@@ -99,7 +99,7 @@ class PlayState extends FlxState
 		FlxG.stage.addChild(fps);
 		fps.visible = false;
 	}
-
+	
 	override public function update(elapsed:Float):Void
 	{
 		infoText.text = "FPS: " + fps.currentFPS + "\n\nObjects can be dragged/thrown around.\n\nPress 'R' to restart.";
