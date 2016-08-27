@@ -45,6 +45,7 @@ class LightSource extends FlxNapeSprite
 	public var endX:Int;
 	public var endY:Int;
 	public var thickness:Int = 1;
+	public var connection:Mirror = null;
 	
 	public function new(map:GameMap, X:Float, Y:Float, ?thickness:Int=1, ?enabled:Bool=true) 
 	{
@@ -95,6 +96,7 @@ class LightSource extends FlxNapeSprite
 	
 	public function limitSpan(endX:Int, endY:Int):Void
 	{
+		setTarget(endX, endY);
 		var endPoint = castLine();
 		setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
 	}
@@ -106,10 +108,18 @@ class LightSource extends FlxNapeSprite
 			lastPoint = null;
 			angleChanged = false;
 			var ang = angle - 0.1;
+			var mirror:Mirror = null;
 			while (ang < angle + 0.1)
 			{
 				var dx = Math.cos(ang) * GameMap.TILE_SIZE;
 				var dy = Math.sin(ang) * GameMap.TILE_SIZE;
+				ang += 0.05;
+				
+				if (dx == 0 && dy == 0)
+				{
+					continue;
+				}
+				
 				var ix = x;
 				var iy = y;				
 								
@@ -120,9 +130,30 @@ class LightSource extends FlxNapeSprite
 				var ltY = (dy < 0) ? FlxG.height : endY;
 				
 				while (ix < ltX && ix > gtX && iy < ltY && iy > gtY)
-				{									
-					var tileIdx = map.foreground.getTile(Std.int(ix / GameMap.TILE_SIZE), Std.int(iy / GameMap.TILE_SIZE));
-					if (tileIdx == Prop.BARREL)
+				{
+					var tx = Std.int(ix / GameMap.TILE_SIZE);
+					var ty = Std.int(iy / GameMap.TILE_SIZE);
+					
+					if (tx > map.foreground.widthInTiles - 1 || ty > map.foreground.heightInTiles - 1)
+					{					
+						ix += dx;
+						iy += dy;
+						continue;
+					}
+					
+					var isMirror = map.mirrors[ty][tx];
+					var tileIdx = map.foreground.getTile(tx, ty);
+					
+					if (isMirror != null)
+					{
+						var newPoint = new FlxPoint(ix, iy);
+						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))
+						{
+							lastPoint = new FlxPoint(newPoint.x, newPoint.y);
+							mirror = isMirror;
+						}
+					}
+					else if (tileIdx == Prop.BARREL)
 					{
 						var newPoint = new FlxPoint(ix + dx * 2.0, iy + dy * 2.0);
 						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))
@@ -135,13 +166,21 @@ class LightSource extends FlxNapeSprite
 					ix += dx;
 					iy += dy;
 				}
-				
-				ang += 0.05;
 			}
 				
 			if (lastPoint == null)
 			{
 				lastPoint = new FlxPoint(endX, endY);
+			}
+			else if (connection != null)
+			{
+				connection.disconnect();
+			}
+			
+			if (mirror != null)
+			{
+				trace("CONNECTED");
+				mirror.connect(this);
 			}
 		}
 		

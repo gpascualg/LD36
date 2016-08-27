@@ -71,8 +71,18 @@ class PlayState extends FlxState
 		darknessOverlay.blend = BlendMode.MULTIPLY;
 		add(darknessOverlay);
 		
+		// Testing
 		lightSources.add(new LightSource(map, 300, 150, 50));
 		lightSources.add(new LightSource(map, 20, 300, 50));
+		for (source in lightSources)
+		{
+			source.setTarget(Math.round(FlxG.width), Math.round(FlxG.height));
+		}
+		
+		// Mirror testing
+		var mirror = new Mirror(map, lightSources, 300, 130);
+		map.mirrors[Std.int(130 / GameMap.TILE_SIZE)][Std.int(300 / GameMap.TILE_SIZE)] = mirror;
+		add(mirror);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -100,12 +110,24 @@ class PlayState extends FlxState
 		#end
 		
 		// Find closest light for each lightsources
+		var i = 0;
 		for (source in lightSources)
 		{
 			if (source.enabled)
 			{
-				source.limitSpan(FlxG.mouse.x, FlxG.mouse.y);
+				if (i==0)
+				{
+					source.limitSpan(FlxG.mouse.x, FlxG.mouse.y);
+				}
+				else
+				{
+					source.span = 10000;
+					var endPoint = source.castLine();
+					source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
+				}
+				
 				drawLighLine(darknessOverlay, source, 50);
+				++i;
 			}
 		}
 		
