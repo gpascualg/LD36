@@ -141,7 +141,7 @@ class LightSource extends FlxNapeSprite
 					var tx = Std.int(ix / GameMap.TILE_SIZE);
 					var ty = Std.int(iy / GameMap.TILE_SIZE);
 					
-					if (tx > map.foreground.widthInTiles - 1 || ty > map.foreground.heightInTiles - 1 || tx < 0 || ty < 0)
+					if (tx >= map.foreground.widthInTiles - 1 || ty >= map.foreground.heightInTiles - 1 || tx <= 0 || ty <= 0)
 					{
 						ix += dx;
 						iy += dy;
