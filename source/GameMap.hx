@@ -46,7 +46,6 @@ class GameMap
 	public var mirrors:Array<Array<Mirror>>;
 	
 	
-	
 	public function new(parent:FlxState) 
 	{
 		_parent = parent;
