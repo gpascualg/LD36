@@ -100,7 +100,6 @@ class LightSource extends FlxNapeSprite
 			var ang = angle - 0.1;
 			while (ang < angle + 0.1)
 			{
-			
 				var dx = Math.cos(ang) * GameMap.TILE_SIZE;
 				var dy = Math.sin(ang) * GameMap.TILE_SIZE;
 				var ix = x;
@@ -113,19 +112,14 @@ class LightSource extends FlxNapeSprite
 				var ltY = (dy < 0) ? FlxG.height : endY;
 				
 				while (ix < ltX && ix > gtX && iy < ltY && iy > gtY)
-				{
-					var checkX = (dx < 0) ? -1 : 1;
-					var checkY = (dy < 0) ? -1 : 1;
-					
-					//trace(dx + "," + dy + (new FlxPoint(Std.int(ix / GameMap.TILE_SIZE), Std.int(iy / GameMap.TILE_SIZE))));
-									
+				{									
 					var tileIdx = map.foreground.getTile(Std.int(ix / GameMap.TILE_SIZE), Std.int(iy / GameMap.TILE_SIZE));
 					if (tileIdx == Prop.BARREL)
 					{
 						var newPoint = new FlxPoint(ix + dx * 2.0, iy + dy * 2.0);
 						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))
 						{
-							lastPoint.set(newPoint.x, newPoint.y);
+							lastPoint = new FlxPoint(newPoint.x, newPoint.y);
 						}
 						break;
 					}
@@ -139,7 +133,7 @@ class LightSource extends FlxNapeSprite
 				
 			if (lastPoint == null)
 			{
-				lastPoint.set(endX, endY);
+				lastPoint = new FlxPoint(endX, endY);
 			}
 		}
 		
