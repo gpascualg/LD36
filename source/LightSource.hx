@@ -40,12 +40,13 @@ class LightSource extends FlxNapeSprite
 	private var angleChanged:Bool = false;
 	private var lastPoint:FlxPoint = new FlxPoint();
 	
+	public var enabled:Bool;
 	public var span:Int;
 	public var endX:Int;
 	public var endY:Int;
 	public var thickness:Int = 1;
 	
-	public function new(map:GameMap, X:Float, Y:Float, ?thickness:Int=1) 
+	public function new(map:GameMap, X:Float, Y:Float, ?thickness:Int=1, ?enabled:Bool=true) 
 	{
 		super(X, Y, null, true, true);
 		loadGraphic("assets/images/gem.png", true, 16, 16);
@@ -59,6 +60,7 @@ class LightSource extends FlxNapeSprite
 		
 		this.map = map;
 		this.thickness = thickness;
+		this.enabled = enabled;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -89,6 +91,12 @@ class LightSource extends FlxNapeSprite
 		this.span = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));	
 		this.endX = endX;
 		this.endY = endY;	
+	}
+	
+	public function limitSpan(endX:Int, endY:Int):Void
+	{
+		var endPoint = castLine();
+		setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
 	}
 	
 	public function castLine():FlxPoint

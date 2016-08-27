@@ -4,6 +4,7 @@ import flash.geom.Point;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
@@ -36,11 +37,11 @@ class Mirror extends FlxNapeSprite
 	private var lightIn:LightSource;
 	private var lightOut:LightSource;
 	
-	public function new(map:GameMap, X:Float, Y:Float) 
+	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
 	{
 		super(X, Y, null, true, true);
-		
-		
+		lightOut = new LightSource(map, X, Y, 50, false);
+		lights.add(lightOut);
 	}
 	
 	override public function update(elapsed:Float):Void

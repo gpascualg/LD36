@@ -41,7 +41,6 @@ class PlayState extends FlxState
 	private var map:GameMap;
 	
 	private var lightSources:FlxTypedGroup<LightSource>;
-	private var mirrors:Array<Array<Mirror>>;
 	private var darknessOverlay:FlxSprite;
 	
 	
@@ -103,19 +102,15 @@ class PlayState extends FlxState
 		// Find closest light for each lightsources
 		for (source in lightSources)
 		{
-			source.setTarget(FlxG.mouse.x, FlxG.mouse.y);
-			var endPoint = source.castLine();
-			source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));	
+			if (source.enabled)
+			{
+				source.limitSpan(FlxG.mouse.x, FlxG.mouse.y);
+				drawLighLine(darknessOverlay, source, 50);
+			}
 		}
 		
 		// Cast shadows
 		//processShadows();
-		
-		// Draw lights
-		for (source in lightSources)
-		{		
-			drawLighLine(darknessOverlay, source, 50);
-		}
 		
 		super.update(elapsed);
 	}

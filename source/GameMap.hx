@@ -40,6 +40,8 @@ class GameMap
 	
 	public var obstacles:Map<Int, Barrel>;
 	
+	public var mirrors:Array<Array<Mirror>>;
+	
 	
 	
 	public function new(parent:FlxState) 
@@ -70,6 +72,9 @@ class GameMap
 		
 		foreground.setupTileIndices([4]);
 		createRandomPath();
+		
+		// Setup mirrors array
+		buildMirrors();
 	}
 	
 	private function createRandomPath():Void
@@ -208,6 +213,22 @@ class GameMap
 	
 	private function setStartPoint(x:Int, y:Int){
 		foreground.setTile(x, y, -3);
+	}
+	
+	private function buildMirrors():Void {
+		mirrors = new Array<Array<Mirror>>();
+		
+		for (y in 0...Std.int(FlxG.height / GameMap.TILE_SIZE))
+		{
+			var arr = new Array<Mirror>();
+			
+			for (x in 0...Std.int(FlxG.width / GameMap.TILE_SIZE))
+			{
+				arr.push(null);
+			}
+			
+			mirrors.push(arr);
+		}
 	}
 }
 
