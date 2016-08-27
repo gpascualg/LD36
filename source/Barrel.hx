@@ -16,9 +16,11 @@ class Barrel extends FlxNapeSprite
 	public function new(X:Float, Y:Float)
 	{
 		super(X + GameMap.TILE_SIZE *.5, Y + 8, "assets/images/barrel.png");
+
 		createRectangularBody(14, 16, BodyType.KINEMATIC);
 		var mat:Material = new Material(0.1, 0.2, 0.38, 1, 0.005);
 		body.setShapeMaterials(mat);
+		body.userData.type = "Barrel";
 		
 		dragJoint = new PivotJoint(FlxNapeSpace.space.world, null, Vec2.weak(), Vec2.weak());
 		dragJoint.space = FlxNapeSpace.space;

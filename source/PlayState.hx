@@ -5,6 +5,7 @@ import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
@@ -38,8 +39,10 @@ class PlayState extends FlxState
 	private static inline var SHADOW_COLOR = 0xff2a2963;
 	private static inline var OVERLAY_COLOR = 0xff887fff;
 	private var map:GameMap;
-	public var darknessOverlay:FlxSprite;
-
+	
+	private var lightSources:FlxTypedGroup<LightSource>;
+	private var darknessOverlay:FlxSprite;
+	
 	
 	/**
 	 * If there's a small gap between something (could be two tiles,
@@ -62,10 +65,14 @@ class PlayState extends FlxState
 			
 		map = new GameMap(this);
 		
+		lightSources = new FlxTypedGroup<LightSource>();
 		darknessOverlay = new FlxSprite();
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
-		//add(darknessOverlay);
+		add(darknessOverlay);
+		
+		lightSources.add(new LightSource(map, 300, 150, 50));
+		lightSources.add(new LightSource(map, 20, 300, 50));
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -74,16 +81,6 @@ class PlayState extends FlxState
 		fps = new FPS(10, 10, 0xffffff);
 		FlxG.stage.addChild(fps);
 		fps.visible = false;
-	}
-	
-	private function drawLighLine(sprite:FlxSprite, x:Float, y:Float, endX:Float, endY:Float, thickness:Int):Void
-	{
-		var height = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));
-		
-		var gradient = FlxGradient.createGradientFlxSprite(thickness, height, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
-		gradient.origin.set(0, 0);
-		gradient.angle = Math.atan2(endY - y, endX - x) * 180.0 / Math.PI - 90;
-		sprite.stamp(gradient, 0, 0);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -94,14 +91,40 @@ class PlayState extends FlxState
 			FlxG.resetState();
 		
 		if (FlxG.keys.justPressed.D)
-			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;
-			
+			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
 		
-		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
-		drawLighLine(darknessOverlay, 0, 0, FlxG.mouse.x, FlxG.mouse.y, 50);
+		#if debug
+			darknessOverlay.fill(0xAAFFFFFF);
+		#else
+			darknessOverlay.fill(FlxColor.BLACK);
+		#end
 		
-		processShadows();
+		// Find closest light for each lightsources
+		for (source in lightSources)
+		{
+			source.setTarget(FlxG.mouse.x, FlxG.mouse.y);
+			var endPoint = source.castLine();
+			source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));	
+		}
+		
+		// Cast shadows
+		//processShadows();
+		
+		// Draw lights
+		for (source in lightSources)
+		{		
+			drawLighLine(darknessOverlay, source, 50);
+		}
+		
 		super.update(elapsed);
+	}
+	
+	private function drawLighLine(sprite:FlxSprite, source:LightSource, thickness:Int):Void
+	{
+		var gradient = FlxGradient.createGradientFlxSprite(source.thickness, source.span, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
+		gradient.origin.set(source.thickness / 2, 0);
+		gradient.angle = source.angle * 180.0 / Math.PI - 90;
+		sprite.stamp(gradient, Std.int(source.x), Std.int(source.y));
 	}
 	
 	public function processShadows():Void
@@ -123,30 +146,35 @@ class PlayState extends FlxState
 		{
 			// We don't want to draw any shadows around the gem, since it's the light source
 			if (body.userData.type != "Gem")
+			{
 				processBodyShapes(body);
+			}
 		}
 	}
 	
 	private function processBodyShapes(body:Body)
 	{
-		for (shape in body.shapes) 
+		for (source in lightSources)
 		{
-			var verts:Vec2List = shape.castPolygon.worldVerts;
-			
-			for (i in 0...verts.length) 
+			for (shape in body.shapes) 			
 			{
-				var startVertex:Vec2 = (i == 0) ? verts.at(verts.length - 1) : verts.at(i - 1);
-				processShapeVertex(startVertex, verts.at(i));
+				var verts:Vec2List = shape.castPolygon.worldVerts;
+				
+				for (i in 0...verts.length) 
+				{
+					var startVertex:Vec2 = (i == 0) ? verts.at(verts.length - 1) : verts.at(i - 1);
+					processShapeVertex(source, startVertex, verts.at(i));
+				}
 			}
 		}
 	}
 	
-	private function processShapeVertex(startVertex:Vec2, endVertex:Vec2):Void
+	private function processShapeVertex(source:LightSource, startVertex:Vec2, endVertex:Vec2):Void
 	{
 		var tempLightOrigin:Vec2 = Vec2.get(
-			map.gem.body.position.x + FlxG.random.float( -.3, 3),
-			map.gem.body.position.y + FlxG.random.float(-.3, .3));
-		
+			source.x + FlxG.random.float( -.3, 3),
+			source.y + FlxG.random.float(-.3, .3));
+			
 		if (doesEdgeCastShadow(startVertex, endVertex, tempLightOrigin))
 		{
 			var projectedPoint:Vec2 = projectPoint(startVertex, tempLightOrigin);

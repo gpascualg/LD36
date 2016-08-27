@@ -193,7 +193,7 @@ class GameMap
 	
 	private function cleanTile(x:Int, y:Int):Void
 	{
-		foreground.setTile(x, y, 0);
+		//foreground.setTile(x, y, 0);
 	}
 	
 	private function reserveTile(x:Int, y:Int):Void
