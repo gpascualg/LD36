@@ -117,9 +117,8 @@ class PlayState extends FlxState
 		
 		darknessOverlay = new FlxSprite();
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
-		darknessOverlay.blend = BlendMode.MULTIPLY;		
-		drawLighLine(darknessOverlay, 0, 0, 300, 300, 10);
-		//add(darknessOverlay);
+		darknessOverlay.blend = BlendMode.MULTIPLY;
+		add(darknessOverlay);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -132,17 +131,17 @@ class PlayState extends FlxState
 	
 	private function drawLighLine(sprite:FlxSprite, x:Float, y:Float, endX:Float, endY:Float, thickness:Int):Void
 	{
-		// Draw main line
-		//sprite.drawLine(x, y, endX, endY, {thickness: thickness});
+		var height = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));
 		
-		// Draw upper line
-		//sprite.drawLine(x, y, endX, endY, {thickness: thickness, color: 0xFFFFFFFF});
+		trace(height);
 		
-		var gradient = FlxGradient.createGradientFlxSprite(thickness, Std.int(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2))), [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 10, 0);
-		//gradient.poi
-		gradient.angle = Math.atan2(endY - y, endX - x) * 180.0 / Math.PI;
+		var gradient = FlxGradient.createGradientFlxSprite(thickness, height, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 100, 0);
+		gradient.origin.set(0, 0);
+		gradient.angle = Math.atan2(endY - y, endX - x) * 180.0 / Math.PI - 90;
 		
-		sprite.stamp(gradient, 0, 0);
+		trace(gradient.height);
+		//sprite.stamp(gradient, 0, 0);
+		add(gradient);
 	}
 	
 	private function createProps():Void
@@ -187,6 +186,11 @@ class PlayState extends FlxState
 		
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;
+			
+		
+		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
+		drawLighLine(darknessOverlay, 0, 0, FlxG.mouse.x, FlxG.mouse.y, 50);
+		
 		
 		processShadows();
 		super.update(elapsed);
