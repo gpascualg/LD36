@@ -17,6 +17,11 @@ class FloatExtender {
 	{
 		return f - o <= epsilon;
 	}
+	
+	static public function clamp(f:Float, min:Float, max:Float)
+	{
+		return (f < min ? min : (f > max ? max : f));
+	}
 }
 
 class Main extends Sprite

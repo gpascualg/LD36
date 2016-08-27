@@ -43,6 +43,7 @@ class PlayState extends FlxState
 	private var lightSources:FlxTypedGroup<LightSource>;
 	private var darknessOverlay:FlxSprite;
 	
+	private var loco:Loco;
 	
 	/**
 	 * If there's a small gap between something (could be two tiles,
@@ -71,9 +72,10 @@ class PlayState extends FlxState
 		darknessOverlay.blend = BlendMode.MULTIPLY;
 		add(darknessOverlay);
 		
+		/*
 		// Testing
-		lightSources.add(new LightSource(map, 300, 150, 50));
-		lightSources.add(new LightSource(map, 20, 300, 50));
+		lightSources.add(new LightSource(map, 300, 180, 70));
+		lightSources.add(new LightSource(map, 20, 300, 70));
 		for (source in lightSources)
 		{
 			source.setTarget(Math.round(FlxG.width), Math.round(FlxG.height));
@@ -83,6 +85,11 @@ class PlayState extends FlxState
 		var mirror = new Mirror(map, lightSources, 300, 130);
 		map.mirrors[Std.int(130 / GameMap.TILE_SIZE)][Std.int(300 / GameMap.TILE_SIZE)] = mirror;
 		add(mirror);
+		*/
+		
+		// Loco!
+		loco = new Loco(map, lightSources, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
+		add(loco);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -109,22 +116,29 @@ class PlayState extends FlxState
 			darknessOverlay.fill(FlxColor.BLACK);
 		#end
 		
+		#if shadows
+			// Clean shadows
+			map.shadowCanvas.fill(FlxColor.TRANSPARENT);
+			map.shadowOverlay.fill(OVERLAY_COLOR);
+		#end
+		
 		// Find closest light for each lightsources
 		var i = 0;
 		for (source in lightSources)
 		{
 			if (source.enabled)
 			{
-				if (i==0)
-				{
-					source.limitSpan(FlxG.mouse.x, FlxG.mouse.y);
-				}
-				else
-				{
-					source.span = 10000;
-					var endPoint = source.castLine();
-					source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
-				}
+				var endPoint = source.castLine(i==2);
+				source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
+				
+				#if shadows
+					var obs = map.obstacles.get(Std.int(source.lastTile.y * map.foreground.widthInTiles + source.lastTile.x));
+					trace(obs);
+					if (obs != null)
+					{
+						processBodyShapes(obs.body);
+					}
+				#end
 				
 				drawLighLine(darknessOverlay, source, 50);
 				++i;
@@ -150,23 +164,9 @@ class PlayState extends FlxState
 		map.shadowCanvas.fill(FlxColor.TRANSPARENT);
 		map.shadowOverlay.fill(OVERLAY_COLOR);
 
-		map.shadowOverlay.drawCircle( // outer red circle
-			map.gem.body.position.x + FlxG.random.float( -.6, .6),
-			map.gem.body.position.y + FlxG.random.float( -.6, .6),
-			(FlxG.random.bool(5) ? 16 : 16.5), 0xffff5f5f);
-
-		map.shadowOverlay.drawCircle( // inner red circle
-			map.gem.body.position.x + FlxG.random.float( -.25, .25),
-			map.gem.body.position.y + FlxG.random.float( -.25, .25),
-			(FlxG.random.bool(5) ? 13 : 13.5), 0xffff7070);
-
 		for (body in FlxNapeSpace.space.bodies)
 		{
-			// We don't want to draw any shadows around the gem, since it's the light source
-			if (body.userData.type != "Gem")
-			{
-				processBodyShapes(body);
-			}
+			processBodyShapes(body);
 		}
 	}
 	

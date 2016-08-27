@@ -39,6 +39,7 @@ class LightSource extends FlxNapeSprite
 	private var lastAngle:Float = 0;
 	private var angleChanged:Bool = false;
 	private var lastPoint:FlxPoint = new FlxPoint();
+	public var lastTile:FlxPoint = new FlxPoint();
 	
 	public var enabled:Bool;
 	public var span:Int;
@@ -94,14 +95,20 @@ class LightSource extends FlxNapeSprite
 		this.endY = endY;	
 	}
 	
-	public function limitSpan(endX:Int, endY:Int):Void
+	public function limitSpan(endX:Int, endY:Int):FlxPoint
 	{
 		setTarget(endX, endY);
 		var endPoint = castLine();
 		setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
+		return endPoint;
 	}
 	
-	public function castLine():FlxPoint
+	public function force()
+	{
+		angleChanged = true;
+	}
+	
+	public function castLine(?verbose:Bool=false):FlxPoint
 	{		
 		if (angleChanged)
 		{
@@ -134,11 +141,19 @@ class LightSource extends FlxNapeSprite
 					var tx = Std.int(ix / GameMap.TILE_SIZE);
 					var ty = Std.int(iy / GameMap.TILE_SIZE);
 					
-					if (tx > map.foreground.widthInTiles - 1 || ty > map.foreground.heightInTiles - 1)
-					{					
+					if (tx > map.foreground.widthInTiles - 1 || ty > map.foreground.heightInTiles - 1 || tx < 0 || ty < 0)
+					{
 						ix += dx;
 						iy += dy;
 						continue;
+					}
+					
+					// Avoid self-tile
+					if (tx == Std.int(x / GameMap.TILE_SIZE) && ty == Std.int(y / GameMap.TILE_SIZE))
+					{
+						ix += dx;
+						iy += dy;
+						continue;						
 					}
 					
 					var isMirror = map.mirrors[ty][tx];
@@ -158,6 +173,7 @@ class LightSource extends FlxNapeSprite
 						var newPoint = new FlxPoint(ix + dx * 2.0, iy + dy * 2.0);
 						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))
 						{
+							lastTile = new FlxPoint(tx, ty);
 							lastPoint = new FlxPoint(newPoint.x, newPoint.y);
 						}
 						break;
@@ -166,6 +182,11 @@ class LightSource extends FlxNapeSprite
 					ix += dx;
 					iy += dy;
 				}
+			}
+			
+			if (verbose)
+			{
+				trace("Light limiting:\nPoint: " + lastPoint + "\nConnection: " + connection);
 			}
 				
 			if (lastPoint == null)
@@ -179,7 +200,6 @@ class LightSource extends FlxNapeSprite
 			
 			if (mirror != null)
 			{
-				trace("CONNECTED");
 				mirror.connect(this);
 			}
 		}

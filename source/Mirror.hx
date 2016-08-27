@@ -42,9 +42,9 @@ class Mirror extends FlxSprite
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
 	{
 		super(X, Y);
-		makeGraphic(16, 5, FlxColor.RED, true);
+		makeGraphic(GameMap.TILE_SIZE, 5, FlxColor.RED, true);
 		
-		lightOut = new LightSource(map, X, Y, 50, false);
+		lightOut = new LightSource(map, X, Y, 1, false);
 		lights.add(lightOut);
 		
 		//angle = 45;
@@ -67,13 +67,13 @@ class Mirror extends FlxSprite
 		
 		var rad = (angle % 360) * Math.PI / 180;
 		var abs = Math.abs(rad - lightIn.angle);
-		trace("Mirror: " + (angle * Math.PI / 180) + " Light:" + lightIn.angle + ' = ' + abs);
+		//trace("Mirror: " + (angle * Math.PI / 180) + " Light:" + lightIn.angle + ' = ' + abs);
 		if (abs < Math.PI || abs > Math.PI * 2)
 		{
-			
+			lightOut.thickness = lightIn.thickness - 10;
 			lightOut.enabled = true;
-			lightOut.setTarget(FlxG.width, FlxG.height);
 			lightOut.angle = rad - lightIn.angle;
+			lightOut.setTarget(Math.round(lightOut.x + Math.cos(lightOut.angle) * 10000), Math.round(lightOut.x + Math.sin(lightOut.angle) * 10000));
 		}
 		else
 		{
