@@ -63,6 +63,15 @@ class PlayState extends FlxState
 	private var speedText:FlxText;
 	private var speedHint:FlxText;
 	
+	var _txtNum1:FlxText;
+	var _img1:FlxSprite;
+		
+	var _txtNum2:FlxText;
+	var _img2:FlxSprite;
+	
+	var _txtNum3:FlxText;
+	var _img3:FlxSprite;
+		
 	override public function create():Void
 	{
 		super.create();
@@ -98,6 +107,10 @@ class PlayState extends FlxState
 		add(speedHint);
 			
 
+		addKeyHint(100, 610, "1", "assets/images/raiways/railway.png", _txtNum2, _img2, 0, 22);
+		addKeyHint(150, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum1, _img1);
+		addKeyHint(200, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum1, _img1, 90);
+		
 		/*
 		// Testing
 		lightSources.add(new LightSource(map, 300, 180, 70));
@@ -130,6 +143,19 @@ class PlayState extends FlxState
 		#else
 			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 0.3, true);
 		#end
+	}
+	
+	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, rot:Float=0, size:Int=24)
+	{
+		txt = new FlxText(x, y + 4, 14, text, 10);
+		txt.size = 10;
+		
+		img = new FlxSprite(x + 8, y - 2 + (24 - size),  imgSource);
+		img.setGraphicSize(size, size);
+		img.angle = rot;
+		
+		add(img);
+		add(txt);		
 	}
 	
 	override public function update(elapsed:Float):Void
