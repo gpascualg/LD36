@@ -33,11 +33,11 @@ class Gem extends FlxNapeSprite
 	public function new(X:Float, Y:Float) 
 	{
 		super(X, Y, null, true, true);
-		loadGraphic("assets/images/gem.png", true, 16, 16);
+		loadGraphic("assets/images/gem.png", true, GameMap.TILE_SIZE, GameMap.TILE_SIZE);
 		animation.add("glitter", [0, 1, 2], 1);
 		animation.play("glitter");
 		
-		createRectangularBody(16, 16, BodyType.DYNAMIC);
+		createRectangularBody(GameMap.TILE_SIZE, GameMap.TILE_SIZE, BodyType.DYNAMIC);
 		body.setShapeMaterials(Material.ice());
 		
 		body.userData.type = "Gem";

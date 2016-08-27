@@ -17,7 +17,7 @@ class Barrel extends FlxNapeSprite
 	{
 		super(X + GameMap.TILE_SIZE *.5, Y + 8, "assets/images/barrel.png");
 
-		createRectangularBody(14, 16, BodyType.KINEMATIC);
+		createRectangularBody(GameMap.TILE_SIZE, GameMap.TILE_SIZE, BodyType.KINEMATIC);
 		var mat:Material = new Material(0.1, 0.2, 0.38, 1, 0.005);
 		body.setShapeMaterials(mat);
 		body.userData.type = "Barrel";
