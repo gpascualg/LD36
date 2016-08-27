@@ -148,16 +148,30 @@ class GameMap
 			y = desiredY;
 		}
 		
-		var x = startPoint.x;
-		var y = startPoint.y;
-		var lastDirection:Direction = Direction.NONE;
+		var x:Int = Std.int(startPoint.x);
+		var y:Int = Std.int(startPoint.y);
+		var lastDirection:Int = -1;
 		for (rail in 0...3)
 		{
 			var direction = foreground.getTile(x, y);
+			var isCurved = lastDirection != -1 && lastDirection != direction;
+			lastDirection = direction;
 			
-			//var railway = new Railway(this, path[rail].direction, path[rail].x * GameMap.TILE_SIZE, path[rail].y * GameMap.TILE_SIZE, path[rail].isCurved);
-			//parent.add(railway);
-			//railway.angle = path[rail].angle;
+			var railway = new Railway(this, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE, isCurved);
+			parent.add(railway);
+			railway.angle = isCurved && direction == Direction.SOUTH ? -90 : 0;
+			
+			switch(actualDirection){
+				case Direction.EAST:
+					++x;
+				case Direction.NORTH:
+					--y;
+				case Direction.SOUTH:
+					++y;
+				case Direction.WEST:
+				case Direction.NONE:
+					// NOOOO;
+			}
 		}
 
 		//Fill the map with random noise ensuring that the path is respected
