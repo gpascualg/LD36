@@ -9,6 +9,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import nape.geom.Vec2;
@@ -19,6 +20,10 @@ import openfl.display.FPS;
 import GameMap;
 using flixel.util.FlxSpriteUtil;
 using GameMap;
+
+import flixel.group.FlxSpriteGroup;
+import flixel.text.FlxText;
+import flixel.ui.FlxBar;
 
 /**
  * This was based on a guide from this forum post: http://forums.tigsource.com/index.php?topic=8803.0
@@ -54,6 +59,10 @@ class PlayState extends FlxState
 	private var infoText:FlxText;
 	private var fps:FPS;
 	
+	private var speedBar:FlxBar;
+	private var speedText:FlxText;
+	private var speedHint:FlxText;
+	
 	override public function create():Void
 	{
 		super.create();
@@ -72,6 +81,24 @@ class PlayState extends FlxState
 		darknessOverlay.blend = BlendMode.MULTIPLY;
 		add(darknessOverlay);
 		
+		
+		speedText = new FlxText(1000, 617, 200, "Speed:", 8, true);
+		speedText.size = 10;
+		add(speedText);
+		
+		speedBar = new FlxBar(1048, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
+		speedBar.createFilledBar(0xFF63460C, 0xFFE6AA2F);
+		speedBar.setRange(8, 20);
+		add(speedBar);
+		
+		
+		speedHint = new FlxText(1125, 619, 200, "Press W", 8, true);
+		speedHint.size = 8;
+		speedHint.alpha = 0.5;
+		add(speedHint);
+		
+		
+
 		/*
 		// Testing
 		lightSources.add(new LightSource(map, 300, 180, 70));
@@ -109,6 +136,16 @@ class PlayState extends FlxState
 		
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
+		
+			
+		if (FlxG.keys.pressed.W)
+		{
+			loco.incrementSpeed(elapsed);
+			speedBar.value = loco.speed;
+		}else{
+			loco.decrementSpeed(elapsed);
+			speedBar.value  = loco.speed;
+		}
 		
 		#if debug
 			darknessOverlay.fill(0xAAFFFFFF);

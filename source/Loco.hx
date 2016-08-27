@@ -14,6 +14,10 @@ import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.phys.Material;
 
+import flixel.group.FlxSpriteGroup;
+import flixel.text.FlxText;
+import flixel.ui.FlxBar;
+
 import GameMap;
 
 using Main.FloatExtender;
@@ -35,9 +39,13 @@ using Main.FloatExtender;
  */
 class Loco extends FlxSprite
 {
+	public static inline var ACELERATION:Float = 1;
+	public static inline var MAX_SPEED:Float = 30;
+	public static inline var MIN_SPEED:Float = 10;
+	
 	private var map:GameMap;
 	private var light:LightSource;
-	public var speed = 10;
+	public var speed:Float = 10;
 	
 	private var _tx:Int = Std.int(Math.NaN);
 	private var _ty:Int = Std.int(Math.NaN);
@@ -45,6 +53,8 @@ class Loco extends FlxSprite
 	private var _first:Bool = true;
 	private var _last:Int = -1;
 	private var _next:Int = -1;
+	
+
 	
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
 	{
@@ -57,11 +67,24 @@ class Loco extends FlxSprite
 				
 		drag.x = drag.y = 0;
 		this.map = map;
+
+		
 	}
 	
 	public function stop()
 	{
 		speed = 0;
+	}
+	
+	public function incrementSpeed(elapsed:Float)
+	{
+		if(speed < MAX_SPEED)
+			speed += ACELERATION * elapsed;
+	}
+	public function decrementSpeed(elapsed:Float)
+	{
+		if (speed > MIN_SPEED)
+			speed -= ACELERATION * elapsed;
 	}
 	
 	override public function update(elapsed:Float):Void
