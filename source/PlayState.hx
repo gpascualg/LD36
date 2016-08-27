@@ -41,6 +41,7 @@ class PlayState extends FlxState
 	private var map:GameMap;
 	
 	private var lightSources:FlxTypedGroup<LightSource>;
+	private var mirrors:Array<Array<Mirror>>;
 	private var darknessOverlay:FlxSprite;
 	
 	
