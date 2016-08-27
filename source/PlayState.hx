@@ -88,7 +88,7 @@ class PlayState extends FlxState
 		
 		speedBar = new FlxBar(1048, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
 		speedBar.createFilledBar(0xFF63460C, 0xFFE6AA2F);
-		speedBar.setRange(8, 20);
+		speedBar.setRange(Loco.MIN_SPEED - 2, Loco.MAX_SPEED);
 		add(speedBar);
 		
 		
@@ -96,8 +96,7 @@ class PlayState extends FlxState
 		speedHint.size = 8;
 		speedHint.alpha = 0.5;
 		add(speedHint);
-		
-		
+			
 
 		/*
 		// Testing
