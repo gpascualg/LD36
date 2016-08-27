@@ -41,7 +41,6 @@ class GameMap
 	public var obstacles:Map<Int, Barrel>;
 	
 	
-	
 	public function new(parent:FlxState) 
 	{
 		_parent = parent;
