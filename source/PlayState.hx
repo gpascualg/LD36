@@ -9,6 +9,7 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import nape.geom.Vec2;
 import nape.geom.Vec2List;
 import nape.phys.Body;
@@ -36,8 +37,9 @@ class PlayState extends FlxState
 {
 	private static inline var SHADOW_COLOR = 0xff2a2963;
 	private static inline var OVERLAY_COLOR = 0xff887fff;
-				
-	private var map:GameMap;	
+	private var map:GameMap;
+	public var darknessOverlay:FlxSprite;
+
 	
 	/**
 	 * If there's a small gap between something (could be two tiles,
@@ -60,6 +62,12 @@ class PlayState extends FlxState
 			
 		map = new GameMap(this);
 		
+		darknessOverlay = new FlxSprite();
+		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
+		darknessOverlay.blend = BlendMode.MULTIPLY;		
+		drawLighLine(darknessOverlay, 0, 0, 300, 300, 10);
+		//add(darknessOverlay);
+		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
 		
@@ -67,7 +75,23 @@ class PlayState extends FlxState
 		fps = new FPS(10, 10, 0xffffff);
 		FlxG.stage.addChild(fps);
 		fps.visible = false;
-	}	
+	}
+	
+	private function drawLighLine(sprite:FlxSprite, x:Float, y:Float, endX:Float, endY:Float, thickness:Int):Void
+	{
+		// Draw main line
+		//sprite.drawLine(x, y, endX, endY, {thickness: thickness});
+		
+		// Draw upper line
+		//sprite.drawLine(x, y, endX, endY, {thickness: thickness, color: 0xFFFFFFFF});
+		
+		var gradient = FlxGradient.createGradientFlxSprite(thickness, Std.int(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2))), [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 10, 0);
+		//gradient.poi
+		gradient.angle = Math.atan2(endY - y, endX - x) * 180.0 / Math.PI;
+		
+		sprite.stamp(gradient, 0, 0);
+	}
+
 	override public function update(elapsed:Float):Void
 	{
 		infoText.text = "FPS: " + fps.currentFPS + "\n\nObjects can be dragged/thrown around.\n\nPress 'R' to restart.";
