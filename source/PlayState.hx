@@ -66,7 +66,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-		
+				
 		FlxG.camera.bgColor = 0x5a81ad;
 		
 		FlxNapeSpace.init();
@@ -124,6 +124,12 @@ class PlayState extends FlxState
 		fps = new FPS(10, 10, 0xffffff);
 		FlxG.stage.addChild(fps);
 		fps.visible = false;
+		
+		#if flash
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 0.3, true);
+		#else
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 0.3, true);
+		#end
 	}
 	
 	override public function update(elapsed:Float):Void

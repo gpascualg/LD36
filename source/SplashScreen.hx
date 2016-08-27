@@ -35,7 +35,7 @@ class SplashScreen extends FlxState
 		howTo.size = 20;
 		add(howTo);
 		
-		credits = new FlxText(880, 610, 400, "A game made in 72 hours for Ludum Dare 36 by blipy & 4nc3str4l", true);
+		credits = new FlxText(800, 610, 500, "A game made in 72 hours for Ludum Dare 36 by Blipi, 4nc3str4l & Myriologie", true);
 		credits.size = 10;
 		add(credits);
 		
