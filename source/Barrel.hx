@@ -6,6 +6,7 @@ import flixel.FlxG;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Material;
+import GameMap;
  
 class Barrel extends FlxNapeSprite
 {
@@ -13,7 +14,7 @@ class Barrel extends FlxNapeSprite
 	
 	public function new(X:Float, Y:Float)
 	{
-		super(X + PlayState.TILE_SIZE *.5, Y + 8, "assets/images/barrel.png");
+		super(X + GameMap.TILE_SIZE *.5, Y + 8, "assets/images/barrel.png");
 		createRectangularBody(14, 16);
 		body.setShapeMaterials(new Material(0.1, 0.2, 0.38, 1, 0.005));
 		
