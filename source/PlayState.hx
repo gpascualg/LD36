@@ -80,15 +80,10 @@ class PlayState extends FlxState
 	{
 		var height = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));
 		
-		trace(height);
-		
-		var gradient = FlxGradient.createGradientFlxSprite(thickness, height, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 100, 0);
+		var gradient = FlxGradient.createGradientFlxSprite(thickness, height, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
 		gradient.origin.set(0, 0);
 		gradient.angle = Math.atan2(endY - y, endX - x) * 180.0 / Math.PI - 90;
-		
-		trace(gradient.height);
-		//sprite.stamp(gradient, 0, 0);
-		add(gradient);
+		sprite.stamp(gradient, 0, 0);
 	}
 
 	override public function update(elapsed:Float):Void
