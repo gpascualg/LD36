@@ -65,12 +65,15 @@ class PlayState extends FlxState
 	
 	var _txtNum1:FlxText;
 	var _img1:FlxSprite;
+	var _img1BG:FlxSprite;
 		
 	var _txtNum2:FlxText;
 	var _img2:FlxSprite;
+	var _img2BG:FlxSprite;
 	
 	var _txtNum3:FlxText;
 	var _img3:FlxSprite;
+	var _img3BG:FlxSprite;
 		
 	override public function create():Void
 	{
@@ -107,9 +110,9 @@ class PlayState extends FlxState
 		add(speedHint);
 			
 
-		addKeyHint(100, 610, "1", "assets/images/raiways/railway.png", _txtNum2, _img2, 0, 22);
-		addKeyHint(150, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum1, _img1);
-		addKeyHint(200, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum1, _img1, 90);
+		addKeyHint(100, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		addKeyHint(150, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG);
+		addKeyHint(200, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90);
 		
 		/*
 		// Testing
@@ -145,10 +148,14 @@ class PlayState extends FlxState
 		#end
 	}
 	
-	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, rot:Float=0, size:Int=24)
+	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)
 	{
+		bg = new FlxSprite().makeGraphic(30, 30, FlxColor.BLACK);
+		bg.drawRect(0, 19, 30, 1, FlxColor.WHITE);
+		
 		txt = new FlxText(x, y + 4, 14, text, 10);
 		txt.size = 10;
+		txt.setBorderStyle(SHADOW, FlxColor.WHITE, 1, 1);
 		
 		img = new FlxSprite(x + 8, y - 2 + (24 - size),  imgSource);
 		img.setGraphicSize(size, size);
@@ -156,6 +163,21 @@ class PlayState extends FlxState
 		
 		add(img);
 		add(txt);		
+	}
+	
+	public function selectRailway(index:Int)
+	{
+		//TODO: Need to understand how de F**CK change text attributes on the fly
+		return;
+		switch(index)
+		{
+			case 1:
+				_txtNum1.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+			case 2:
+				_txtNum2.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+			case 3:
+				_txtNum3.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+		}
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -176,6 +198,21 @@ class PlayState extends FlxState
 		}else{
 			loco.decrementSpeed(elapsed);
 			speedBar.value  = loco.speed;
+		}
+		
+		if (FlxG.keys.justPressed.ONE)
+		{
+			selectRailway(1);
+		}
+		
+		if (FlxG.keys.justPressed.TWO)
+		{
+			selectRailway(2);
+		}
+		
+		if (FlxG.keys.justPressed.THREE)
+		{
+			selectRailway(3);
 		}
 		
 		#if debug
