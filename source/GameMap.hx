@@ -79,19 +79,22 @@ class GameMap
 		
 		//Start point
 		var xStart:Int = 1;
-		var yStart:Int = Std.int((Math.floor(Math.random() * (19 - 1 + 1)) + 1));
+		var yStart:Int = Std.random(foreground.heightInTiles - 4) + 2;
 		setStartPoint(Std.int(xStart), Std.int(yStart));
 		
 		//End Point
-		var xEnd:Int = 38;
-		var yEnd:Float = Std.int((Math.floor(Math.random() * (19 - 1 + 1)) + 1));
+		var xEnd:Int = foreground.widthInTiles - 2;
+		var yEnd:Float = Std.random(foreground.heightInTiles - 4) + 2;
 		setEndPoint(Std.int(xEnd), Std.int(yEnd));
+		
+		trace("YEnd: " + yEnd);
 		
 		//Calculate the path
 		var x:Int = xStart;
 		var y:Int = yStart;
 		var actualDirection:Direction = chooseRandomDirection(x, y);
-		var counter:Int = 0;
+		
+		
 		while (!hasGeneratedPath)
 		{	
 			if (Math.random() > 0.7)
@@ -152,14 +155,12 @@ class GameMap
 				}
 				
 				//Render an obstacle
-				if (tileIndex != -1 && tileIndex != 4 && Math.random() > 0.75)
+				else if (tileIndex != -1 && tileIndex != 4 && Math.random() > 0.75)
 				{
 					var barr:Barrel = new Barrel(xPos, yPos);
 					obstacles[tileY * tileX] = barr;
 					_parent.add(barr);
 					foreground.setTile(tileX, tileY, Prop.BARREL);
-				
-					cleanTile(tileX, tileY);
 				}
 			}
 		}
