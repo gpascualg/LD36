@@ -99,7 +99,6 @@ class GameMap
 		var counter:Int = 0;
 		while (!hasGeneratedPath)
 		{	
-			trace(x + ", " + y);
 			if (Math.random() > 0.7)
 			{
 				actualDirection = chooseRandomDirection(x, y);
@@ -163,6 +162,7 @@ class GameMap
 					var barr:Barrel = new Barrel(xPos, yPos);
 					obstacles[tileY * tileX] = barr;
 					_parent.add(barr);
+					foreground.setTile(tileX, tileY, Prop.BARREL);
 				
 					cleanTile(tileX, tileY);
 				}
