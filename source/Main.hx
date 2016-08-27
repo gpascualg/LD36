@@ -22,13 +22,17 @@ class FloatExtender {
 class Main extends Sprite
 {
 	var skipSplash:Bool = true;
+	public static inline var MAP_WIDTH:Int = 640;
+	public static inline var MAP_HEIGTH:Int = 320;
+	public static inline var MAP_SCALE:Int = 2;
+	
 	public function new()
 	{
 		super();
 		#if !flash
-			addChild(new FlxGame(640, 320, PlayState, 1, 60, true, false));
+			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState, 1, 60, true, false));
 		#else
-			addChild(new FlxGame(640, 320, PlayState));
+			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
 		#end
 	}
 }

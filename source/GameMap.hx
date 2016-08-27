@@ -24,7 +24,7 @@ import Gem;
  */
 class GameMap
 {
-	public static inline var TILE_SIZE:Int = 16;
+	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
 	public var foreground:FlxNapeTilemap;
