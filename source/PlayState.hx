@@ -157,6 +157,7 @@ class PlayState extends FlxState
 		gradient.origin.set(source.thickness / 2, 0);
 		gradient.angle = source.angle * 180.0 / Math.PI - 90;
 		sprite.stamp(gradient, Std.int(source.x), Std.int(source.y));
+		gradient.destroy();
 	}
 	
 	public function processShadows():Void

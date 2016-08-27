@@ -112,7 +112,7 @@ class GameMap
 			var desiredX:Int = x;
 			var desiredY:Int = y;
 		
-			reserveTile(desiredX, desiredY);
+			reserveTile(desiredX, desiredY, actualDirection);
 						
 			if (Math.random() > 0.7)
 			{
@@ -148,20 +148,36 @@ class GameMap
 			y = desiredY;
 		}
 		
-		var x:Int = Std.int(startPoint.x);
-		var y:Int = Std.int(startPoint.y);
+		// Add railways
+		x = xStart;
+		y = yStart;
 		var lastDirection:Int = -1;
-		for (rail in 0...3)
+		var direction:Int = -1;
+		var numberOfRails = 0;
+		
+		while (true)
 		{
-			var direction = foreground.getTile(x, y);
-			var isCurved = lastDirection != -1 && lastDirection != direction;
-			lastDirection = direction;
+			direction = foreground.getTile(x, y);
+			trace((new FlxPoint(x, y)) + " " + direction);
+			if (direction == -2)
+			{
+				break;
+			}
+				
+			if (numberOfRails < 1500)
+			{
+				var isCurved = lastDirection != -1 && lastDirection != direction;
+				
+				var railway = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+				parent.add(railway);
+				lastDirection = direction;
+			}
+			else
+			{
+				reserveTile(x, y);
+			}
 			
-			var railway = new Railway(this, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE, isCurved);
-			parent.add(railway);
-			railway.angle = isCurved && direction == Direction.SOUTH ? -90 : 0;
-			
-			switch(actualDirection){
+			switch(direction) {
 				case Direction.EAST:
 					++x;
 				case Direction.NORTH:
@@ -172,6 +188,7 @@ class GameMap
 				case Direction.NONE:
 					// NOOOO;
 			}
+			++numberOfRails;
 		}
 
 		//Fill the map with random noise ensuring that the path is respected
