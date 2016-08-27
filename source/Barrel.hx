@@ -7,7 +7,8 @@ import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Material;
 import GameMap;
- 
+import nape.phys.BodyType;
+
 class Barrel extends FlxNapeSprite
 {
 	private var dragJoint:PivotJoint;
@@ -15,13 +16,15 @@ class Barrel extends FlxNapeSprite
 	public function new(X:Float, Y:Float)
 	{
 		super(X + GameMap.TILE_SIZE *.5, Y + 8, "assets/images/barrel.png");
-		createRectangularBody(14, 16);
-		body.setShapeMaterials(new Material(0.1, 0.2, 0.38, 1, 0.005));
+		createRectangularBody(14, 16, BodyType.KINEMATIC);
+		var mat:Material = new Material(0.1, 0.2, 0.38, 1, 0.005);
+		body.setShapeMaterials(mat);
 		
 		dragJoint = new PivotJoint(FlxNapeSpace.space.world, null, Vec2.weak(), Vec2.weak());
 		dragJoint.space = FlxNapeSpace.space;
 		dragJoint.active = false;
-		dragJoint.stiff = false;
+		dragJoint.stiff = true;
+		
 	}
 	
 	override public function update(elapsed:Float):Void
