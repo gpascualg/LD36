@@ -61,7 +61,7 @@ class PlayState extends FlxState
 		FlxG.camera.bgColor = 0x5a81ad;
 		
 		FlxNapeSpace.init();
-		FlxNapeSpace.space.gravity.setxy(0, 1200);
+		FlxNapeSpace.space.gravity.setxy(0, 0);
 		FlxNapeSpace.drawDebug = false; // You can toggle this on/off one by pressing 'D'		
 			
 		map = new GameMap(this);
@@ -93,7 +93,6 @@ class PlayState extends FlxState
 		
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
-		
 		
 		#if debug
 			darknessOverlay.fill(0xAAFFFFFF);

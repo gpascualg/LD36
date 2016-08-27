@@ -31,8 +31,16 @@ class GameMap
 	public var shadowCanvas:FlxSprite;
 	public var shadowOverlay:FlxSprite;
 	
+	public var mapData:Array<Int>;
+	
 	private var _parent:FlxState;
 	public var gem:Gem;
+	
+	public var hasGeneratedPath:Bool;
+	
+	public var obstacles:Map<Int, Barrel>;
+	
+	
 	
 	public function new(parent:FlxState) 
 	{
@@ -48,21 +56,87 @@ class GameMap
 		_parent.add(shadowCanvas);
 		
 		foreground = new FlxNapeTilemap();
+		mapData = new Array<Int>();
+		
 		foreground.loadMapFromCSV("assets/data/foreground.txt",
 			"assets/images/tiles.png", TILE_SIZE, TILE_SIZE, null, 1, 1);
+		
 		_parent.add(foreground);
-	
+		
 		shadowOverlay = new FlxSprite();
 		shadowOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
 		shadowOverlay.blend = BlendMode.MULTIPLY;
 		_parent.add(shadowOverlay);
 		
 		foreground.setupTileIndices([4]);
-		createProps();	
+		createRandomPath();
 	}
 	
-	private function createProps():Void
+	private function createRandomPath():Void
 	{
+		//Declare the obstacles array
+		obstacles = new Map<Int, Barrel>();
+		
+		//Start point
+		var xStart:Int = 1;
+		var yStart:Int = Std.int((Math.floor(Math.random() * (19 - 1 + 1)) + 1));
+		setStartPoint(Std.int(xStart), Std.int(yStart));
+		
+		//End Point
+		var xEnd:Int = 38;
+		var yEnd:Float = Std.int((Math.floor(Math.random() * (19 - 1 + 1)) + 1));
+		setEndPoint(Std.int(xEnd), Std.int(yEnd));
+		
+		//Calculate the path
+		var x:Int = xStart;
+		var y:Int = yStart;
+		var actualDirection:Direction = chooseRandomDirection(x, y);
+		var counter:Int = 0;
+		while (!hasGeneratedPath)
+		{	
+			trace(x + ", " + y);
+			if (Math.random() > 0.7)
+			{
+				actualDirection = chooseRandomDirection(x, y);
+				continue;
+			}
+			
+			//We have ended
+			if (foreground.getTile(x, y) == -2){
+				hasGeneratedPath = true;
+				continue;
+			}
+			
+			var desiredX:Int = x;
+			var desiredY:Int = y;
+
+			switch(actualDirection){
+				case Direction.EAST:
+					desiredX++;
+					if (desiredX == foreground.widthInTiles - 1){
+						actualDirection = chooseRandomDirection(x, y);
+						continue;
+					}
+				case Direction.NORTH:
+					desiredY--;
+					if (desiredY == 1){
+						actualDirection = chooseRandomDirection(x, y);
+						continue;
+					}
+				case Direction.SOUTH:
+					desiredY++;
+					if (desiredY == foreground.heightInTiles - 1){
+						actualDirection = chooseRandomDirection(x, y);
+						continue;
+					}
+			}
+		
+			reserveTile(desiredX, desiredY);
+			x = desiredX;
+			y = desiredY;
+		}
+
+		//Fill the map with random noise ensuring that the path is respected
 		for (tileY in 0...foreground.heightInTiles)
 		{
 			for (tileX in 0...foreground.widthInTiles)
@@ -71,24 +145,69 @@ class GameMap
 				var xPos:Float = tileX * TILE_SIZE;
 				var yPos:Float = tileY * TILE_SIZE;
 				
-				if (tileIndex == Prop.BARREL)
-				{					
-					_parent.add(new Barrel(xPos, yPos));
-					cleanTile(tileX, tileY);
-				}
-				else if (tileIndex == Prop.GEM)
+				//Render the start and the end point
+				if (tileIndex == -2 || tileIndex == -3)
 				{
 					gem = new Gem(xPos, yPos);
 					_parent.add(gem);
+				}
+				
+				//Render an obstacle
+				if (tileIndex != -1 && tileIndex != 4 && Math.random() > 0.75)
+				{
+					var barr:Barrel = new Barrel(xPos, yPos);
+					obstacles[tileY * tileX] = barr;
+					_parent.add(barr);
+				
 					cleanTile(tileX, tileY);
 				}
 			}
 		}
-	}	
+	}
+	
+	private function cleanMap()
+	{
+		for (tileY in 1...foreground.heightInTiles -1)
+		{
+			for (tileX in 1...foreground.widthInTiles -1)
+			{
+				foreground.setTile(tileX, tileY, 0);
+			}
+		}
+	}
+	
+	private function chooseRandomDirection(x:Int, y:Int):Direction
+	{
+		var allowedDirs:Array<Direction> = new Array<Direction>();
+		
+		if (x != foreground.widthInTiles - 1)
+			allowedDirs.push(Direction.EAST);
+		if (y !=  1)
+			allowedDirs.push(Direction.NORTH);
+		if (y != foreground.heightInTiles - 1)
+			allowedDirs.push(Direction.SOUTH);
+		
+		var dir:Direction = cast(Std.int((Math.floor(Math.random() * (allowedDirs.length - 0 + 1)) + 0)), Direction);
+		return allowedDirs[dir];
+	}
 	
 	private function cleanTile(x:Int, y:Int):Void
 	{
 		//foreground.setTile(x, y, 0);
+	}
+	
+	private function reserveTile(x:Int, y:Int):Void
+	{
+		if(foreground.getTile(x, y) == 0)
+			foreground.setTile(x, y, -1);
+	}
+	
+	private function setEndPoint(x:Int, y:Int){
+		foreground.setTile(x, y, -2);
+	}
+	
+	private function setStartPoint(x:Int, y:Int){
+		foreground.setTile(x, y, -3);
 	}
 }
 
@@ -98,3 +217,12 @@ abstract Prop(Int) to Int
 	var BARREL = 5;
 	var GEM = 6;
 }
+
+@:enum
+abstract Direction(Int) to Int
+{
+	var NORTH = 0;
+	var EAST = 1;
+	var SOUTH = 2;
+}
+
