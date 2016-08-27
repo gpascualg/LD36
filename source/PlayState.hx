@@ -65,7 +65,7 @@ class PlayState extends FlxState
 		darknessOverlay = new FlxSprite();
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
-		add(darknessOverlay);
+		//add(darknessOverlay);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);

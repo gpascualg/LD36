@@ -42,6 +42,11 @@ class GameMap
 			"assets/images/tiles.png", TILE_SIZE, TILE_SIZE, null, 1, 1);
 		_parent.add(background);
 		
+		shadowCanvas = new FlxSprite();
+		shadowCanvas.blend = BlendMode.MULTIPLY;
+		shadowCanvas.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
+		_parent.add(shadowCanvas);
+		
 		foreground = new FlxNapeTilemap();
 		foreground.loadMapFromCSV("assets/data/foreground.txt",
 			"assets/images/tiles.png", TILE_SIZE, TILE_SIZE, null, 1, 1);
@@ -51,11 +56,6 @@ class GameMap
 		shadowOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
 		shadowOverlay.blend = BlendMode.MULTIPLY;
 		_parent.add(shadowOverlay);
-		
-		shadowCanvas = new FlxSprite();
-		shadowCanvas.blend = BlendMode.MULTIPLY;
-		shadowCanvas.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
-		_parent.add(shadowCanvas);
 		
 		foreground.setupTileIndices([4]);
 		createProps();	
