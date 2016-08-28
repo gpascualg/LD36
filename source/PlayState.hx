@@ -184,31 +184,31 @@ class PlayState extends FlxState
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
 		
 		_img1BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
-		_img1BG.setPosition(512, 614);
+		_img1BG.setPosition(492, 614);
 		
-		auxSprite.setPosition(513, 615);
+		auxSprite.setPosition(493, 615);
 		add(_img1BG);
 		add(auxSprite);
 		
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
 		_img2BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
-		_img2BG.setPosition(561, 614);
+		_img2BG.setPosition(554, 614);
 		
-		auxSprite.setPosition(562, 615);
+		auxSprite.setPosition(555, 615);
 		add(_img2BG);
 		add(auxSprite);
 		
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
-		_img3BG = new FlxSprite().makeGraphic(22, 24, FlxColor.GREEN);
-		_img3BG.setPosition(614, 614);
+		_img3BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img3BG.setPosition(611, 614);
 		
-		auxSprite.setPosition(615, 615);
+		auxSprite.setPosition(613, 615);
 
 		add(_img3BG);
 		add(auxSprite);
 		
-		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
+		addKeyHint(480, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		addKeyHint(540, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
 		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90, 23);
 		clearAllSelectedRails();
 		//End of KeyHits
@@ -275,13 +275,14 @@ class PlayState extends FlxState
 	
 	
 	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)
-	{
-		bg = new FlxSprite().makeGraphic(30, 30, FlxColor.BLACK);
-		bg.drawRect(0, 19, 30, 1, FlxColor.WHITE);
+	{		
+		var keyImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/"+text+".png");
+		trace(keyImage.path);
+		keyImage.setPosition(x-17, y);
+		keyImage.alpha = 0.8;
+		keyImage.setGraphicSize(18, 18);
 		
-		txt = new FlxText(x, y + 4, 14, text, 10);
-		txt.size = 10;
-		txt.setBorderStyle(SHADOW, FlxColor.WHITE, 1, 1);
+		add(keyImage);
 		
 		img = new FlxSprite(x + 8, y - 2 + (24 - size),  imgSource);
 		img.setGraphicSize(size, size);
