@@ -17,15 +17,23 @@ class Railway extends FlxSprite
 	public var map:GameMap;
 	public var lastDirection:Int;
 	public var direction:Int;
+	public var previous:Railway = null;
+	public var next:Railway = null;
 	
-	public function new(map:GameMap, lastDirection:Int, direction:Int, X:Float, Y:Float, ?addToTileset:Bool=true)
+	public function new(map:GameMap, previous:Railway, lastDirection:Int, direction:Int, X:Float, Y:Float, ?addToTileset:Bool=true)
 	{	
 		super(X, Y);
 		
+		this.previous = previous;
 		this.map = map;
 		if (addToTileset)
 		{
 			map.reserveTile(Std.int(X / GameMap.TILE_SIZE), Std.int(Y / GameMap.TILE_SIZE), direction);
+		}
+		
+		if (previous != null)
+		{
+			previous.next = this;
 		}
 		
 		setDirection(lastDirection, direction);

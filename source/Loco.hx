@@ -88,11 +88,13 @@ class Loco extends Wagon
 		var ang:Float = 0;
 		if (_last == Direction.EAST || _next == Direction.EAST || _last == Direction.WEST || _next == Direction.WEST)
 		{
-			ang = ((FlxG.mouse.y - y) / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
+			var sign = _last == Direction.WEST || _next == Direction.WEST ? -1 : 1;
+			ang = ((FlxG.mouse.y - y) * sign / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		else
 		{
-			ang = ((FlxG.mouse.x - x) / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
+			var sign = _last == Direction.NORTH || _next == Direction.NORTH ? -1 : 1;
+			ang = ((FlxG.mouse.x - x) * sign / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		
 		var cx = x - GameMap.TILE_SIZE / 2.0;
@@ -137,9 +139,29 @@ class Loco extends Wagon
 	
 	public function onGemPick(loco:Loco, gem:Gem)
 	{
-		var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
-		gem.kill();
-		StatsManager.gemsTaken += 1;
-		PlayState.instance.diamondsTxt.text = Std.string(StatsManager.gemsTaken);
+
+		if (gem.alive && gem.exists)
+		{
+			// Find last wagon
+			var current:Wagon = this;
+			while (current.next != null)
+			{
+				current = current.next;
+			}
+			
+			// Set last position to be last wagon center tile
+			map.endPoint.x = Std.int((current.x + GameMap.TILE_SIZE / 2.0) / GameMap.TILE_SIZE);
+			map.endPoint.y = Std.int((current.y + GameMap.TILE_SIZE / 2.0) / GameMap.TILE_SIZE);
+			
+			// Kill gem and reset map
+			var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
+			gem.kill();
+			StatsManager.gemsTaken += 1;
+			PlayState.instance.diamondsTxt.text = Std.string(StatsManager.gemsTaken);
+			// Adjust position (startPos is old endPos)
+			//x = map.startPoint.x * GameMap.TILE_SIZE;
+			//y = map.startPoint.y * GameMap.TILE_SIZE;
+			//speed = 0;
+		}
 	}
 }

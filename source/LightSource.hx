@@ -267,6 +267,7 @@ class LightSource extends FlxNapeSprite
 		gradient.angle = angle * 180.0 / Math.PI - 90;
 		canvas.stamp(gradient, Std.int(x), Std.int(y));
 		gradient.destroy();
+		
 	}
 }
 

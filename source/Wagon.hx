@@ -52,7 +52,8 @@ class Wagon extends FlxSprite
 	
 	public var map:GameMap;
 	public var speed:Float = MIN_SPEED;
-	private var previous:Wagon;
+	private var previous:Wagon = null;
+	private var next:Wagon = null;
 	
 	public function new(map:GameMap, X:Float, Y:Float, asset:String, ?previous:Wagon=null)
 	{
@@ -60,8 +61,29 @@ class Wagon extends FlxSprite
 		loadGraphic(asset);
 		drag.x = drag.y = 0;
 		
+		if (previous != null)
+		{
+			previous.next = this;
+		}
+		
 		this.map = map;
 		this.previous = previous;
+	}
+	
+	public function resetWagon(X:Float, Y:Float, ?resetSpeed:Bool=false)
+	{
+		x = X;
+		y = Y;
+		_first = true;
+		_last = _next = -1;
+		_tx = Std.int(Math.NaN);
+		_ty = Std.int(Math.NaN);
+		
+		if (resetSpeed)
+		{
+			speed = 0;
+			velocity.set(speed, 0);
+		}
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -69,6 +91,12 @@ class Wagon extends FlxSprite
 		var mA = 0;
 		var tx = Std.int((x + 1e-6) / GameMap.TILE_SIZE);
 		var ty = Std.int(y / GameMap.TILE_SIZE);
+		
+		// HACK
+		if (FlxG.keys.justPressed.F)
+		{
+			speed = MAX_SPEED;
+		}
 		
 		if (previous != null)
 		{
@@ -141,28 +169,24 @@ class Wagon extends FlxSprite
 			switch (tileIdx) 
 			{
 				case Direction.NORTH:
-					trace((new FlxPoint(tx, ty)) + " = NORTH " + tileIdx);
 					mA = -90;
 					if (_last == -1) angle = _target = -90;
 					else if (_last == Direction.EAST) _target -= 90
 					else if (_last != Direction.NORTH) _target += 90;
 					
 				case Direction.EAST:
-					trace((new FlxPoint(tx, ty)) + " = EAST " + tileIdx);
 					mA = 0;
 					if (_last == -1) angle = _target = 0;
 					else if (_last == Direction.NORTH) _target += 90
 					else if (_last != Direction.EAST) _target -= 90;
 					
 				case Direction.SOUTH:
-					trace((new FlxPoint(tx, ty)) + " = SOUTH " + tileIdx);
 					mA = 90;
 					if (_last == -1) angle = _target = 90;
 					else if (_last == Direction.EAST) _target += 90
 					else if (_last != Direction.SOUTH) _target -= 90;
 					
 				case Direction.WEST:
-					trace((new FlxPoint(tx, ty)) + " = WEST " + tileIdx);
 					mA = -180;
 					if (_last == -1) angle = _target = -180;					
 					else if (_last == Direction.NORTH) _target -= 90
@@ -171,7 +195,7 @@ class Wagon extends FlxSprite
 				default:
 					trace("STOPPING at " + (new FlxPoint(tx, ty)) + "? " + tileIdx);
 					speed = 0;
-					PlayState.GameOver();
+					//PlayState.GameOver();
 			}
 			
 			velocity.set(speed, 0);
