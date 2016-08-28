@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
+	public static inline var PREBUILD_RAILS_MAX:Int = 500; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -37,6 +37,7 @@ class GameMap
 	public var mapData:Array<Int>;
 	
 	private var _parent:FlxState;
+	private var _loco:Loco;
 	
 	public var inverted:Bool = false;
 	public var startPoint:FlxPoint;
@@ -46,14 +47,16 @@ class GameMap
 	public var hasGeneratedPath:Bool;
 	
 	public var lastRail:Railway = null;
-	public var rails:FlxTypedGroup<Railway>;
+	public var lastDirection:Int = -1;
 	public var gems:FlxTypedGroup<Gem>;
 	public var obstacles:Map<Int, Barrel> = null;
 	
 	public var mirrors:Array<Array<Mirror>>;
 	
+	private var rails:FlxTypedGroup<Railway>;
+	private var railsByIndex:Array<Array<Railway>>;
 	
-	public function new(parent:FlxState, lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite) 
+	public function new(parent:FlxState)
 	{
 		_parent = parent;
 		var background:FlxTilemap = new FlxTilemap();
@@ -84,13 +87,12 @@ class GameMap
 		parent.add(rails);
 		gems = new FlxTypedGroup<Gem>();
 		parent.add(gems);
-		createRandomPath(lightSources, canvas);
 		
 		// Setup mirrors array
 		buildMirrors();
 	}
 	
-	public function createRandomPath(lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, ?startPoint:FlxPoint=null, ?invert:Bool=false):Void
+	public function createRandomPath(lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, loco:Loco, ?startPoint:FlxPoint=null, ?invert:Bool=false):Void
 	{
 		// Empty map
 		if (obstacles != null)
@@ -107,25 +109,20 @@ class GameMap
 			}
 		}
 		
-		// Keep last chunks
-		var rail:Railway = lastRail;
-		var keepRails:Array<Railway> = new Array<Railway>();
-		
-		while (rail != null)
+		// Save loco
+		if (loco != null)
 		{
-			var tx = Std.int(rail.x / GameMap.TILE_SIZE);
-			var ty = Std.int(rail.y / GameMap.TILE_SIZE);
-			
-			if (keepRails.length > 0 || (tx == Std.int(endPoint.x) && ty == Std.int(endPoint.y)))
-			{
-				keepRails.push(rail);
-				rail = rail.next;
-			}
-			else
-			{
-				rail = rail.previous;
-			}
+			_loco = loco;
 		}
+		
+		// Keep last chunks
+		var currentWagon:Wagon = _loco;
+		while (currentWagon.next != null)
+		{
+			currentWagon = currentWagon.next;
+		}
+		
+		var keepRails:Array<Railway> = currentWagon.nextRails(false);
 		
 		trace(keepRails);
 		trace(keepRails.length);
@@ -182,14 +179,17 @@ class GameMap
 		}
 		
 		var path:Array<Array<Int>> = new Array<Array<Int>>();
+		railsByIndex = new Array<Array<Railway>>();
 		for (ty in 0...foreground.heightInTiles)
 		{
-			var arr = new Array<Int>();
+			var arr1 = new Array<Int>();
+			var arr2 = new Array<Railway>();
 			
 			for (tx in 0...foreground.widthInTiles)
 			{
-				arr.push(0);
-			
+				arr1.push(0);
+				arr2.push(null);
+				
 				// Clear
 				var tileIdx = foreground.getTile(tx, ty);
 				if (tileIdx < 0)
@@ -198,7 +198,8 @@ class GameMap
 				}
 			}
 			
-			path.push(arr);
+			path.push(arr1);
+			railsByIndex.push(arr2);
 		}
 		path[yEnd][xEnd] = -2;
 		
@@ -298,13 +299,20 @@ class GameMap
 			
 			if (direction == -2)
 			{
+				if (numberOfRails < PREBUILD_RAILS_MAX)
+				{
+					//lastRail = new Railway(this, lastRail, lastDirection, lastDirection, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+					//placeRailAt(lastRail, x, y);
+				}
+				
 				break;
 			}
 			
 			if (numberOfRails < Math.max(PREBUILD_RAILS_MAX, keepRails.length))
 			{
+				trace('Rail at: ' + new FlxPoint(x, y) + ' ' + lastDirection + ' -> ' + direction);
 				lastRail = new Railway(this, lastRail, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
-				rails.add(lastRail);
+				placeRailAt(lastRail, x, y);
 				lastDirection = direction;
 			}
 			else
@@ -403,7 +411,7 @@ class GameMap
 					acc = 0.7;
 				}
 			}
-		}		
+		}
 		
 		// Gem on endPoint
 		var gem = new Gem(this, lightSources, canvas, endPoint.x * GameMap.TILE_SIZE, endPoint.y * GameMap.TILE_SIZE);
@@ -421,6 +429,35 @@ class GameMap
 		}
 	}
 	
+	public function getLastDirection()
+	{
+		if (lastDirection == -1)
+		{
+			return lastRail.direction;
+		}
+		
+		return lastRail.nextDirection(lastDirection);
+	}
+	
+	public function setLastRail(rail:Railway, ?direction:Int=-1)
+	{
+		lastRail = rail;
+		lastDirection = direction;
+	}
+	
+	public function placeRailAt(rail:Railway, x:Int, y:Int)
+	{
+		if (railsByIndex[y][x] != null)
+		{
+			rails.remove(railsByIndex[y][x]);
+		}
+		
+		railsByIndex[y][x] = rail;
+		setLastRail(rail);
+		reserveTile(x, y, rail.direction);
+		rails.add(rail);
+	}
+	
 	public function getRailAt(x:Int, y:Int)
 	{
 		for (rail in rails)
@@ -432,6 +469,16 @@ class GameMap
 		}
 		
 		return null;
+	}
+	
+	public function tempRailPlace(rail:Railway)
+	{
+		rails.add(rail);
+	}
+	
+	public function tempRailRemove(rail:Railway)
+	{
+		rails.remove(rail);
 	}
 	
 	public function directionInverse(d:Int)

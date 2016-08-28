@@ -46,6 +46,8 @@ class Wagon extends FlxSprite
 	private var _tx:Int = Std.int(Math.NaN);
 	private var _ty:Int = Std.int(Math.NaN);
 	private var _first:Bool = true;
+	private var _previous:Railway = null;
+	private var _current:Railway = null;
 	private var _last:Int = -1;
 	private var _next:Int = -1;
 	private var _target:Int = 0;
@@ -53,7 +55,7 @@ class Wagon extends FlxSprite
 	public var map:GameMap;
 	public var speed:Float = MIN_SPEED;
 	private var previous:Wagon = null;
-	private var next:Wagon = null;
+	public var next:Wagon = null;
 	
 	public function new(map:GameMap, X:Float, Y:Float, asset:String, ?previous:Wagon=null)
 	{
@@ -70,6 +72,13 @@ class Wagon extends FlxSprite
 		this.previous = previous;
 	}
 	
+	public function init(X:Float, Y:Float)
+	{
+		x = X;
+		y = Y;
+	}
+	
+	/*
 	public function resetWagon(X:Float, Y:Float, ?resetSpeed:Bool=false)
 	{
 		x = X;
@@ -85,6 +94,7 @@ class Wagon extends FlxSprite
 			velocity.set(speed, 0);
 		}
 	}
+	*/
 	
 	override public function update(elapsed:Float):Void
 	{
@@ -98,6 +108,12 @@ class Wagon extends FlxSprite
 			speed = MAX_SPEED;
 		}
 		#end
+		
+		if (_first)
+		{
+			_current = map.getRailAt(tx, ty);
+			_last = _next = _current.direction;
+		}
 		
 		if (previous != null)
 		{
@@ -125,7 +141,7 @@ class Wagon extends FlxSprite
 		}
 		
 		if (tx != _tx || ty != _ty)
-		{
+		{				
 			if (!_first && _next == Direction.NORTH)
 			{
 				var tdy = Std.int((y + GameMap.TILE_SIZE - 1e-6) / GameMap.TILE_SIZE);
@@ -159,68 +175,73 @@ class Wagon extends FlxSprite
 				y = _ty * GameMap.TILE_SIZE; // Fix Y?
 			}
 			
-			_first = false;
 			_tx = tx;
 			_ty = ty;
 			
-			var tileIdx = map.foreground.getTile(tx, ty);
-			_last = _next;
-			_next = tileIdx;
-			
-			// Are next and last of opposite directions?
-			if (map.directionInverse(_last) == _next)
+			if (_current == null)
 			{
-				var rail = map.getRailAt(tx, ty);
-				var first = rail;
-				var last = null;
-				
-				while (rail != null)
-				{
-					rail.inverse();
-					last = rail;
-					rail = rail.previous;
-				}
-				
-				tileIdx = _next = first.direction;
-				map.lastRail = last;
+				trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);
+				speed = 0;
+				velocity.set(speed * elapsed, 0);
+				alive = false;
+				//PlayState.GameOver();
+				return;
 			}
 			
-			switch (tileIdx) 
+			_last = _next;
+			_next = _current.nextDirection(_last);
+			trace("At " + (new FlxPoint(tx, ty)) + _next);
+			_previous = _current;
+			_current = _current.nextRail(_last);
+			trace(_current);
+			
+			switch (_next) 
 			{
 				case Direction.NORTH:
 					mA = -90;
-					if (_last == -1) angle = _target = -90;
+					if (_first) angle = _target = -90;
 					else if (_last == Direction.EAST) _target -= 90
 					else if (_last != Direction.NORTH) _target += 90;
 					
 				case Direction.EAST:
 					mA = 0;
-					if (_last == -1) angle = _target = 0;
+					if (_first) angle = _target = 0;
 					else if (_last == Direction.NORTH) _target += 90
 					else if (_last != Direction.EAST) _target -= 90;
 					
 				case Direction.SOUTH:
 					mA = 90;
-					if (_last == -1) angle = _target = 90;
+					if (_first) angle = _target = 90;
 					else if (_last == Direction.EAST) _target += 90
 					else if (_last != Direction.SOUTH) _target -= 90;
 					
 				case Direction.WEST:
 					mA = -180;
-					if (_last == -1) angle = _target = -180;					
+					if (_first) angle = _target = -180;					
 					else if (_last == Direction.NORTH) _target -= 90
 					else if (_last != Direction.WEST) _target += 90;
 					
 				default:
-					trace("STOPPING at " + (new FlxPoint(tx, ty)) + "? " + tileIdx);
+					trace("SHOULD NOT BE HERE!! at " + (new FlxPoint(tx, ty)) + "? " + _next);
 					speed = 0;
-					PlayState.GameOver();
+					//PlayState.GameOver();
 			}
 			
+			_first = false;
 			velocity.set(speed * elapsed, 0);
 			velocity.rotate(FlxPoint.weak(0, 0), mA);
 		}
 		
 		super.update(elapsed);
+	}
+	
+	public function nextRails(?canEndInCurve:Bool=true):Array<Railway>
+	{
+		if (_current != null)
+		{
+			return _previous.nextRails(_last, canEndInCurve);
+		}
+		
+		return [];
 	}
 }

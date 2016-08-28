@@ -124,7 +124,7 @@ class LightSource extends FlxNapeSprite
 	{
 		var mirror:Mirror = null;
 		lastPoint = null;
-			
+					
 		//if (angleChanged)
 		if (type == LightType.LINE || type == LightType.CONE)
 		{

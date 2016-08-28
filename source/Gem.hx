@@ -49,6 +49,8 @@ class Gem extends FlxSprite
 		this.map = map;
 		this.lightSources = lightSources;
 		this.canvas = canvas;
+		
+		setSize(30, 30);
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -62,7 +64,7 @@ class Gem extends FlxSprite
 		FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut });
 		FlxTween.tween(light, { thickness: 1 }, 2, { ease: FlxEase.circOut, onComplete: finishKill });
 		
-		map.createRandomPath(lightSources, canvas, map.endPoint, !map.inverted);
+		map.createRandomPath(lightSources, canvas, null, map.endPoint, !map.inverted);
 	}
 
 	private function finishKill(_):Void

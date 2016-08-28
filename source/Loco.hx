@@ -48,11 +48,18 @@ class Loco extends Wagon
 {
 	private var light:LightSource;
 	private var sound:FlxSound;
-
+	private var canvas:FlxSprite;
+	private var lights:FlxTypedGroup<LightSource>;
+	
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas: FlxSprite, X:Float, Y:Float) 
 	{
 		super(map, X, Y, "assets/images/train/train-head.png");
-		
+		this.canvas = canvas;
+		this.lights = lights;
+	}
+	
+	override public function init(X:Float, Y:Float)
+	{
 		new FlxTimer().start(1.0, expluseSmoke, 0);	
 		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70, LightType.CONE);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
@@ -60,6 +67,8 @@ class Loco extends Wagon
 		
 		sound = FlxG.sound.load(SoundManager.LOCO_SOUND, 0.3, true);
 		sound.play();
+		
+		super.init(X, Y);
 	}
 	
 	public function stop()
@@ -136,6 +145,35 @@ class Loco extends Wagon
 				offsetY = 0;
 		}
 		PlayState.instance.add(new Smoke(this.x + offsetX, this.y + offsetY));
+	}
+	
+	public function updateLast(rail:Railway)
+	{
+		var realNext:Int = -1;
+		var last = _next;
+		var next = _next;
+		var prev = null;
+		var current = _current;
+		var railAcc = 0;
+		while (current != null)
+		{
+			prev = current;
+			last = next;
+			next = current.nextDirection(last);							
+			current = current.nextRail(last);
+			
+			if (current != null && current == rail)
+			{
+				++railAcc;
+				if (railAcc == 2)
+				{
+					prev = rail;
+					break;
+				}
+			}
+		}
+		
+		map.setLastRail(prev, next);
 	}
 	
 	public function onGemPicked(loco:Loco, gem:Gem)

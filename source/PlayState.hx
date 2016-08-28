@@ -119,8 +119,12 @@ class PlayState extends FlxState
 		
 		lightSources = new FlxTypedGroup<LightSource>();
 		darknessOverlay = new FlxSprite();
-			
-		map = new GameMap(this, lightSources, darknessOverlay);
+		
+		map = new GameMap(this);
+		loco = new Loco(map, lightSources, darknessOverlay, 0, 0);
+		var wagon1 = new Wagon(map, 0, 0, "assets/images/train/train-part.png", loco);
+		var wagon2 = new Wagon(map, 0, 0, "assets/images/train/train-bottom.png", wagon1);
+		map.createRandomPath(lightSources, darknessOverlay, loco);
 		
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
@@ -214,9 +218,9 @@ class PlayState extends FlxState
 		*/
 		
 		// Loco!
-		loco = new Loco(map, lightSources, darknessOverlay, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
-		var wagon1 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-part.png", loco);
-		var wagon2 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-bottom.png", wagon1);
+		loco.init(map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
+		wagon1.init(map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
+		wagon2.init(map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
 		add(wagon2);
 		add(wagon1);
 		add(loco);
@@ -317,7 +321,7 @@ class PlayState extends FlxState
 				(lastRail[1] && FlxG.keys.justPressed.TWO) ||
 				(lastRail[2] && FlxG.keys.justPressed.THREE)))
 			{
-				map.rails.remove(rail);
+				map.tempRailRemove(rail);
 				rail = null;
 				clearAllSelectedRails();
 			}
@@ -325,7 +329,7 @@ class PlayState extends FlxState
 			{
 				if (rail != null)
 				{
-					map.rails.remove(rail);
+					map.tempRailRemove(rail);
 					rail = null;
 				}
 				
@@ -333,7 +337,7 @@ class PlayState extends FlxState
 				lastRail[1] = FlxG.keys.justPressed.TWO;
 				lastRail[2] = FlxG.keys.justPressed.THREE;
 				
-				railOld = map.lastRail.direction;
+				railOld = map.getLastDirection();
 				
 				if (FlxG.keys.justPressed.ONE)
 				{
@@ -372,8 +376,8 @@ class PlayState extends FlxState
 				
 				trace("Setting from " + railOld + " to " + railNew);
 				
-				rail = new Railway(map, map.lastRail, railOld, railNew, 0, 0, false);
-				map.rails.add(rail);
+				rail = new Railway(map, map.lastRail, railOld, railNew, 0, 0);
+				map.tempRailPlace(rail);
 			}
 		}
 				
@@ -393,17 +397,19 @@ class PlayState extends FlxState
 				{
 					var tx = Std.int(map.lastRail.x / GameMap.TILE_SIZE);
 					var ty = Std.int(map.lastRail.y / GameMap.TILE_SIZE);
+					var direction = map.getLastDirection();
 					
 					var canBeAdded = 
-						(map.lastRail.direction == Direction.EAST && tx + 1 == x && ty == y) ||
-						(map.lastRail.direction == Direction.WEST && tx - 1 == x && ty == y) ||
-						(map.lastRail.direction == Direction.NORTH && tx == x && ty - 1 == y) ||
-						(map.lastRail.direction == Direction.SOUTH && tx == x && ty + 1 == y);
+						(direction == Direction.EAST && tx + 1 == x && ty == y) ||
+						(direction == Direction.WEST && tx - 1 == x && ty == y) ||
+						(direction == Direction.NORTH && tx == x && ty - 1 == y) ||
+						(direction == Direction.SOUTH && tx == x && ty + 1 == y);
 					
 					if (canBeAdded)
 					{
-						map.lastRail = rail;
-						rail.reserveNow();
+						rail.updateTile();
+						map.placeRailAt(rail, rail.tx, rail.ty);
+						loco.updateLast(rail);
 						rail = null;
 						clearAllSelectedRails();
 						_addRailSound.play();
