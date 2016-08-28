@@ -40,6 +40,9 @@ import flixel.ui.FlxBar;
  */
 class PlayState extends FlxState
 {
+	
+	public static var instance:PlayState = null;
+	
 	private static inline var SHADOW_COLOR = 0xff2a2963;
 	private static inline var OVERLAY_COLOR = 0xff887fff;
 	private var map:GameMap;
@@ -79,7 +82,9 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-				
+		
+		instance = this;
+		
 		FlxG.camera.bgColor = 0x5a81ad;
 		
 		FlxNapeSpace.init();
