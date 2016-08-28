@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
+	public static inline var PREBUILD_RAILS_MAX:Int = 500; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -53,7 +53,7 @@ class GameMap
 	public var mirrors:Array<Array<Mirror>>;
 	
 	
-	public function new(parent:FlxState) 
+	public function new(parent:FlxState, lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite) 
 	{
 		_parent = parent;
 		var background:FlxTilemap = new FlxTilemap();
@@ -84,14 +84,13 @@ class GameMap
 		parent.add(rails);
 		gems = new FlxTypedGroup<Gem>();
 		parent.add(gems);
-		createRandomPath();
-		//createRandomPath(null, true);
+		createRandomPath(lightSources, canvas);
 		
 		// Setup mirrors array
 		buildMirrors();
 	}
 	
-	public function createRandomPath(?startPoint:FlxPoint=null, ?invert:Bool=false):Void
+	public function createRandomPath(lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, ?startPoint:FlxPoint=null, ?invert:Bool=false):Void
 	{
 		// Empty map
 		if (obstacles != null)
@@ -108,6 +107,12 @@ class GameMap
 			}
 		}
 		
+		// Clear rails
+		for (rail in rails)
+		{
+			rails.remove(rail);
+		}
+				
 		//Declare the obstacles array
 		obstacles = new Map<Int, Barrel>();
 		inverted = invert;
@@ -138,28 +143,40 @@ class GameMap
 			yStart = Std.int(startPoint.y);
 		}
 		
-		setStartPoint(xStart, yStart);
-		setEndPoint(xEnd, yEnd);
-		
-		trace("YEnd: " + yEnd);
-		
-		//Calculate the path
-		var x:Int = xStart;
-		var y:Int = yStart;
-		var actualDirection:Direction = chooseRandomDirection(x, y);
-		
 		var path:Array<Array<Int>> = new Array<Array<Int>>();
-		for (y in 0...foreground.heightInTiles)
+		for (ty in 0...foreground.heightInTiles)
 		{
 			var arr = new Array<Int>();
-			for (x in 0...foreground.widthInTiles)
+			
+			for (tx in 0...foreground.widthInTiles)
 			{
 				arr.push(0);
+			
+				// Clear
+				var tileIdx = foreground.getTile(tx, ty);
+				if (tileIdx >= 50 || tileIdx < 0)
+				{
+					reserveTile(tx, ty, 0);
+				}
 			}
+			
 			path.push(arr);
 		}
 		path[yEnd][xEnd] = -2;
 		
+		// Set start & end point
+		setStartPoint(xStart, yStart);
+		setEndPoint(xEnd, yEnd);
+				
+		//Calculate the path & clear foreground from obstacles / custom ids
+		var x:Int = xStart;
+		var y:Int = yStart;
+		var actualDirection:Direction = chooseRandomDirection(x, y);
+		
+		trace("Start: " + new FlxPoint(xStart, yStart));
+		trace("End: " + new FlxPoint(xEnd, yEnd));
+		
+		hasGeneratedPath = false;
 		while (!hasGeneratedPath)
 		{
 			//We have ended
@@ -211,7 +228,7 @@ class GameMap
 			x = desiredX;
 			y = desiredY;
 		}
-		
+				
 		// Add railways
 		x = xStart;
 		y = yStart;
@@ -222,7 +239,7 @@ class GameMap
 		while (true)
 		{
 			direction = path[y][x];
-			trace((new FlxPoint(x, y)) + " " + direction);
+			//trace((new FlxPoint(x, y)) + " " + direction);
 			
 			if (direction == -2)
 			{
@@ -249,12 +266,14 @@ class GameMap
 					--y;
 				case Direction.SOUTH:
 					++y;
-				case Direction.NONE:
+					
+				default:
+					break;
 					// NOOOO;
 			}
 			++numberOfRails;
 		}
-		
+				
 		// Flag start surroundings
 		for (x in -1...2)
 		{
@@ -329,7 +348,11 @@ class GameMap
 					acc = 0.7;
 				}
 			}
-		}
+		}		
+		
+		// Gem on endPoint
+		var gem = new Gem(this, lightSources, canvas, endPoint.x * GameMap.TILE_SIZE, endPoint.y * GameMap.TILE_SIZE);
+		gems.add(gem);
 	}
 	
 	private function cleanMap()

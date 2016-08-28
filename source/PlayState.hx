@@ -93,15 +93,15 @@ class PlayState extends FlxState
 		FlxNapeSpace.init();
 		FlxNapeSpace.space.gravity.setxy(0, 0);
 		FlxNapeSpace.drawDebug = false; // You can toggle this on/off one by pressing 'D'		
-			
-		map = new GameMap(this);
 		
 		lightSources = new FlxTypedGroup<LightSource>();
 		darknessOverlay = new FlxSprite();
+			
+		map = new GameMap(this, lightSources, darknessOverlay);
+		
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
-		add(darknessOverlay);
-		
+		add(darknessOverlay);		
 		
 		speedText = new FlxText(1000, 617, 200, "Speed:", 8, true);
 		speedText.size = 10;
@@ -145,10 +145,6 @@ class PlayState extends FlxState
 		add(wagon2);
 		add(wagon1);
 		add(loco);
-		
-		// Light on endPoint
-		var gem = new Gem(map, lightSources, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE);
-		map.gems.add(gem);
 		
 		// Ping light
 		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
