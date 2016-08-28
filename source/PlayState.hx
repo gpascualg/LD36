@@ -118,7 +118,6 @@ class PlayState extends FlxState
 		
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
-		darknessOverlay.alpha = 0.9;
 		add(darknessOverlay);		
 		
 		//Speed UI
