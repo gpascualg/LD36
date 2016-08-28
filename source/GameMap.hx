@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 500; // 5
+	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -116,7 +116,8 @@ class GameMap
 		}
 		
 		// Keep last chunks
-		_loco._first = true;
+		_loco._current = _loco._current == null ? loco._previous : loco._current;
+		_loco._first = _loco._current == null;
 		var currentWagon:Wagon = _loco;
 		while (currentWagon.next != null)
 		{

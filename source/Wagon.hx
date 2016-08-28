@@ -31,8 +31,8 @@ class Wagon extends FlxSprite
 	private var _tx:Int = Std.int(Math.NaN);
 	private var _ty:Int = Std.int(Math.NaN);
 	public var _first:Bool = true;
-	private var _previous:Railway = null;
-	private var _current:Railway = null;
+	public var _previous:Railway = null;
+	public var _current:Railway = null;
 	private var _last:Int = -1;
 	private var _next:Int = -1;
 	private var _target:Int = 0;
@@ -165,11 +165,8 @@ class Wagon extends FlxSprite
 			
 			if (_current == null)
 			{
-				trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);
-				speed = 0;
-				velocity.set(speed * elapsed, 0);
-				alive = false;
-				//PlayState.GameOver();
+				trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);				
+				PlayState.GameOver();
 				return;
 			}
 			
@@ -208,7 +205,7 @@ class Wagon extends FlxSprite
 				default:
 					trace("SHOULD NOT BE HERE!! at " + (new FlxPoint(tx, ty)) + "? " + _next);
 					speed = 0;
-					//PlayState.GameOver();
+					PlayState.GameOver();
 			}
 			
 			_first = false;

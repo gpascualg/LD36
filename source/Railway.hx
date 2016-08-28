@@ -146,7 +146,7 @@ class Railway extends FlxSprite
 			case Direction.EAST: return map.getRailAt(tx + 1, ty);
 			case Direction.WEST: return map.getRailAt(tx - 1, ty);
 		}
-				
+		
 		return null;
 	}
 	
