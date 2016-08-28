@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 500; // 5
+	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
