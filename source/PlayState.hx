@@ -41,6 +41,9 @@ using flixel.util.FlxSpriteUtil;
  */
 class PlayState extends FlxState
 {
+	
+	public static var instance:PlayState = null;
+	
 	private static inline var SHADOW_COLOR = 0xff2a2963;
 	private static inline var OVERLAY_COLOR = 0xff887fff;
 	private var map:GameMap;
@@ -82,7 +85,9 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-				
+		
+		instance = this;
+		
 		FlxG.camera.bgColor = 0x5a81ad;
 		
 		FlxNapeSpace.init();
@@ -158,9 +163,9 @@ class PlayState extends FlxState
 		fps.visible = false;
 		
 		#if flash
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 0.3, true);
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 1, true);
 		#else
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 0.3, true);
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 1, true);
 		#end
 	}
 	
