@@ -48,6 +48,7 @@ class Loco extends Wagon
 {
 	private var light:LightSource;
 	private var sound:FlxSound;
+	private var headLight:LightSource;
 
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas: FlxSprite, X:Float, Y:Float) 
 	{
@@ -57,6 +58,9 @@ class Loco extends Wagon
 		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70, LightType.CONE);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
 		lights.add(light);
+		
+		headLight = new LightSource(map, canvas, X, y, 100, LightType.CONCENTRIC_SPOT);
+		lights.add(headLight);
 		
 		sound = FlxG.sound.load(SoundManager.LOCO_SOUND, 0.3, true);
 		sound.play();
@@ -79,13 +83,16 @@ class Loco extends Wagon
 	}
 		
 	override public function update(elapsed:Float):Void
-	{		
+	{			
 		updateLight();
 		super.update(elapsed);
 	}
 	
 	private function updateLight()
-	{
+	{		
+		headLight.x = x + 10;
+		headLight.y = y + 10;
+		
 		var ang:Float = 0;
 		if (_next == Direction.EAST || _next == Direction.WEST)
 		{
