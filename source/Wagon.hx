@@ -22,21 +22,6 @@ import GameMap;
 
 using Main.FloatExtender;
 
-/**
- * About the 'userData'-field:
- * Most things in Nape have this handy Dynamic field called 'userData' which
- * can hold pretty much any kind of data. This can aid you in finding - or
- * referencing this particular nape-sprite instance later, just do:
- *    body.userData.someFieldName = someValue
- * 
- * Note: The program does not always provide you with error messages when it
- * crashes and when Nape is involved; be sure to not refer to fields in userData
- * that you're not sure exists.
- * 
- * To read more about what Nape is and what it can do
- * (and to study some interesting - and useful - Nape demos)
- * @see http://napephys.com/samples.html
- */
 class Wagon extends FlxSprite
 {
 	public static inline var ACELERATION:Float = 100;
