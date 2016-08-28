@@ -139,5 +139,7 @@ class Loco extends Wagon
 	{
 		var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
 		gem.kill();
+		StatsManager.gemsTaken += 1;
+		PlayState.instance.diamondsTxt.text = Std.string(StatsManager.gemsTaken);
 	}
 }
