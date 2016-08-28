@@ -102,7 +102,7 @@ class PlayState extends FlxState
 		
 		speedBar = new FlxBar(1048, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
 		speedBar.createFilledBar(0xFF63460C, 0xFFE6AA2F);
-		speedBar.setRange(Loco.MIN_SPEED - 2, Loco.MAX_SPEED);
+		speedBar.setRange(Wagon.MIN_SPEED - 2, Wagon.MAX_SPEED);
 		add(speedBar);
 		
 		
@@ -133,6 +133,10 @@ class PlayState extends FlxState
 		
 		// Loco!
 		loco = new Loco(map, lightSources, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
+		var wagon1 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-part.png", loco);
+		var wagon2 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-bottom.png", wagon1);
+		add(wagon2);
+		add(wagon1);
 		add(loco);
 		
 		infoText = new FlxText(10, 10, 100, "");

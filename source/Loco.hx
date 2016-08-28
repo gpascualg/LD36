@@ -18,6 +18,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 
+import Wagon;
 import GameMap;
 
 using Main.FloatExtender;
@@ -37,36 +38,18 @@ using Main.FloatExtender;
  * (and to study some interesting - and useful - Nape demos)
  * @see http://napephys.com/samples.html
  */
-class Loco extends FlxSprite
+class Loco extends Wagon
 {
-	public static inline var ACELERATION:Float = 1;
-	public static inline var MAX_SPEED:Float = 30;
-	public static inline var MIN_SPEED:Float = 10;
-	
-	private var map:GameMap;
 	private var light:LightSource;
-	public var speed:Float = MIN_SPEED;
 	
-	private var _tx:Int = Std.int(Math.NaN);
-	private var _ty:Int = Std.int(Math.NaN);
-	
-	private var _first:Bool = true;
-	private var _last:Int = -1;
-	private var _next:Int = -1;
-	private var _target:Int = 0;
-
 	
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
 	{
-		super(X, Y);
-		makeGraphic(GameMap.TILE_SIZE, GameMap.TILE_SIZE, FlxColor.GREEN, true);
+		super(map, X, Y, "assets/images/train/train-head.png");
 		
 		light = new LightSource(map, X, Y + GameMap.TILE_SIZE / 2, 70);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
-		lights.add(light);
-				
-		drag.x = drag.y = 0;
-		this.map = map;		
+		lights.add(light);	
 	}
 	
 	public function stop()
@@ -76,13 +59,13 @@ class Loco extends FlxSprite
 	
 	public function incrementSpeed(elapsed:Float)
 	{
-		if(speed < MAX_SPEED)
-			speed += ACELERATION * elapsed;
+		if(speed < Wagon.MAX_SPEED)
+			speed += Wagon.ACELERATION * elapsed;
 	}
 	public function decrementSpeed(elapsed:Float)
 	{
-		if (speed > MIN_SPEED)
-			speed -= ACELERATION * elapsed;
+		if (speed > Wagon.MIN_SPEED)
+			speed -= Wagon.ACELERATION * elapsed;
 	}
 	
 	private function roundTo10(x:Float)
@@ -92,101 +75,7 @@ class Loco extends FlxSprite
 	}
 	
 	override public function update(elapsed:Float):Void
-	{
-		var mA = 0;
-		var tx = Std.int((x + 1e-6) / GameMap.TILE_SIZE);
-		var ty = Std.int(y / GameMap.TILE_SIZE);
-				
-		if (_target != angle)
-		{
-			var dAng = 2;
-			angle += _target < angle ? -dAng : dAng;
-		}
-		
-		if (tx != _tx || ty != _ty)
-		{
-			if (!_first && _next == Direction.NORTH)
-			{
-				var tdy = Std.int((y + GameMap.TILE_SIZE - 1e-6) / GameMap.TILE_SIZE);
-				if (tdy == _ty)
-				{
-					updateLight();
-					super.update(elapsed);
-					return;
-				}
-				
-				if (tdy != ty)
-				{
-					y = tdy * GameMap.TILE_SIZE;
-					ty = Std.int(y / GameMap.TILE_SIZE);
-				}
-			}
-			else if (!_first && _next == Direction.WEST)
-			{
-				var tdx = Std.int((x + GameMap.TILE_SIZE - 1e-6) / GameMap.TILE_SIZE);
-				if (tdx == _tx)
-				{
-					updateLight();
-					super.update(elapsed);
-					return;
-				}
-				
-				if (tdx != tx)
-				{
-					x = tdx * GameMap.TILE_SIZE;
-					tx = Std.int(x / GameMap.TILE_SIZE);
-				}
-				
-				y = _ty * GameMap.TILE_SIZE; // Fix Y?
-			}
-			
-			_first = false;
-			_tx = tx;
-			_ty = ty;
-			
-			var tileIdx = map.foreground.getTile(tx, ty);
-			_last = _next;
-			_next = tileIdx;
-			
-			switch (tileIdx) 
-			{
-				case Direction.NORTH:
-					trace((new FlxPoint(tx, ty)) + " = NORTH " + tileIdx);
-					mA = -90;
-					if (_last == -1) angle = _target = -90;
-					else if (_last == Direction.EAST) _target -= 90
-					else if (_last != Direction.NORTH) _target += 90;
-					
-				case Direction.EAST:
-					trace((new FlxPoint(tx, ty)) + " = EAST " + tileIdx);
-					mA = 0;
-					if (_last == -1) angle = _target = 0;
-					else if (_last == Direction.NORTH) _target += 90
-					else if (_last != Direction.EAST) _target -= 90;
-					
-				case Direction.SOUTH:
-					trace((new FlxPoint(tx, ty)) + " = SOUTH " + tileIdx);
-					mA = 90;
-					if (_last == -1) angle = _target = 90;
-					else if (_last == Direction.EAST) _target += 90
-					else if (_last != Direction.SOUTH) _target -= 90;
-					
-				case Direction.WEST:
-					trace((new FlxPoint(tx, ty)) + " = WEST " + tileIdx);
-					mA = -180;
-					if (_last == -1) angle = _target = -180;					
-					else if (_last == Direction.NORTH) _target -= 90
-					else if (_last != Direction.WEST) _target += 90;
-					
-				default:
-					trace("STOPPING at " + (new FlxPoint(tx, ty)) + "? " + tileIdx);
-					speed = 0;
-			}
-			
-			velocity.set(speed, 0);
-			velocity.rotate(FlxPoint.weak(0, 0), mA);
-		}
-		
+	{		
 		updateLight();
 		super.update(elapsed);
 	}
@@ -203,11 +92,15 @@ class Loco extends FlxSprite
 			ang = ((FlxG.mouse.x - x) / 1000).clamp( -0.1, 0.1) + angle * Math.PI / 180;
 		}
 		
-		light.x = x + angle * GameMap.TILE_SIZE / 2.0 / 90 - ((angle > 0) ? angle / 90 : 0) * GameMap.TILE_SIZE + ((angle < -180) ? angle / -270 : 0) * GameMap.TILE_SIZE;
-		light.y = y + GameMap.TILE_SIZE / 2 + angle * GameMap.TILE_SIZE / 2.0 / 90 + ((angle < -90) ? angle / -180 : 0) * GameMap.TILE_SIZE;
+		var cx = x - GameMap.TILE_SIZE / 2.0;
+		var cy = y + GameMap.TILE_SIZE / 2.0;
+		var r = GameMap.TILE_SIZE / 2.0;
+		var rad = angle * Math.PI / 180;
+		
+		light.x = cx + r * Math.cos(rad);
+		light.y = cy + r * Math.sin(rad);
 		light.angle = ang;
-		light.setTarget(Std.int(light.x + Math.cos(light.angle) * 10000), Std.int(light.y + Math.sin(light.angle) * 10000));
-		light.angle = ang; // Force again :/
+		light.setSpan(Std.int(light.x + Math.cos(light.angle) * 10000), Std.int(light.y + Math.sin(light.angle) * 10000));
 		light.force();
 	}
 }
