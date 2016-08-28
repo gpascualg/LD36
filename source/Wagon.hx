@@ -24,8 +24,8 @@ using Main.FloatExtender;
 
 class Wagon extends FlxSprite
 {
-	public static inline var ACELERATION:Float = 100;
-	public static inline var MAX_SPEED:Float = 30000;
+	public static inline var ACELERATION:Float = 500;
+	public static inline var MAX_SPEED:Float = 5000;
 	public static inline var MIN_SPEED:Float = 1000;
 	
 	private var _tx:Int = Std.int(Math.NaN);
