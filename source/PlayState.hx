@@ -103,6 +103,7 @@ class PlayState extends FlxState
 		super.create();
 		
 		instance = this;
+		StatsManager.ResetStats();
 		
 		FlxG.camera.bgColor = 0x5a81ad;
 		

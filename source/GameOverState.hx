@@ -9,6 +9,7 @@ import flixel.addons.effects.chainable.FlxShakeEffect;
 import flixel.system.FlxSound;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import flixel.text.FlxText;
 
 /**
  * ...
@@ -65,6 +66,28 @@ class GameOverState extends FlxState
 		}
 		
 		add(button);
+		
+		
+		var horOffset:Int = 80;
+		
+		_shakeEffect.onComplete = function(){
+			var infoText = new FlxText(410 + horOffset, 260, 300, "Time Resisted:", true);
+			infoText.size = 24;
+			add(infoText);
+			
+			infoText = new FlxText(700 + horOffset, 260, 260, Std.string(StatsManager.secondsResisted), true);
+			infoText.size = 24;
+			add(infoText);
+			
+			infoText = new FlxText(410 + horOffset, 314, 300, "Diamonds Taken:", true);
+			infoText.size = 24;
+			add(infoText);
+			
+			infoText = new FlxText(700 + horOffset, 314, 300, Std.string(StatsManager.gemsTaken), true);
+			infoText.size = 24;
+			add(infoText);
+		}
+
 		
 	}
 	
