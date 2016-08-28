@@ -141,7 +141,7 @@ class PlayState extends FlxState
 		beaconBar.setRange(0,  MAX_PING_LIGTH);
 		add(beaconBar);
 		
-		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
+		beaconHint = new FlxText(815, 619, 200, "Space", 8, true);
 		beaconHint.size = 8;
 		beaconHint.alpha = 0.5;
 		add(beaconHint);
@@ -150,9 +150,37 @@ class PlayState extends FlxState
 		//End of Beacon UI
 	
 		//KeyHints
+		var auxSprite:FlxSprite;
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		
+		_img1BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img1BG.setPosition(512, 614);
+		
+		auxSprite.setPosition(513, 615);
+		add(_img1BG);
+		add(auxSprite);
+		
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		_img2BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img2BG.setPosition(561, 614);
+		
+		auxSprite.setPosition(562, 615);
+		add(_img2BG);
+		add(auxSprite);
+		
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		_img3BG = new FlxSprite().makeGraphic(22, 24, FlxColor.GREEN);
+		_img3BG.setPosition(614, 614);
+		
+		auxSprite.setPosition(615, 615);
+
+		add(_img3BG);
+		add(auxSprite);
+		
 		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90);
-		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0);
+		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90, 23);
+		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0, 23);
+		clearAllSelectedRails();
 		//End of KeyHits
 		
 		/*
@@ -221,17 +249,23 @@ class PlayState extends FlxState
 	
 	public function selectRailway(index:Int)
 	{
-		//TODO: Need to understand how de F**CK change text attributes on the fly
-		return;
+		clearAllSelectedRails();
 		switch(index)
 		{
 			case 1:
-				_txtNum1.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img1BG.alpha = 1;
 			case 2:
-				_txtNum2.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img2BG.alpha = 1;
 			case 3:
-				_txtNum3.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img3BG.alpha = 1;
 		}
+	}
+	
+	public function clearAllSelectedRails()
+	{
+		_img1BG.alpha = 0;
+		_img2BG.alpha = 0;
+		_img3BG.alpha = 0;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -254,6 +288,7 @@ class PlayState extends FlxState
 			{
 				rail.destroy();
 				rail = null;
+				clearAllSelectedRails();
 			}
 			else
 			{
