@@ -5,6 +5,7 @@ import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
@@ -25,6 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
+	public static inline var PREBUILD_RAILS_MAX:Int = 5;
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -41,6 +43,8 @@ class GameMap
 	
 	public var hasGeneratedPath:Bool;
 	
+	public var lastRail:Railway = null;
+	public var rails:FlxTypedGroup<Railway>;
 	public var obstacles:Map<Int, Barrel>;
 	
 	public var mirrors:Array<Array<Mirror>>;
@@ -73,13 +77,15 @@ class GameMap
 		_parent.add(shadowOverlay);
 		
 		foreground.setupTileIndices([4]);
-		createRandomPath(parent);
+		rails = new FlxTypedGroup<Railway>();
+		parent.add(rails);
+		createRandomPath();
 		
 		// Setup mirrors array
 		buildMirrors();
 	}
 	
-	private function createRandomPath(parent:FlxState):Void
+	private function createRandomPath():Void
 	{
 		//Declare the obstacles array
 		obstacles = new Map<Int, Barrel>();
@@ -100,6 +106,17 @@ class GameMap
 		var x:Int = xStart;
 		var y:Int = yStart;
 		var actualDirection:Direction = chooseRandomDirection(x, y);
+		
+		var path:Array<Array<Int>> = new Array<Array<Int>>();
+		for (y in 0...foreground.heightInTiles)
+		{
+			var arr = new Array<Int>();
+			for (x in 0...foreground.widthInTiles)
+			{
+				arr.push(-1);
+			}
+			path.push(arr);
+		}
 				
 		while (!hasGeneratedPath)
 		{
@@ -112,7 +129,8 @@ class GameMap
 			var desiredX:Int = x;
 			var desiredY:Int = y;
 		
-			reserveTile(desiredX, desiredY, actualDirection);
+			path[desiredY][desiredX] = actualDirection;
+			reserveTile(desiredX, desiredY);
 						
 			if (Math.random() > 0.7)
 			{
@@ -155,28 +173,22 @@ class GameMap
 		var direction:Int = -1;
 		var numberOfRails = 0;
 		
-		while (true)
+		while (numberOfRails < PREBUILD_RAILS_MAX)
 		{
-			direction = foreground.getTile(x, y);
+			direction = path[y][x];
 			trace((new FlxPoint(x, y)) + " " + direction);
+			
 			if (direction == -2)
 			{
 				break;
 			}
-				
-			if (numberOfRails < 1500)
-			{
-				var isCurved = lastDirection != -1 && lastDirection != direction;
-				
-				var railway = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
-				parent.add(railway);
-				lastDirection = direction;
-			}
-			else
-			{
-				reserveTile(x, y);
-			}
 			
+			var isCurved = lastDirection != -1 && lastDirection != direction;
+			
+			lastRail = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+			rails.add(lastRail);
+			lastDirection = direction;
+						
 			switch(direction) {
 				case Direction.EAST:
 					++x;
@@ -189,6 +201,18 @@ class GameMap
 					// NOOOO;
 			}
 			++numberOfRails;
+		}
+		
+		// Flag start surroundings
+		for (x in -1...1)
+		{
+			for (y in -1...1)
+			{
+				if (x != 0 && y != 0 && foreground.getTile(x, y) == 0)
+				{
+					reserveTile(x, y, -4);
+				}
+			}
 		}
 
 		//Fill the map with random noise ensuring that the path is respected

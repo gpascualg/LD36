@@ -14,43 +14,79 @@ import GameMap;
 
 class Railway extends FlxSprite
 {
-	public function new(map:GameMap, last:Int, direction:Int, X:Float, Y:Float)
+	public var map:GameMap;
+	public var lastDirection:Int;
+	public var direction:Int;
+	
+	public function new(map:GameMap, lastDirection:Int, direction:Int, X:Float, Y:Float, ?addToTileset:Bool=true)
 	{	
-		var curved = last != Direction.NONE && last != direction;
-				
+		super(X, Y);
+		
+		this.map = map;
+		if (addToTileset)
+		{
+			map.reserveTile(Std.int(X / GameMap.TILE_SIZE), Std.int(Y / GameMap.TILE_SIZE), direction);
+		}
+		
+		setDirection(lastDirection, direction);
+	}
+	
+	public function setDirection(lastDirection:Int, direction:Int)
+	{
+		var curved = lastDirection != Direction.NONE && lastDirection != direction;
+		this.direction = direction;
+		this.lastDirection = lastDirection;
+		
 		if (!curved)
 		{
 			if (direction == Direction.NORTH || direction == Direction.SOUTH)
 			{
-				super(X, Y, "assets/images/raiways/railway.png");
+				loadGraphic("assets/images/raiways/railway.png");
 			}
 			else
 			{
-				super(X, Y, "assets/images/raiways/horizontal-railway.png");
+				loadGraphic("assets/images/raiways/horizontal-railway.png");
 			}
 		}
 		else
 		{
-			super(X, Y, "assets/images/raiways/Curved Railway.png");
-		}
-		
-		map.reserveTile(Std.int(X / GameMap.TILE_SIZE), Std.int(Y / GameMap.TILE_SIZE), direction);
-		
-		if (curved)
-		{
-			if (last == Direction.EAST && direction == Direction.NORTH)
-			{
-				angle = 180;
-			}
-			else if (last == Direction.EAST && direction == Direction.SOUTH)
+			loadGraphic("assets/images/raiways/Curved Railway.png");
+			
+			if (lastDirection == Direction.NORTH && direction == Direction.EAST)
+			{}
+			else if (lastDirection == Direction.NORTH && direction == Direction.WEST)
 			{
 				angle = 90;
 			}
-			else if (last == Direction.SOUTH && direction == Direction.EAST)
+			else if (lastDirection == Direction.EAST && direction == Direction.NORTH)
+			{
+				angle = 180;
+			}
+			else if (lastDirection == Direction.EAST && direction == Direction.SOUTH)
+			{
+				angle = 90;
+			}
+			else if (lastDirection == Direction.WEST && direction == Direction.NORTH)
 			{
 				angle = -90;
 			}
+			else if (lastDirection == Direction.WEST && direction == Direction.SOUTH)
+			{}
+			else if (lastDirection == Direction.SOUTH && direction == Direction.EAST)
+			{
+				angle = -90;
+			}
+			else if (lastDirection == Direction.SOUTH && direction == Direction.WEST)
+			{
+				angle = -180;
+			}
 		}
+	}
+	
+	public function reserveNow()
+	{
+		trace("Placed from " + lastDirection + " to " + direction);
+		map.reserveTile(Std.int(x / GameMap.TILE_SIZE), Std.int(y / GameMap.TILE_SIZE), direction);
 	}
 	
 	override public function update(elapsed:Float):Void

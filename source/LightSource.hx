@@ -90,9 +90,9 @@ class LightSource extends FlxNapeSprite
 	
 	public function setSpan(endX:Int, endY:Int):Void
 	{
-		this.span = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));	
+		this.span = Math.round(Math.sqrt(Math.pow(x - endX, 2) + Math.pow(y - endY, 2)));
 		this.endX = endX;
-		this.endY = endY;	
+		this.endY = endY;
 	}
 	
 	public function limitSpan(endX:Int, endY:Int):FlxPoint

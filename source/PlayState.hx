@@ -49,6 +49,8 @@ class PlayState extends FlxState
 	private var darknessOverlay:FlxSprite;
 	
 	private var loco:Loco;
+	private var rail:Railway = null;
+	private var lastRail = [false, false, false];
 	
 	/**
 	 * If there's a small gap between something (could be two tiles,
@@ -137,6 +139,83 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
 		
+		var railOld:Int = Direction.NONE;
+		var railNew:Int = Direction.EAST;
+		if (FlxG.keys.justPressed.ONE || FlxG.keys.justPressed.TWO || FlxG.keys.justPressed.THREE)
+		{			
+			if (rail != null && (
+				(lastRail[0] && FlxG.keys.justPressed.ONE) ||
+				(lastRail[1] && FlxG.keys.justPressed.TWO) ||
+				(lastRail[2] && FlxG.keys.justPressed.THREE)))
+			{
+				rail.destroy();
+				rail = null;
+			}
+			else
+			{
+				if (rail != null)
+				{					
+					rail.destroy();
+					rail = null;
+				}
+				
+				lastRail[0] = FlxG.keys.justPressed.ONE;
+				lastRail[1] = FlxG.keys.justPressed.TWO;
+				lastRail[2] = FlxG.keys.justPressed.THREE;
+				
+				railOld = map.lastRail.direction;
+				
+				if (FlxG.keys.justPressed.ONE)
+				{
+					railNew = railOld;
+				}
+				
+				if (FlxG.keys.justPressed.TWO)
+				{
+					if (railOld == Direction.EAST || railOld == Direction.WEST)
+					{
+						railNew = Direction.NORTH;
+					}
+					else
+					{
+						railNew = Direction.EAST;
+					}
+				}
+				
+				if (FlxG.keys.justPressed.THREE)
+				{
+					if (railOld == Direction.EAST || railOld == Direction.WEST)
+					{
+						railNew = Direction.SOUTH;
+					}
+					else
+					{
+						railNew = Direction.WEST;
+					}
+				}
+				
+				trace("Setting from " + railOld + " to " + railNew);
+				
+				rail = new Railway(map, railOld, railNew, 0, 0, false);
+				map.rails.add(rail);
+			}
+		}
+		
+		if (rail != null)
+		{
+			var x:Int = Std.int(FlxG.mouse.x / GameMap.TILE_SIZE);
+			var y:Int = Std.int(FlxG.mouse.y / GameMap.TILE_SIZE);
+			
+			rail.x = x * GameMap.TILE_SIZE;
+			rail.y = y * GameMap.TILE_SIZE;
+			
+			if (FlxG.mouse.justPressed)
+			{
+				map.lastRail = rail;
+				rail.reserveNow();
+				rail = null;
+			}
+		}
 			
 		if (FlxG.keys.pressed.W)
 		{
@@ -147,6 +226,7 @@ class PlayState extends FlxState
 			speedBar.value  = loco.speed;
 		}
 		
+		// Clean lightning
 		#if debug
 			darknessOverlay.fill(0xAAFFFFFF);
 		#else
