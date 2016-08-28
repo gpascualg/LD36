@@ -141,20 +141,25 @@ class Loco extends Wagon
 	{
 		if (gem.alive && gem.exists)
 		{
+			// Find last wagon
+			var current:Wagon = this;
+			while (current.next != null)
+			{
+				current = current.next;
+			}
+			
+			// Set last position to be last wagon center tile
+			map.endPoint.x = Std.int((current.x + GameMap.TILE_SIZE / 2.0) / GameMap.TILE_SIZE);
+			map.endPoint.y = Std.int((current.y + GameMap.TILE_SIZE / 2.0) / GameMap.TILE_SIZE);
+			
+			// Kill gem and reset map
 			var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
 			gem.kill();
 			
 			// Adjust position (startPos is old endPos)
-			x = map.startPoint.x * GameMap.TILE_SIZE;
-			y = map.startPoint.y * GameMap.TILE_SIZE;
-			
-			// Reset all wagons
-			var current:Wagon = this;
-			while (current != null)
-			{				
-				current.resetWagon(x, y, current.previous != null);
-				current = current.next;
-			}
+			//x = map.startPoint.x * GameMap.TILE_SIZE;
+			//y = map.startPoint.y * GameMap.TILE_SIZE;
+			//speed = 0;
 		}
 	}
 }

@@ -107,9 +107,46 @@ class GameMap
 			}
 		}
 		
+		// Keep last chunks
+		var rail:Railway = lastRail;
+		var keepRails:Array<Railway> = [];
+		
+		while (rail != null)
+		{
+			var tx = Std.int(rail.x / GameMap.TILE_SIZE);
+			var ty = Std.int(rail.y / GameMap.TILE_SIZE);
+			
+			if (keepRails.length > 0 || (tx == Std.int(endPoint.x) && ty == Std.int(endPoint.y)))
+			{
+				keepRails.push(rail);
+				rail = rail.next;
+			}
+			else
+			{
+				rail = rail.previous;
+			}
+		}
+		
+		trace(keepRails);
+		
 		// Clear rails
 		for (rail in rails)
 		{
+			// Clear tile only if not keeping
+			if (keepRails.indexOf(rail) < 0)
+			{			
+				var tx = Std.int(rail.x / GameMap.TILE_SIZE);
+				var ty = Std.int(rail.y / GameMap.TILE_SIZE);
+				
+				// Clear
+				var tileIdx = foreground.getTile(tx, ty);
+				if (tileIdx >= 50)
+				{
+					reserveTile(tx, ty, 0);
+				}
+			}
+			
+			// Remove
 			rails.remove(rail);
 		}
 				
@@ -154,7 +191,7 @@ class GameMap
 			
 				// Clear
 				var tileIdx = foreground.getTile(tx, ty);
-				if (tileIdx >= 50 || tileIdx < 0)
+				if (tileIdx < 0)
 				{
 					reserveTile(tx, ty, 0);
 				}
@@ -171,7 +208,7 @@ class GameMap
 		//Calculate the path & clear foreground from obstacles / custom ids
 		var x:Int = xStart;
 		var y:Int = yStart;
-		var actualDirection:Direction = chooseRandomDirection(x, y);
+		var actualDirection:Int = chooseRandomDirection(x, y);
 		
 		trace("Start: " + new FlxPoint(xStart, yStart));
 		trace("End: " + new FlxPoint(xEnd, yEnd));
@@ -187,9 +224,26 @@ class GameMap
 			
 			var desiredX:Int = x;
 			var desiredY:Int = y;
+			
+			// Does this tile already have a rail? (force direction)
+			var currentIdx = foreground.getTile(x, y);
+			if (currentIdx >= 50)
+			{
+				path[y][x] = currentIdx;
+				
+				switch (currentIdx) 
+				{
+					case Direction.WEST: --x;
+					case Direction.EAST: ++x;
+					case Direction.NORTH: --y;
+					case Direction.SOUTH: ++y;						
+				}
+				
+				continue;
+			}
+			//trace("NOT Forcing: " + new FlxPoint(x, y) + " " + currentIdx);
 		
 			path[desiredY][desiredX] = actualDirection;
-						
 			if (Math.random() > 0.7)
 			{
 				actualDirection = chooseRandomDirection(x, y);
@@ -248,7 +302,7 @@ class GameMap
 			
 			if (numberOfRails < PREBUILD_RAILS_MAX)
 			{
-				lastRail = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+				lastRail = new Railway(this, lastRail, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
 				rails.add(lastRail);
 				lastDirection = direction;
 			}
@@ -400,7 +454,7 @@ class GameMap
 	
 	private function setStartPoint(x:Int, y:Int){
 		startPoint = new FlxPoint(x, y);
-		foreground.setTile(x, y, -3);
+		//foreground.setTile(x, y, -3);
 	}
 	
 	private function buildMirrors():Void {

@@ -270,7 +270,7 @@ class PlayState extends FlxState
 				
 				trace("Setting from " + railOld + " to " + railNew);
 				
-				rail = new Railway(map, railOld, railNew, 0, 0, false);
+				rail = new Railway(map, map.lastRail, railOld, railNew, 0, 0, false);
 				map.rails.add(rail);
 			}
 		}

@@ -169,28 +169,24 @@ class Wagon extends FlxSprite
 			switch (tileIdx) 
 			{
 				case Direction.NORTH:
-					trace((new FlxPoint(tx, ty)) + " = NORTH " + tileIdx);
 					mA = -90;
 					if (_last == -1) angle = _target = -90;
 					else if (_last == Direction.EAST) _target -= 90
 					else if (_last != Direction.NORTH) _target += 90;
 					
 				case Direction.EAST:
-					trace((new FlxPoint(tx, ty)) + " = EAST " + tileIdx);
 					mA = 0;
 					if (_last == -1) angle = _target = 0;
 					else if (_last == Direction.NORTH) _target += 90
 					else if (_last != Direction.EAST) _target -= 90;
 					
 				case Direction.SOUTH:
-					trace((new FlxPoint(tx, ty)) + " = SOUTH " + tileIdx);
 					mA = 90;
 					if (_last == -1) angle = _target = 90;
 					else if (_last == Direction.EAST) _target += 90
 					else if (_last != Direction.SOUTH) _target -= 90;
 					
 				case Direction.WEST:
-					trace((new FlxPoint(tx, ty)) + " = WEST " + tileIdx);
 					mA = -180;
 					if (_last == -1) angle = _target = -180;					
 					else if (_last == Direction.NORTH) _target -= 90
