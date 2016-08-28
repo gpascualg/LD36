@@ -21,6 +21,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 
+import LightSource;
 import Wagon;
 import GameMap;
 
@@ -53,7 +54,7 @@ class Loco extends Wagon
 		super(map, X, Y, "assets/images/train/train-head.png");
 		
 		new FlxTimer().start(1.0, expluseSmoke, 0);	
-		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70);
+		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70, LightType.CONE);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
 		lights.add(light);
 		
@@ -86,18 +87,18 @@ class Loco extends Wagon
 	private function updateLight()
 	{
 		var ang:Float = 0;
-		if (_last == Direction.EAST || _next == Direction.EAST || _last == Direction.WEST || _next == Direction.WEST)
+		if (_next == Direction.EAST || _next == Direction.WEST)
 		{
-			var sign = _last == Direction.WEST || _next == Direction.WEST ? -1 : 1;
+			var sign =_next == Direction.WEST ? -1 : 1;
 			ang = ((FlxG.mouse.y - y) * sign / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		else
 		{
-			var sign = _last == Direction.NORTH || _next == Direction.NORTH ? -1 : 1;
+			var sign = _next == Direction.SOUTH ? -1 : 1;
 			ang = ((FlxG.mouse.x - x) * sign / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		
-		var cx = x - GameMap.TILE_SIZE / 2.0;
+		var cx = x + GameMap.TILE_SIZE / 2.0;
 		var cy = y + GameMap.TILE_SIZE / 2.0;
 		var r = GameMap.TILE_SIZE / 2.0;
 		var rad = angle * Math.PI / 180;
