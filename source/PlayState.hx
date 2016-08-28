@@ -195,8 +195,8 @@ class PlayState extends FlxState
 		add(auxSprite);
 		
 		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90, 23);
-		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0, 23);
+		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
+		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90, 23);
 		clearAllSelectedRails();
 		//End of KeyHits
 		
