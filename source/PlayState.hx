@@ -118,6 +118,7 @@ class PlayState extends FlxState
 		
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
+		darknessOverlay.alpha = 0.9;
 		add(darknessOverlay);		
 		
 		//Speed UI
@@ -221,11 +222,7 @@ class PlayState extends FlxState
 		FlxG.stage.addChild(fps);
 		fps.visible = false;
 		
-		#if flash
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 1, true);
-		#else
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 1, true);
-		#end
+		SoundManager.PlayBackgroundMusic();
 		
 		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
 		
