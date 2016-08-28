@@ -72,7 +72,6 @@ class PlayState extends FlxState
 	 */
 	private var lineStyle:LineStyle = { color: SHADOW_COLOR, thickness: 1 };
 	
-	private var infoText:FlxText;
 	private var fps:FPS;
 	
 	private var speedBar:FlxBar;
@@ -133,16 +132,16 @@ class PlayState extends FlxState
 		//End of speed UI
 		
 		//Beacon UI
-		beaconText = new FlxText(680, 617, 200, "Beacon:", 8, true);
+		beaconText = new FlxText(690, 617, 200, "Beacon:", 8, true);
 		beaconText.size = 10;
 		add(beaconText);
 		
-		beaconBar = new FlxBar(738, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
+		beaconBar = new FlxBar(748, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
 		beaconBar.createFilledBar(0xFF000044, 0xFF0000ff);
 		beaconBar.setRange(0,  MAX_PING_LIGTH);
 		add(beaconBar);
 		
-		beaconHint = new FlxText(815, 619, 200, "Space", 8, true);
+		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
 		beaconHint.size = 8;
 		beaconHint.alpha = 0.5;
 		add(beaconHint);
@@ -151,9 +150,9 @@ class PlayState extends FlxState
 		//End of Beacon UI
 	
 		//KeyHints
-		addKeyHint(100, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(150, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90);
-		addKeyHint(200, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0);
+		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90);
+		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0);
 		//End of KeyHits
 		
 		/*
@@ -186,9 +185,6 @@ class PlayState extends FlxState
 		// Ping light
 		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
 		lightSources.add(ping);
-		
-		infoText = new FlxText(10, 10, 100, "");
-		add(infoText);
 		
 		// This here is only used to get the current FPS in a simple way, without having to run the application in Debug mode
 		fps = new FPS(10, 10, 0xffffff);
@@ -240,7 +236,6 @@ class PlayState extends FlxState
 	
 	override public function update(elapsed:Float):Void
 	{
-		infoText.text = "FPS: " + fps.currentFPS + "\n\nObjects can be dragged/thrown around.\n\nPress 'R' to restart.";
 		
 		if (FlxG.keys.justPressed.R)
 			FlxG.resetState();

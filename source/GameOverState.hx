@@ -46,7 +46,7 @@ class GameOverState extends FlxState
 		_gameOverSound.volume = 0.5;
 		_gameOverSound.play();
 		
-		var button = new FlxButton(460, 450, "Play Again");
+		var button = new FlxButton(470, 450, "Play Again");
 		button.setGraphicSize(180, 30);
 		
 		button.onUp.callback = function()
@@ -56,7 +56,7 @@ class GameOverState extends FlxState
 		
 		add(button);
 		
-		var button = new FlxButton(720, 450, "Main Menu");
+		var button = new FlxButton(730, 450, "Main Menu");
 		button.setGraphicSize(180, 30);
 		
 		button.onUp.callback = function()
