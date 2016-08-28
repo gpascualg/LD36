@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 500; // 5
+	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -109,7 +109,7 @@ class GameMap
 		
 		// Keep last chunks
 		var rail:Railway = lastRail;
-		var keepRails:Array<Railway> = [];
+		var keepRails:Array<Railway> = new Array<Railway>();
 		
 		while (rail != null)
 		{
@@ -128,6 +128,7 @@ class GameMap
 		}
 		
 		trace(keepRails);
+		trace(keepRails.length);
 		
 		// Clear rails
 		for (rail in rails)
@@ -300,7 +301,7 @@ class GameMap
 				break;
 			}
 			
-			if (numberOfRails < PREBUILD_RAILS_MAX)
+			if (numberOfRails < Math.max(PREBUILD_RAILS_MAX, keepRails.length))
 			{
 				lastRail = new Railway(this, lastRail, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
 				rails.add(lastRail);

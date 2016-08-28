@@ -138,7 +138,7 @@ class Loco extends Wagon
 		PlayState.instance.add(new Smoke(this.x + offsetX, this.y + offsetY));
 	}
 	
-	public function onGemPick(loco:Loco, gem:Gem)
+	public function onGemPicked(loco:Loco, gem:Gem)
 	{
 
 		if (gem.alive && gem.exists)

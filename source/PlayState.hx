@@ -1,6 +1,9 @@
 package;
 
 import flash.utils.Timer;
+import flixel.addons.effects.chainable.FlxEffectSprite;
+import flixel.addons.effects.chainable.FlxGlitchEffect;
+import flixel.addons.effects.chainable.FlxRainbowEffect;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
@@ -97,6 +100,9 @@ class PlayState extends FlxState
 	var _txtNum3:FlxText;
 	var _img3:FlxSprite;
 	var _img3BG:FlxSprite;
+	
+	var _effects:FlxEffectSprite;
+	var mirror:Mirror;
 		
 	override public function create():Void
 	{
@@ -117,7 +123,12 @@ class PlayState extends FlxState
 		
 		darknessOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK, true);
 		darknessOverlay.blend = BlendMode.MULTIPLY;
-		add(darknessOverlay);		
+		add(darknessOverlay);
+
+		add(_effects = new FlxEffectSprite(darknessOverlay));
+		_effects.effects = [new FlxRainbowEffect(0.9)];
+		_effects.effects[0].active = false;
+		_effects.blend = BlendMode.MULTIPLY;
 		
 		//Speed UI
 		speedText = new FlxText(1000, 617, 200, "Speed:", 8, true);
@@ -188,19 +199,17 @@ class PlayState extends FlxState
 		clearAllSelectedRails();
 		//End of KeyHits
 		
-		/*
-		// Testing
-		lightSources.add(new LightSource(map, 300, 180, 70));
-		lightSources.add(new LightSource(map, 20, 300, 70));
-		for (source in lightSources)
-		{
-			source.setTarget(Math.round(FlxG.width), Math.round(FlxG.height));
-		}
-		
 		// Mirror testing
-		var mirror = new Mirror(map, lightSources, 300, 130);
+		/*
+		mirror = new Mirror(map, lightSources, darknessOverlay, 300, 130);
 		map.mirrors[Std.int(130 / GameMap.TILE_SIZE)][Std.int(300 / GameMap.TILE_SIZE)] = mirror;
 		add(mirror);
+		
+		lightSources.add(new LightSource(map, darknessOverlay, 300, 180, 70));
+		for (source in lightSources)
+		{
+			source.setTarget(Math.round(300), Math.round(130));
+		}
 		*/
 		
 		// Loco!
@@ -311,15 +320,15 @@ class PlayState extends FlxState
 				(lastRail[1] && FlxG.keys.justPressed.TWO) ||
 				(lastRail[2] && FlxG.keys.justPressed.THREE)))
 			{
-				rail.destroy();
+				map.rails.remove(rail);
 				rail = null;
 				clearAllSelectedRails();
 			}
 			else
 			{
 				if (rail != null)
-				{					
-					rail.destroy();
+				{
+					map.rails.remove(rail);
 					rail = null;
 				}
 				
@@ -370,7 +379,7 @@ class PlayState extends FlxState
 				map.rails.add(rail);
 			}
 		}
-		
+				
 		if (rail != null)
 		{
 			var x:Int = Std.int(FlxG.mouse.x / GameMap.TILE_SIZE);
@@ -452,7 +461,7 @@ class PlayState extends FlxState
 		{
 			if (source.enabled)
 			{
-				var endPoint = source.castLine(i==2);
+				var endPoint = source.castLine();
 				source.setSpan(Std.int(endPoint.x), Std.int(endPoint.y));
 				
 				#if shadows
@@ -473,9 +482,24 @@ class PlayState extends FlxState
 		//processShadows();
 		
 		// Overlaps
-		FlxG.overlap(loco, map.gems, loco.onGemPick);
+		FlxG.overlap(loco, map.gems, onGemPicked);
 		
 		super.update(elapsed);
+	}
+	
+	public function onGemPicked(loco:Loco, gem:Gem)
+	{
+		darknessOverlay.alpha = 0.90;
+		_effects.effects[0].active = true;
+		new FlxTimer().start(1, disableRainbow, 1);
+		
+		loco.onGemPicked(loco, gem);
+	}
+	
+	public function disableRainbow(timer:FlxTimer)
+	{
+		darknessOverlay.alpha = 1;
+		_effects.effects[0].active = false;
 	}
 	
 	public function processShadows():Void

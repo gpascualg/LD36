@@ -195,7 +195,7 @@ class Wagon extends FlxSprite
 				default:
 					trace("STOPPING at " + (new FlxPoint(tx, ty)) + "? " + tileIdx);
 					speed = 0;
-					//PlayState.GameOver();
+					PlayState.GameOver();
 			}
 			
 			velocity.set(speed, 0);

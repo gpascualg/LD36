@@ -120,7 +120,7 @@ class LightSource extends FlxNapeSprite
 		angleChanged = true;
 	}
 	
-	public function castLine(?verbose:Bool=false):FlxPoint
+	public function castLine():FlxPoint
 	{		
 		if (angleChanged)
 		{
@@ -195,11 +195,6 @@ class LightSource extends FlxNapeSprite
 					iy += dy;
 				}
 			}
-			
-			if (verbose)
-			{
-				trace("Light limiting:\nPoint: " + lastPoint + "\nConnection: " + connection);
-			}
 				
 			if (lastPoint == null)
 			{
@@ -212,6 +207,7 @@ class LightSource extends FlxNapeSprite
 			
 			if (mirror != null)
 			{
+				trace("MIRROR");
 				mirror.connect(this);
 			}
 		}
