@@ -324,7 +324,10 @@ class PlayState extends FlxState
 			GameOver();
 		
 		if (FlxG.keys.justPressed.D)
-			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
+			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;
+		
+		if (FlxG.keys.justPressed.R)
+			FlxG.resetGame();
 		
 		var railOld:Int = Direction.NONE;
 		var railNew:Int = Direction.EAST;
