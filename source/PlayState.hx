@@ -19,7 +19,6 @@ import openfl.display.BlendMode;
 import openfl.display.FPS;
 import GameMap;
 using flixel.util.FlxSpriteUtil;
-using GameMap;
 
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
@@ -405,5 +404,10 @@ class PlayState extends FlxState
 		lightToStart.subeq(light);
 	 
 		return normal.dot(lightToStart) > 0;
+	}
+	
+	public static function GameOver():Void
+	{
+		
 	}
 }
