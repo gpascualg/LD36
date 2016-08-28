@@ -235,21 +235,28 @@ class LightSource extends FlxNapeSprite
 				drawLighLine();
 			
 			case LightType.SPOT:
-				drawLighSpot();				
+				drawLighSpot(false);	
+			
+			case LightType.CONCENTRIC_SPOT:
+				drawLighSpot(true);				
 		}
 	}
 	
-	private function drawLighSpot():Void
+	private function drawLighSpot(concentric:Bool):Void
 	{
 		var alpha = 0x00;
 		var radius = thickness;
+		var counter = 0;
+		var maxCounter = thickness > 100 ? 5 : 20;
+		var da = Math.round(thickness > 100 ? 256 / maxCounter : 20);
 		
-		while (alpha < 0xFF && radius > 0)
+		while (alpha < 0xFF && radius > 0 && counter < maxCounter)
 		{
-			canvas.drawCircle(x + radius / 2, y + radius / 2, radius, (alpha << 24) | 0xFFFFFF);
+			canvas.drawCircle(x + (concentric ? 0 : 1) * radius / 2, y + (concentric ? 0 : 1) * radius / 2, radius, (alpha << 24) | 0xFFFFFF);
 			
-			alpha += 0x10;
+			alpha += da;
 			radius -= 10;
+			++counter;
 		}
 	}
 	
@@ -268,4 +275,5 @@ abstract LightType(Int) to Int
 {
 	var SPOT = 0;
 	var LINE = 1;
+	var CONCENTRIC_SPOT = 2;
 }

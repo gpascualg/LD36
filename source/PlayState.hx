@@ -49,6 +49,8 @@ class PlayState extends FlxState
 	private var darknessOverlay:FlxSprite;
 	
 	private var loco:Loco;
+	private var pingUp:Bool = true;
+	private var ping:LightSource;
 	private var rail:Railway = null;
 	private var lastRail = [false, false, false];
 	
@@ -141,6 +143,10 @@ class PlayState extends FlxState
 		
 		// Light on endPoint
 		lightSources.add(new LightSource(map, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE, 80, LightType.SPOT));
+		
+		// Ping light
+		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
+		lightSources.add(ping);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -292,6 +298,15 @@ class PlayState extends FlxState
 			speedBar.value  = loco.speed;
 		}
 		
+		if (FlxG.keys.justPressed.SPACE && !ping.enabled)
+		{
+			ping.enabled = true;
+			pingUp = true;
+			ping.thickness = 0;
+			ping.x = loco.x + GameMap.TILE_SIZE / 2.0;
+			ping.y = loco.y + GameMap.TILE_SIZE / 2.0;
+		}
+		
 		// Clean lightning
 		#if debug
 			darknessOverlay.fill(0xAAFFFFFF);
@@ -304,6 +319,28 @@ class PlayState extends FlxState
 			map.shadowCanvas.fill(FlxColor.TRANSPARENT);
 			map.shadowOverlay.fill(OVERLAY_COLOR);
 		#end
+		
+		// Update ping
+		if (ping.enabled)
+		{
+			if (pingUp)
+			{
+				ping.thickness += 10;
+				if (ping.thickness > 300)
+				{
+					pingUp = false;
+				}
+			}
+			else
+			{
+				ping.thickness -= 1;
+				
+				if (ping.thickness <= 0)
+				{
+					ping.enabled = false;
+				}
+			}
+		}
 		
 		// Find closest light for each lightsources
 		var i = 0;

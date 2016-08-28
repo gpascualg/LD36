@@ -83,7 +83,7 @@ class Loco extends Wagon
 	private function updateLight()
 	{
 		var ang:Float = 0;
-		if (_last == Direction.EAST || _next == Direction.EAST)
+		if (_last == Direction.EAST || _next == Direction.EAST || _last == Direction.WEST || _next == Direction.WEST)
 		{
 			ang = ((FlxG.mouse.y - y) / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
