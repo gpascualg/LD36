@@ -40,8 +40,8 @@ using Main.FloatExtender;
 class Loco extends FlxSprite
 {
 	public static inline var ACELERATION:Float = 1;
-	public static inline var MAX_SPEED:Float = 300;
-	public static inline var MIN_SPEED:Float = 30;
+	public static inline var MAX_SPEED:Float = 30;
+	public static inline var MIN_SPEED:Float = 10;
 	
 	private var map:GameMap;
 	private var light:LightSource;
