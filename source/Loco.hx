@@ -83,7 +83,7 @@ class Loco extends Wagon
 		
 		switch(getNormalizedAngle() )
 		{
-			case 0, -0:
+			case 0:
 				offsetX = 20;
 				offsetY = 10;
 			case 90:
@@ -138,7 +138,9 @@ class Loco extends Wagon
 		
 		if (normalizedAngle < 0)
 			normalizedAngle += 360;
-			
+		
+		//This avoids having "-0"
+		normalizedAngle = Math.abs(normalizedAngle);
 		return normalizedAngle;
 	}
 	
@@ -161,6 +163,7 @@ class Loco extends Wagon
 				offsetX = 20;
 				offsetY = 0;
 		}
+		
 		PlayState.instance.add(new Smoke(this.x + offsetX, this.y + offsetY));
 	}
 	
