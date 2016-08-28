@@ -3,6 +3,7 @@ package;
 import flixel.FlxSprite;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.FlxG;
@@ -10,6 +11,8 @@ import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.BodyType;
 import nape.phys.Material;
+
+import LightSource;
 
 /**
  * About the 'userData'-field:
@@ -28,12 +31,17 @@ import nape.phys.Material;
  */
 class Gem extends FlxSprite
 {	
-	public function new(X:Float, Y:Float) 
+	private var light:LightSource;
+	
+	public function new(map:GameMap, lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, X:Float, Y:Float) 
 	{
 		super(X, Y);
 		loadGraphic("assets/images/gem.png", true, GameMap.TILE_SIZE, GameMap.TILE_SIZE);
 		animation.add("glitter", [0, 1, 2], 1);
 		animation.play("glitter");
+		
+		light = new LightSource(map, canvas, X, Y, 80, LightType.SPOT);
+		lightSources.add(light);
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -45,10 +53,12 @@ class Gem extends FlxSprite
 	{
 		alive = false;
 		FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut, onComplete: finishKill });
+		FlxTween.tween(light, { thickness: 1 }, .33, { ease: FlxEase.circOut, onComplete: finishKill });
 	}
 
 	private function finishKill(_):Void
 	{
 		exists = false;
+		light.kill();
 	}
 }

@@ -248,15 +248,8 @@ class GameMap
 				var xPos:Float = tileX * TILE_SIZE;
 				var yPos:Float = tileY * TILE_SIZE;
 				
-				//Render the start and the end point
-				if (tileIndex == -2/* || tileIndex == -3*/)
-				{
-					gem = new Gem(xPos, yPos);
-					gems.add(gem);
-				}
-				
 				//Render an obstacle
-				else if (tileIndex != -1 && tileIndex < 50 && tileIndex != 4 && Math.random() > 0.75)
+				if (tileIndex != -1 && tileIndex < 50 && tileIndex != 4 && Math.random() > 0.75)
 				{
 					var barr:Barrel = new Barrel(xPos, yPos);
 					obstacles[tileY * foreground.widthInTiles + tileX] = barr;

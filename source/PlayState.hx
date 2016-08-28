@@ -142,7 +142,8 @@ class PlayState extends FlxState
 		add(loco);
 		
 		// Light on endPoint
-		lightSources.add(new LightSource(map, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE, 80, LightType.SPOT));
+		var gem = new Gem(map, lightSources, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE);
+		map.gems.add(gem);
 		
 		// Ping light
 		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);

@@ -67,13 +67,7 @@ class Loco extends Wagon
 		if (speed > Wagon.MIN_SPEED)
 			speed -= Wagon.ACELERATION * elapsed;
 	}
-	
-	private function roundTo10(x:Float)
-	{
-		x = Std.int(x);
-		return x + (10 - (x % 10));
-	}
-	
+		
 	override public function update(elapsed:Float):Void
 	{		
 		updateLight();
