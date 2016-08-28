@@ -85,14 +85,43 @@ class Loco extends Wagon
 	override public function update(elapsed:Float):Void
 	{			
 		updateLight();
+		updateHeadLight();
 		super.update(elapsed);
 	}
 	
-	private function updateLight()
-	{		
-		headLight.x = x + 10;
-		headLight.y = y + 10;
+	private function updateHeadLight():Void
+	{
+		var offsetX:Int = 0;
+		var offsetY:Int = 0;
 		
+		trace(getNormalizedAngle());
+		
+		switch(getNormalizedAngle() )
+		{
+			case 0, -0:
+				offsetX = 20;
+				offsetY = 10;
+			case 90:
+				offsetX = 12;
+				offsetY = 20;
+			case 270:
+				offsetX = 15;
+				offsetY = 10;
+			case 180:
+				offsetX = 10;
+				offsetY = 10;
+			default:
+				offsetX = 10;
+				offsetY = 10;
+				
+		}
+		headLight.x = x + offsetX;
+		headLight.y = y + offsetY;
+		
+	}
+	
+	private function updateLight()
+	{			
 		var ang:Float = 0;
 		if (_next == Direction.EAST || _next == Direction.WEST)
 		{
@@ -117,17 +146,22 @@ class Loco extends Wagon
 		light.force();
 	}
 	
-	private function expluseSmoke(timer:FlxTimer):Void
+	private function getNormalizedAngle():Float
 	{
-		var offsetX:Int = 0;
-		var offsetY:Int = 0;
 		
 		var normalizedAngle:Float = angle % 360;
 		
 		if (normalizedAngle < 0)
 			normalizedAngle += 360;
-		
-		switch(normalizedAngle)
+			
+		return normalizedAngle;
+	}
+	
+	private function expluseSmoke(timer:FlxTimer):Void
+	{
+		var offsetX:Int = 0;
+		var offsetY:Int = 0;		
+		switch(getNormalizedAngle() )
 		{
 			case 0:
 				offsetX = 4;
