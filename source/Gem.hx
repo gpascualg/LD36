@@ -3,6 +3,8 @@ package;
 import flixel.FlxSprite;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.FlxG;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
@@ -37,5 +39,16 @@ class Gem extends FlxSprite
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+	}
+	
+	override public function kill():Void
+	{
+		alive = false;
+		FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut, onComplete: finishKill });
+	}
+
+	private function finishKill(_):Void
+	{
+		exists = false;
 	}
 }

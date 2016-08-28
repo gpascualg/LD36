@@ -39,12 +39,14 @@ class GameMap
 	private var _parent:FlxState;
 	
 	public var startPoint:FlxPoint;
+	public var endPoint:FlxPoint;
 	public var gem:Gem;
 	
 	public var hasGeneratedPath:Bool;
 	
 	public var lastRail:Railway = null;
 	public var rails:FlxTypedGroup<Railway>;
+	public var gems:FlxTypedGroup<Gem>;
 	public var obstacles:Map<Int, Barrel>;
 	
 	public var mirrors:Array<Array<Mirror>>;
@@ -79,6 +81,8 @@ class GameMap
 		foreground.setupTileIndices([4]);
 		rails = new FlxTypedGroup<Railway>();
 		parent.add(rails);
+		gems = new FlxTypedGroup<Gem>();
+		parent.add(gems);
 		createRandomPath();
 		
 		// Setup mirrors array
@@ -208,9 +212,29 @@ class GameMap
 		{
 			for (y in -1...1)
 			{
-				if (x != 0 && y != 0 && foreground.getTile(x, y) == 0)
+				var cx = xStart + x;
+				var cy = yStart + y;
+				
+				if (cx > 0 && cy > 0 && cx < foreground.widthInTiles - 1 && cy < foreground.heightInTiles - 1 && 
+					x != 0 && y != 0 && foreground.getTile(cx, cy) == 0)
 				{
-					reserveTile(x, y, -4);
+					reserveTile(cx, cy, -4);
+				}
+			}
+		}
+		
+		// Flag end surroundings
+		for (x in -1...1)
+		{
+			for (y in -1...1)
+			{
+				var cx = Std.int(endPoint.x + x);
+				var cy = Std.int(endPoint.y + y);
+				
+				if (cx > 0 && cy > 0 && cx < foreground.widthInTiles - 1 && cy < foreground.heightInTiles - 1 && 
+					x != 0 && y != 0 && foreground.getTile(cx, cy) == 0)
+				{
+					reserveTile(cx, cy, -4);
 				}
 			}
 		}
@@ -225,10 +249,10 @@ class GameMap
 				var yPos:Float = tileY * TILE_SIZE;
 				
 				//Render the start and the end point
-				if (tileIndex == -2 || tileIndex == -3)
+				if (tileIndex == -2/* || tileIndex == -3*/)
 				{
 					gem = new Gem(xPos, yPos);
-					_parent.add(gem);
+					gems.add(gem);
 				}
 				
 				//Render an obstacle
@@ -280,6 +304,7 @@ class GameMap
 	}
 	
 	private function setEndPoint(x:Int, y:Int){
+		endPoint = new FlxPoint(x, y);
 		foreground.setTile(x, y, -2);
 	}
 	

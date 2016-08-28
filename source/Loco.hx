@@ -43,11 +43,11 @@ class Loco extends Wagon
 	private var light:LightSource;
 	
 	
-	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
+	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas: FlxSprite, X:Float, Y:Float) 
 	{
 		super(map, X, Y, "assets/images/train/train-head.png");
 		
-		light = new LightSource(map, X, Y + GameMap.TILE_SIZE / 2, 70);
+		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
 		lights.add(light);	
 	}
@@ -85,11 +85,11 @@ class Loco extends Wagon
 		var ang:Float = 0;
 		if (_last == Direction.EAST || _next == Direction.EAST)
 		{
-			ang = ((FlxG.mouse.y - y) / 1000).clamp( -0.1, 0.1) + angle * Math.PI / 180;
+			ang = ((FlxG.mouse.y - y) / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		else
 		{
-			ang = ((FlxG.mouse.x - x) / 1000).clamp( -0.1, 0.1) + angle * Math.PI / 180;
+			ang = ((FlxG.mouse.x - x) / 500).clamp(-0.2, 0.2) + angle * Math.PI / 180;
 		}
 		
 		var cx = x - GameMap.TILE_SIZE / 2.0;
@@ -102,5 +102,11 @@ class Loco extends Wagon
 		light.angle = ang;
 		light.setSpan(Std.int(light.x + Math.cos(light.angle) * 10000), Std.int(light.y + Math.sin(light.angle) * 10000));
 		light.force();
+	}
+	
+	public function onGemPick(loco:Loco, gem:Gem)
+	{
+		var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
+		gem.kill();
 	}
 }
