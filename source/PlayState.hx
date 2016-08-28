@@ -65,6 +65,7 @@ class PlayState extends FlxState
 	private var _pingPower = MAX_PING_LIGTH;
 	private var _pingSound:FlxSound;
 	
+	private var _addRailSound:FlxSound;
 	
 	/**
 	 * If there's a small gap between something (could be two tiles,
@@ -141,14 +142,15 @@ class PlayState extends FlxState
 		beaconBar.setRange(0,  MAX_PING_LIGTH);
 		add(beaconBar);
 		
-		beaconHint = new FlxText(815, 619, 200, "Space", 8, true);
+		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
 		beaconHint.size = 8;
 		beaconHint.alpha = 0.5;
 		add(beaconHint);
 		
 		_pingSound = FlxG.sound.load("assets/sounds/Beacon.wav", 0.3);
 		//End of Beacon UI
-	
+		_addRailSound = FlxG.sound.load("assets/sounds/addRail.wav", 5);
+		
 		//KeyHints
 		var auxSprite:FlxSprite;
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
@@ -359,6 +361,8 @@ class PlayState extends FlxState
 				map.lastRail = rail;
 				rail.reserveNow();
 				rail = null;
+				clearAllSelectedRails();
+				_addRailSound.play();
 			}
 		}
 			
