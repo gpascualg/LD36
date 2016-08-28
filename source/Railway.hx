@@ -139,7 +139,6 @@ class Railway extends FlxSprite
 	
 	public function nextRail(from:Int):Railway
 	{
-		trace('Querying ' + new FlxPoint(tx, ty) + ' for ' + from + ' which yields ' + nextDirection(from) + ' = ');
 		switch (nextDirection(from))
 		{
 			case Direction.NORTH: return map.getRailAt(tx, ty - 1);

@@ -30,7 +30,7 @@ class Wagon extends FlxSprite
 	
 	private var _tx:Int = Std.int(Math.NaN);
 	private var _ty:Int = Std.int(Math.NaN);
-	private var _first:Bool = true;
+	public var _first:Bool = true;
 	private var _previous:Railway = null;
 	private var _current:Railway = null;
 	private var _last:Int = -1;
@@ -178,7 +178,6 @@ class Wagon extends FlxSprite
 			trace("At " + (new FlxPoint(tx, ty)) + _next);
 			_previous = _current;
 			_current = _current.nextRail(_last);
-			trace(_current);
 			
 			switch (_next) 
 			{

@@ -87,10 +87,8 @@ class Loco extends Wagon
 	{
 		var offsetX:Int = 0;
 		var offsetY:Int = 0;
-		
-		trace(getNormalizedAngle());
-		
-		switch(getNormalizedAngle() )
+				
+		switch (getNormalizedAngle())
 		{
 			case 0:
 				offsetX = 20;
@@ -115,7 +113,7 @@ class Loco extends Wagon
 	}
 	
 	private function updateLight()
-	{			
+	{
 		var ang:Float = 0;
 		if (_next == Direction.EAST || _next == Direction.WEST)
 		{
