@@ -40,7 +40,7 @@ using Main.FloatExtender;
 class Wagon extends FlxSprite
 {
 	public static inline var ACELERATION:Float = 100;
-	public static inline var MAX_SPEED:Float = 3000;
+	public static inline var MAX_SPEED:Float = 30000;
 	public static inline var MIN_SPEED:Float = 1000;
 	
 	private var _tx:Int = Std.int(Math.NaN);
@@ -92,11 +92,12 @@ class Wagon extends FlxSprite
 		var tx = Std.int((x + 1e-6) / GameMap.TILE_SIZE);
 		var ty = Std.int(y / GameMap.TILE_SIZE);
 		
-		// HACK
+		#if debug
 		if (FlxG.keys.justPressed.F)
 		{
 			speed = MAX_SPEED;
 		}
+		#end
 		
 		if (previous != null)
 		{
@@ -165,6 +166,24 @@ class Wagon extends FlxSprite
 			var tileIdx = map.foreground.getTile(tx, ty);
 			_last = _next;
 			_next = tileIdx;
+			
+			// Are next and last of opposite directions?
+			if (map.directionInverse(_last) == _next)
+			{
+				var rail = map.getRailAt(tx, ty);
+				var first = rail;
+				var last = null;
+				
+				while (rail != null)
+				{
+					rail.inverse();
+					last = rail;
+					rail = rail.previous;
+				}
+				
+				tileIdx = _next = first.direction;
+				map.lastRail = last;
+			}
 			
 			switch (tileIdx) 
 			{

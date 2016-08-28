@@ -41,7 +41,6 @@ class LightSource extends FlxNapeSprite
 	private var lastY:Int = 0;
 	
 	private var canvas:FlxSprite;
-	private var type:LightType;
 	private var lastAngle:Float = 0;
 	private var angleChanged:Bool = false;
 	private var lastPoint:FlxPoint = new FlxPoint();
@@ -52,6 +51,7 @@ class LightSource extends FlxNapeSprite
 	public var endX:Int;
 	public var endY:Int;
 	public var thickness:Int = 1;
+	public var type:LightType;
 	public var connection:Mirror = null;
 	
 	public function new(map:GameMap, canvas:FlxSprite, X:Float, Y:Float, ?thickness:Int=1, ?type:LightType=LightType.LINE, ?enabled:Bool=true) 
@@ -121,13 +121,16 @@ class LightSource extends FlxNapeSprite
 	}
 	
 	public function castLine():FlxPoint
-	{		
-		if (angleChanged)
+	{
+		var mirror:Mirror = null;
+		lastPoint = null;
+			
+		//if (angleChanged)
+		if (type == LightType.LINE || type == LightType.CONE)
 		{
-			lastPoint = null;
 			angleChanged = false;
 			var ang = angle - 0.1;
-			var mirror:Mirror = null;
+			
 			while (ang < angle + 0.1)
 			{
 				var dx = Math.cos(ang) * GameMap.TILE_SIZE;
@@ -195,21 +198,53 @@ class LightSource extends FlxNapeSprite
 					iy += dy;
 				}
 			}
-				
-			if (lastPoint == null)
-			{
-				lastPoint = new FlxPoint(endX, endY);
-			}
-			else if (connection != null)
-			{
-				connection.disconnect();
-			}
+		}
+		else if (type == LightType.SPOT || type == LightType.CONCENTRIC_SPOT)
+		{
+			var x = Std.int(x / GameMap.TILE_SIZE);
+			var y = Std.int(y / GameMap.TILE_SIZE);
 			
-			if (mirror != null)
+			var dx = Std.int(thickness / GameMap.TILE_SIZE);
+			var dy = Std.int(thickness / GameMap.TILE_SIZE);
+			
+			for (cx in -(dx + 1)...(dx + 1))
 			{
-				trace("MIRROR");
-				mirror.connect(this);
+				for (cy in -(dy + 1)...(dy + 1))
+				{
+					var tx = x + cx;
+					var ty = y + cy;
+					
+					if (tx >= map.foreground.widthInTiles - 1 || ty >= map.foreground.heightInTiles - 1 || tx <= 0 || ty <= 0)
+					{
+						continue;
+					}
+					
+					var isMirror = map.mirrors[ty][tx];
+					if (isMirror != null)
+					{
+						var newPoint = new FlxPoint(tx, ty);
+						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))
+						{
+							lastPoint = new FlxPoint(newPoint.x, newPoint.y);
+							mirror = isMirror;
+						}
+					}
+				}
 			}
+		}
+			
+		if (lastPoint == null)
+		{
+			lastPoint = new FlxPoint(endX, endY);
+		}
+		
+		if (mirror != null)
+		{
+			mirror.connect(this);
+		}
+		else if (connection != null)
+		{
+			connection.disconnect();
 		}
 		
 		return lastPoint;			

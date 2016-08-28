@@ -200,10 +200,10 @@ class PlayState extends FlxState
 		clearAllSelectedRails();
 		//End of KeyHits
 		
-		// Mirror testing
 		/*
-		mirror = new Mirror(map, lightSources, darknessOverlay, 300, 130);
-		map.mirrors[Std.int(130 / GameMap.TILE_SIZE)][Std.int(300 / GameMap.TILE_SIZE)] = mirror;
+		// Mirror testing
+		mirror = new Mirror(map, lightSources, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE);
+		map.mirrors[Std.int(map.endPoint.y)][Std.int(map.endPoint.x)] = mirror;
 		add(mirror);
 		
 		lightSources.add(new LightSource(map, darknessOverlay, 300, 180, 70));

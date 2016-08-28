@@ -45,10 +45,8 @@ class Mirror extends FlxSprite
 		super(X, Y);
 		makeGraphic(GameMap.TILE_SIZE, 5, FlxColor.RED, true);
 		
-		lightOut = new LightSource(map, canvas, X, Y, 1, LightType.LINE, false);
+		lightOut = new LightSource(map, canvas, X, Y, 1, LightType.CONE, false);
 		lights.add(lightOut);
-		
-		//angle = 45;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -73,7 +71,16 @@ class Mirror extends FlxSprite
 		{
 			lightOut.thickness = lightIn.thickness - 10;
 			lightOut.enabled = true;
-			lightOut.angle = rad - lightIn.angle;
+			
+			if (lightIn.type == LightType.LINE || lightIn.type == LightType.CONE)
+			{
+				lightOut.angle = rad - lightIn.angle;
+			}
+			else
+			{
+				lightOut.angle = rad - Math.PI / 4.0;
+			}
+			
 			lightOut.setTarget(Math.round(lightOut.x + Math.cos(lightOut.angle) * 10000), Math.round(lightOut.x + Math.sin(lightOut.angle) * 10000));
 		}
 		else

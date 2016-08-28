@@ -421,6 +421,32 @@ class GameMap
 		}
 	}
 	
+	public function getRailAt(x:Int, y:Int)
+	{
+		for (rail in rails)
+		{
+			if (Std.int(rail.x / GameMap.TILE_SIZE) == x && Std.int(rail.y / GameMap.TILE_SIZE) == y)
+			{
+				return rail;
+			}
+		}
+		
+		return null;
+	}
+	
+	public function directionInverse(d:Int)
+	{
+		switch (d) 
+		{
+			case Direction.NORTH: return Direction.SOUTH;
+			case Direction.SOUTH: return Direction.NORTH;
+			case Direction.EAST: return Direction.WEST;
+			case Direction.WEST: return Direction.EAST;				
+		}
+		
+		return Direction.NONE;
+	}
+	
 	private function chooseRandomDirection(x:Int, y:Int):Direction
 	{
 		var allowedDirs:Array<Direction> = new Array<Direction>();

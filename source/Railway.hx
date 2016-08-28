@@ -1,5 +1,6 @@
 package;
 
+import flash.geom.ColorTransform;
 import flixel.FlxSprite;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
@@ -91,6 +92,23 @@ class Railway extends FlxSprite
 		}
 	}
 	
+	public function inverse()
+	{
+		var curved = lastDirection != Direction.NONE && lastDirection != direction;
+		if (!curved)
+		{
+			direction = map.directionInverse(direction);
+		}
+		else
+		{
+			var temp = direction;
+			direction = map.directionInverse(lastDirection);
+			lastDirection = map.directionInverse(temp);
+		}
+		
+		reserveNow();
+	}
+	
 	public function reserveNow()
 	{
 		trace("Placed from " + lastDirection + " to " + direction);
@@ -98,7 +116,16 @@ class Railway extends FlxSprite
 	}
 	
 	override public function update(elapsed:Float):Void
-	{		
+	{
+		if (this == map.lastRail)
+		{
+			this.colorTransform = new ColorTransform(0.7, 1, 0.7);
+		}
+		else
+		{
+			this.colorTransform = new ColorTransform();
+		}
+		
 		super.update(elapsed);
 	}
 }
