@@ -59,20 +59,24 @@ class GameOverState extends FlxState
 		
 		var button = new FlxButton(470, 450, "Play Again");
 		button.setGraphicSize(180, 30);
+		button.setSize(180, 30);
 		
 		button.onUp.callback = function()
 		{
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new PlayState());	
 		}
 		
 		add(button);
 		
 		var button = new FlxButton(730, 450, "Main Menu");
 		button.setGraphicSize(180, 30);
+		button.setSize(180, 30);
 		
 		button.onUp.callback = function()
 		{
-			FlxG.switchState(new SplashScreen());
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new SplashScreen());
+			}	
 		}
 		
 		add(button);

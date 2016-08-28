@@ -86,7 +86,9 @@ class SplashScreen extends FlxState
 		
 		if (FlxG.keys.firstJustReleased() != -1)
 		{
-			FlxG.switchState(new PlayState());
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new PlayState());
+			}	
 		}
 	}
 	

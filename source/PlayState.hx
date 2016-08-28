@@ -169,7 +169,7 @@ class PlayState extends FlxState
 		t.size = 10;
 		add(t);
 		
-		keyImage = new FlxSprite().loadGraphic("assets/images/keys/R.png");
+		keyImage = new FlxSprite().loadGraphic("assets/images/keys/G.png");
 		keyImage.alpha = 0.8;
 		keyImage.setPosition(190,  608);
 		keyImage.setGraphicSize(18, 18);
@@ -316,7 +316,7 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		
-		if (FlxG.keys.justPressed.R)
+		if (FlxG.keys.justPressed.G)
 			GameOver();
 		
 		if (FlxG.keys.justPressed.D)
