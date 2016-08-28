@@ -1,10 +1,13 @@
 package;
 
 import flash.geom.Point;
+import flixel.FlxSprite;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
+import flixel.util.FlxGradient;
+import flixel.util.FlxColor;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
@@ -14,6 +17,7 @@ import nape.phys.Material;
 import GameMap;
 
 using Main.FloatExtender;
+using flixel.util.FlxSpriteUtil;
 
 /**
  * About the 'userData'-field:
@@ -36,6 +40,8 @@ class LightSource extends FlxNapeSprite
 	private var lastX:Int = 0;
 	private var lastY:Int = 0;
 	
+	private var canvas:FlxSprite;
+	private var type:LightType;
 	private var lastAngle:Float = 0;
 	private var angleChanged:Bool = false;
 	private var lastPoint:FlxPoint = new FlxPoint();
@@ -48,7 +54,7 @@ class LightSource extends FlxNapeSprite
 	public var thickness:Int = 1;
 	public var connection:Mirror = null;
 	
-	public function new(map:GameMap, X:Float, Y:Float, ?thickness:Int=1, ?enabled:Bool=true) 
+	public function new(map:GameMap, canvas:FlxSprite, X:Float, Y:Float, ?thickness:Int=1, ?type:LightType=LightType.LINE, ?enabled:Bool=true) 
 	{
 		super(X, Y, null, true, true);
 		loadGraphic("assets/images/gem.png", true, 16, 16);
@@ -63,6 +69,8 @@ class LightSource extends FlxNapeSprite
 		this.map = map;
 		this.thickness = thickness;
 		this.enabled = enabled;
+		this.canvas = canvas;
+		this.type = type;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -218,4 +226,54 @@ class LightSource extends FlxNapeSprite
 		lastX = Std.int(x);
 		lastY = Std.int(y);
 	}
+	
+	public function drawLight()
+	{
+		switch (type) 
+		{
+			case LightType.LINE:
+				drawLighLine();
+			
+			case LightType.SPOT:
+				drawLighSpot(false);	
+			
+			case LightType.CONCENTRIC_SPOT:
+				drawLighSpot(true);				
+		}
+	}
+	
+	private function drawLighSpot(concentric:Bool):Void
+	{
+		var alpha = 0x00;
+		var radius = thickness;
+		var counter = 0;
+		var maxCounter = thickness > 100 ? 5 : 20;
+		var da = Math.round(thickness > 100 ? 256 / maxCounter : 20);
+		
+		while (alpha < 0xFF && radius > 0 && counter < maxCounter)
+		{
+			canvas.drawCircle(x + (concentric ? 0 : 1) * radius / 2, y + (concentric ? 0 : 1) * radius / 2, radius, (alpha << 24) | 0xFFFFFF);
+			
+			alpha += da;
+			radius -= 10;
+			++counter;
+		}
+	}
+	
+	private function drawLighLine():Void
+	{
+		var gradient = FlxGradient.createGradientFlxSprite(thickness, span, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
+		gradient.origin.set(thickness / 2, 0);
+		gradient.angle = angle * 180.0 / Math.PI - 90;
+		canvas.stamp(gradient, Std.int(x), Std.int(y));
+		gradient.destroy();
+	}
+}
+
+@:enum
+abstract LightType(Int) to Int
+{
+	var SPOT = 0;
+	var LINE = 1;
+	var CONCENTRIC_SPOT = 2;
 }

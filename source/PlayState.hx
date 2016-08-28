@@ -11,18 +11,19 @@ import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
-import flixel.util.FlxGradient;
 import nape.geom.Vec2;
 import nape.geom.Vec2List;
 import nape.phys.Body;
 import openfl.display.BlendMode;
 import openfl.display.FPS;
-import GameMap;
-using flixel.util.FlxSpriteUtil;
-
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
+
+import GameMap;
+import LightSource;
+
+using flixel.util.FlxSpriteUtil;
 
 /**
  * This was based on a guide from this forum post: http://forums.tigsource.com/index.php?topic=8803.0
@@ -51,6 +52,8 @@ class PlayState extends FlxState
 	private var darknessOverlay:FlxSprite;
 	
 	private var loco:Loco;
+	private var pingUp:Bool = true;
+	private var ping:LightSource;
 	private var rail:Railway = null;
 	private var lastRail = [false, false, false];
 	
@@ -136,12 +139,20 @@ class PlayState extends FlxState
 		*/
 		
 		// Loco!
-		loco = new Loco(map, lightSources, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
+		loco = new Loco(map, lightSources, darknessOverlay, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE);
 		var wagon1 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-part.png", loco);
 		var wagon2 = new Wagon(map, map.startPoint.x * GameMap.TILE_SIZE, map.startPoint.y * GameMap.TILE_SIZE, "assets/images/train/train-bottom.png", wagon1);
 		add(wagon2);
 		add(wagon1);
 		add(loco);
+		
+		// Light on endPoint
+		var gem = new Gem(map, lightSources, darknessOverlay, map.endPoint.x * GameMap.TILE_SIZE, map.endPoint.y * GameMap.TILE_SIZE);
+		map.gems.add(gem);
+		
+		// Ping light
+		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
+		lightSources.add(ping);
 		
 		infoText = new FlxText(10, 10, 100, "");
 		add(infoText);
@@ -293,6 +304,15 @@ class PlayState extends FlxState
 			speedBar.value  = loco.speed;
 		}
 		
+		if (FlxG.keys.justPressed.SPACE && !ping.enabled)
+		{
+			ping.enabled = true;
+			pingUp = true;
+			ping.thickness = 0;
+			ping.x = loco.x + GameMap.TILE_SIZE / 2.0;
+			ping.y = loco.y + GameMap.TILE_SIZE / 2.0;
+		}
+		
 		// Clean lightning
 		#if debug
 			darknessOverlay.fill(0xAAFFFFFF);
@@ -305,6 +325,28 @@ class PlayState extends FlxState
 			map.shadowCanvas.fill(FlxColor.TRANSPARENT);
 			map.shadowOverlay.fill(OVERLAY_COLOR);
 		#end
+		
+		// Update ping
+		if (ping.enabled)
+		{
+			if (pingUp)
+			{
+				ping.thickness += 10;
+				if (ping.thickness > 300)
+				{
+					pingUp = false;
+				}
+			}
+			else
+			{
+				ping.thickness -= 1;
+				
+				if (ping.thickness <= 0)
+				{
+					ping.enabled = false;
+				}
+			}
+		}
 		
 		// Find closest light for each lightsources
 		var i = 0;
@@ -324,7 +366,7 @@ class PlayState extends FlxState
 					}
 				#end
 				
-				drawLighLine(darknessOverlay, source, 50);
+				source.drawLight();
 				++i;
 			}
 		}
@@ -332,16 +374,10 @@ class PlayState extends FlxState
 		// Cast shadows
 		//processShadows();
 		
+		// Overlaps
+		FlxG.overlap(loco, map.gems, loco.onGemPick);
+		
 		super.update(elapsed);
-	}
-	
-	private function drawLighLine(sprite:FlxSprite, source:LightSource, thickness:Int):Void
-	{
-		var gradient = FlxGradient.createGradientFlxSprite(source.thickness, source.span, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
-		gradient.origin.set(source.thickness / 2, 0);
-		gradient.angle = source.angle * 180.0 / Math.PI - 90;
-		sprite.stamp(gradient, Std.int(source.x), Std.int(source.y));
-		gradient.destroy();
 	}
 	
 	public function processShadows():Void
@@ -417,6 +453,6 @@ class PlayState extends FlxState
 	
 	public static function GameOver():Void
 	{
-		
+		FlxG.switchState(new GameOverState()); 
 	}
 }

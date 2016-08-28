@@ -40,7 +40,7 @@ using Main.FloatExtender;
 class Wagon extends FlxSprite
 {
 	public static inline var ACELERATION:Float = 1;
-	public static inline var MAX_SPEED:Float = 30;
+	public static inline var MAX_SPEED:Float = 300;
 	public static inline var MIN_SPEED:Float = 10;
 	
 	private var _tx:Int = Std.int(Math.NaN);
@@ -171,6 +171,7 @@ class Wagon extends FlxSprite
 				default:
 					trace("STOPPING at " + (new FlxPoint(tx, ty)) + "? " + tileIdx);
 					speed = 0;
+					PlayState.GameOver();
 			}
 			
 			velocity.set(speed, 0);

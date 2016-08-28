@@ -14,6 +14,7 @@ import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.phys.Material;
 
+import LightSource;
 import GameMap;
 
 using Main.FloatExtender;
@@ -39,12 +40,12 @@ class Mirror extends FlxSprite
 	private var lightIn:LightSource;
 	private var lightOut:LightSource;
 	
-	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, X:Float, Y:Float) 
+	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas:FlxSprite, X:Float, Y:Float) 
 	{
 		super(X, Y);
 		makeGraphic(GameMap.TILE_SIZE, 5, FlxColor.RED, true);
 		
-		lightOut = new LightSource(map, X, Y, 1, false);
+		lightOut = new LightSource(map, canvas, X, Y, 1, LightType.LINE, false);
 		lights.add(lightOut);
 		
 		//angle = 45;
