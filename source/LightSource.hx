@@ -81,7 +81,11 @@ class LightSource extends FlxNapeSprite
 	
 	public function setTarget(endX:Int, endY:Int):Void
 	{
-		endX -= Math.round(thickness / 2);
+		if (type == LightType.LINE)
+		{
+			endX -= Math.round(thickness / 2);
+		}
+		
 		setSpan(endX, endY);
 		
 		angle = Math.atan2(endY - y, endX - x);
@@ -232,17 +236,20 @@ class LightSource extends FlxNapeSprite
 		switch (type) 
 		{
 			case LightType.LINE:
-				drawLighLine();
+				drawLightLine();
 			
 			case LightType.SPOT:
-				drawLighSpot(false);	
+				drawLightSpot(false);	
 			
 			case LightType.CONCENTRIC_SPOT:
-				drawLighSpot(true);				
+				drawLightSpot(true);
+				
+			case LightType.CONE:
+				drawLightCone();
 		}
 	}
 	
-	private function drawLighSpot(concentric:Bool):Void
+	private function drawLightSpot(concentric:Bool):Void
 	{
 		var alpha = 0x00;
 		var radius = thickness;
@@ -260,14 +267,33 @@ class LightSource extends FlxNapeSprite
 		}
 	}
 	
-	private function drawLighLine():Void
+	private function drawLightLine():Void
 	{
 		var gradient = FlxGradient.createGradientFlxSprite(thickness, span, [FlxColor.BLACK, FlxColor.WHITE, FlxColor.BLACK], 1, 0);
 		gradient.origin.set(thickness / 2, 0);
 		gradient.angle = angle * 180.0 / Math.PI - 90;
 		canvas.stamp(gradient, Std.int(x), Std.int(y));
 		gradient.destroy();
+	}
 		
+	private function drawLightCone():Void
+	{
+		var aperture = 0.5;
+		var alpha = 0x00;
+		
+		while (aperture > 0 && alpha < 0xFF) 
+		{
+			var ro  = angle - aperture;
+			var beta = angle + aperture;
+		
+			canvas.drawPolygon([getPosition(), 
+								new FlxPoint(x + span * Math.cos(beta), y + Math.sin(beta) * span), 
+								new FlxPoint(x + span * Math.cos(ro), y + Math.sin(ro) * span), 
+								getPosition()], (alpha << 24) | 0xFFFFFF);
+								
+			aperture -= 0.05;
+			alpha += 20;
+		}
 	}
 }
 
@@ -277,4 +303,5 @@ abstract LightType(Int) to Int
 	var SPOT = 0;
 	var LINE = 1;
 	var CONCENTRIC_SPOT = 2;
+	var CONE = 3;
 }
