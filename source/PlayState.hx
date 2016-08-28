@@ -1,5 +1,6 @@
 package;
 
+import flash.utils.Timer;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
@@ -7,10 +8,12 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import nape.geom.Vec2;
 import nape.geom.Vec2List;
 import nape.phys.Body;
@@ -57,18 +60,28 @@ class PlayState extends FlxState
 	private var rail:Railway = null;
 	private var lastRail = [false, false, false];
 	
+	private static inline var MAX_PING_LIGTH = 300;
+	private static inline var PING_RECHARGE = 10;
+	private var _pingPower = MAX_PING_LIGTH;
+	private var _pingSound:FlxSound;
+	
+	private var _addRailSound:FlxSound;
+	
 	/**
 	 * If there's a small gap between something (could be two tiles,
 	 * even if they're right next to each other), this should cover it up for us
 	 */
 	private var lineStyle:LineStyle = { color: SHADOW_COLOR, thickness: 1 };
 	
-	private var infoText:FlxText;
 	private var fps:FPS;
 	
 	private var speedBar:FlxBar;
 	private var speedText:FlxText;
 	private var speedHint:FlxText;
+	
+	private var beaconBar:FlxBar;
+	private var beaconText:FlxText;
+	private var beaconHint:FlxText;
 	
 	var _txtNum1:FlxText;
 	var _img1:FlxSprite;
@@ -103,6 +116,7 @@ class PlayState extends FlxState
 		darknessOverlay.blend = BlendMode.MULTIPLY;
 		add(darknessOverlay);		
 		
+		//Speed UI
 		speedText = new FlxText(1000, 617, 200, "Speed:", 8, true);
 		speedText.size = 10;
 		add(speedText);
@@ -112,16 +126,64 @@ class PlayState extends FlxState
 		speedBar.setRange(Wagon.MIN_SPEED - 2, Wagon.MAX_SPEED);
 		add(speedBar);
 		
-		
 		speedHint = new FlxText(1125, 619, 200, "Press W", 8, true);
 		speedHint.size = 8;
 		speedHint.alpha = 0.5;
 		add(speedHint);
-			
+		//End of speed UI
+		
+		//Beacon UI
+		beaconText = new FlxText(690, 617, 200, "Beacon:", 8, true);
+		beaconText.size = 10;
+		add(beaconText);
+		
+		beaconBar = new FlxBar(748, 615, FlxBarFillDirection.LEFT_TO_RIGHT, 200, 20);
+		beaconBar.createFilledBar(0xFF000044, 0xFF0000ff);
+		beaconBar.setRange(0,  MAX_PING_LIGTH);
+		add(beaconBar);
+		
+		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
+		beaconHint.size = 8;
+		beaconHint.alpha = 0.5;
+		add(beaconHint);
+		
+		_pingSound = FlxG.sound.load("assets/sounds/Beacon.wav", 0.3);
+		//End of Beacon UI
+		_addRailSound = FlxG.sound.load("assets/sounds/addRail.wav", 5);
+		
+		//KeyHints
+		var auxSprite:FlxSprite;
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		
+		_img1BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img1BG.setPosition(512, 614);
+		
+		auxSprite.setPosition(513, 615);
+		add(_img1BG);
+		add(auxSprite);
+		
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		_img2BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img2BG.setPosition(561, 614);
+		
+		auxSprite.setPosition(562, 615);
+		add(_img2BG);
+		add(auxSprite);
+		
+		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
+		_img3BG = new FlxSprite().makeGraphic(22, 24, FlxColor.GREEN);
+		_img3BG.setPosition(614, 614);
+		
+		auxSprite.setPosition(615, 615);
 
-		addKeyHint(100, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(150, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90);
-		addKeyHint(200, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0);
+		add(_img3BG);
+		add(auxSprite);
+		
+		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90, 23);
+		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0, 23);
+		clearAllSelectedRails();
+		//End of KeyHits
 		
 		/*
 		// Testing
@@ -150,9 +212,6 @@ class PlayState extends FlxState
 		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
 		lightSources.add(ping);
 		
-		infoText = new FlxText(10, 10, 100, "");
-		add(infoText);
-		
 		// This here is only used to get the current FPS in a simple way, without having to run the application in Debug mode
 		fps = new FPS(10, 10, 0xffffff);
 		FlxG.stage.addChild(fps);
@@ -163,7 +222,11 @@ class PlayState extends FlxState
 		#else
 			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 1, true);
 		#end
+		
+		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
 	}
+	
+	
 	
 	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)
 	{
@@ -184,22 +247,27 @@ class PlayState extends FlxState
 	
 	public function selectRailway(index:Int)
 	{
-		//TODO: Need to understand how de F**CK change text attributes on the fly
-		return;
+		clearAllSelectedRails();
 		switch(index)
 		{
 			case 1:
-				_txtNum1.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img1BG.alpha = 1;
 			case 2:
-				_txtNum2.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img2BG.alpha = 1;
 			case 3:
-				_txtNum3.setBorderStyle(SHADOW, FlxColor.GREEN, 1, 1);
+				_img3BG.alpha = 1;
 		}
+	}
+	
+	public function clearAllSelectedRails()
+	{
+		_img1BG.alpha = 0;
+		_img2BG.alpha = 0;
+		_img3BG.alpha = 0;
 	}
 	
 	override public function update(elapsed:Float):Void
 	{
-		infoText.text = "FPS: " + fps.currentFPS + "\n\nObjects can be dragged/thrown around.\n\nPress 'R' to restart.";
 		
 		if (FlxG.keys.justPressed.R)
 			FlxG.resetState();
@@ -218,6 +286,7 @@ class PlayState extends FlxState
 			{
 				rail.destroy();
 				rail = null;
+				clearAllSelectedRails();
 			}
 			else
 			{
@@ -288,6 +357,8 @@ class PlayState extends FlxState
 				map.lastRail = rail;
 				rail.reserveNow();
 				rail = null;
+				clearAllSelectedRails();
+				_addRailSound.play();
 			}
 		}
 			
@@ -299,6 +370,8 @@ class PlayState extends FlxState
 			loco.decrementSpeed(elapsed);
 			speedBar.value  = loco.speed;
 		}
+		
+		beaconBar.value = _pingPower;
 		
 		if (FlxG.keys.justPressed.SPACE && !ping.enabled)
 		{
@@ -328,9 +401,11 @@ class PlayState extends FlxState
 			if (pingUp)
 			{
 				ping.thickness += 10;
-				if (ping.thickness > 300)
+				if (ping.thickness > _pingPower)
 				{
 					pingUp = false;
+					_pingPower = 0;
+					_pingSound.play(); 
 				}
 			}
 			else
