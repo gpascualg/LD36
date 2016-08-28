@@ -34,8 +34,6 @@ class SplashScreen extends FlxState
 	public function new() 
 	{
 		super();
-		
-
 	}
 	
 	override public function create():Void 
@@ -44,12 +42,12 @@ class SplashScreen extends FlxState
 		
 		SoundManager.PlayBackgroundMusic();
 		
-		var _gameOverEffectSprite:FlxEffectSprite;
+		var _splashEffect:FlxEffectSprite;
 		
 		var splashImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/splash/splash-bg.png");
-		add(_gameOverEffectSprite = new FlxEffectSprite(splashImage));
+		add(_splashEffect = new FlxEffectSprite(splashImage));
 		var effect:FlxGlitchEffect = new FlxGlitchEffect(10, 2, 0.1);
-		_gameOverEffectSprite.effects = [effect];
+		_splashEffect.effects = [effect];
 		
 		
 		var image:FlxSprite = new FlxSprite().loadGraphic("assets/images/splash/title.png");
