@@ -39,9 +39,9 @@ using Main.FloatExtender;
  */
 class Wagon extends FlxSprite
 {
-	public static inline var ACELERATION:Float = 1;
-	public static inline var MAX_SPEED:Float = 300;
-	public static inline var MIN_SPEED:Float = 10;
+	public static inline var ACELERATION:Float = 100;
+	public static inline var MAX_SPEED:Float = 3000;
+	public static inline var MIN_SPEED:Float = 1000;
 	
 	private var _tx:Int = Std.int(Math.NaN);
 	private var _ty:Int = Std.int(Math.NaN);
@@ -198,7 +198,7 @@ class Wagon extends FlxSprite
 					//PlayState.GameOver();
 			}
 			
-			velocity.set(speed, 0);
+			velocity.set(speed * elapsed, 0);
 			velocity.rotate(FlxPoint.weak(0, 0), mA);
 		}
 		
