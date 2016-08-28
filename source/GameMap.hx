@@ -85,7 +85,7 @@ class GameMap
 		gems = new FlxTypedGroup<Gem>();
 		parent.add(gems);
 		createRandomPath();
-		createRandomPath(null, true);
+		//createRandomPath(null, true);
 		
 		// Setup mirrors array
 		buildMirrors();
