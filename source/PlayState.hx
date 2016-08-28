@@ -83,6 +83,9 @@ class PlayState extends FlxState
 	private var beaconText:FlxText;
 	private var beaconHint:FlxText;
 	
+	private var timerTxt:FlxText;
+	public var diamondsTxt:FlxText;
+	
 	var _txtNum1:FlxText;
 	var _img1:FlxSprite;
 	var _img1BG:FlxSprite;
@@ -224,8 +227,32 @@ class PlayState extends FlxState
 		#end
 		
 		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
+		
+		//STATS:
+		timerTxt = new FlxText(30, 614, 150, "Time:", true);
+		timerTxt.size = 10;
+		add(timerTxt);
+		
+		timerTxt = new FlxText(68, 614, 150, "0", true);
+		timerTxt.size = 10;
+		add(timerTxt);
+		
+		diamondsTxt = new FlxText(95, 614, 200, "Diamods:", true);
+		diamondsTxt.size = 10;
+		add(diamondsTxt);
+		
+		diamondsTxt = new FlxText(150, 614, 150, "0", true);
+		diamondsTxt.size = 10;
+		add(diamondsTxt);
+		
+		new FlxTimer().start(1, addOneSecond, 0);
 	}
 	
+	public function addOneSecond(timer:FlxTimer):Void
+	{
+		StatsManager.secondsResisted += 1;
+		timerTxt.text = Std.string(StatsManager.secondsResisted);
+	}
 	
 	
 	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)

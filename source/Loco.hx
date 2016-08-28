@@ -140,6 +140,7 @@ class Loco extends Wagon
 	
 	public function onGemPick(loco:Loco, gem:Gem)
 	{
+
 		if (gem.alive && gem.exists)
 		{
 			// Find last wagon
@@ -156,7 +157,8 @@ class Loco extends Wagon
 			// Kill gem and reset map
 			var pick = FlxG.sound.play(SoundManager.PICKUP_SOUND, 0.5, false);
 			gem.kill();
-			
+			StatsManager.gemsTaken += 1;
+			PlayState.instance.diamondsTxt.text = Std.string(StatsManager.gemsTaken);
 			// Adjust position (startPos is old endPos)
 			//x = map.startPoint.x * GameMap.TILE_SIZE;
 			//y = map.startPoint.y * GameMap.TILE_SIZE;
