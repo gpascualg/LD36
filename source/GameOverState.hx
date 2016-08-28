@@ -10,6 +10,8 @@ import flixel.system.FlxSound;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
+import flixel.addons.effects.chainable.FlxGlitchEffect;
+
 
 /**
  * ...
@@ -32,6 +34,14 @@ class GameOverState extends FlxState
 	override public function create():Void 
 	{
 		super.create();
+		
+		var bgEffect:FlxEffectSprite;
+		
+		var splashImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/splash/splash-bg.png");
+		add(bgEffect = new FlxEffectSprite(splashImage));
+		var effect:FlxGlitchEffect = new FlxGlitchEffect(10, 2, 0.1);
+		bgEffect.effects = [effect];
+		
 		_gameOverSound = FlxG.sound.load(SoundManager.DEATH_SOUND);
 		
 		_gameOverSprite = new FlxSprite(100, 100, "assets/images/Game-Over.png");
@@ -49,20 +59,24 @@ class GameOverState extends FlxState
 		
 		var button = new FlxButton(470, 450, "Play Again");
 		button.setGraphicSize(180, 30);
+		button.setSize(180, 30);
 		
 		button.onUp.callback = function()
 		{
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new PlayState());	
 		}
 		
 		add(button);
 		
 		var button = new FlxButton(730, 450, "Main Menu");
 		button.setGraphicSize(180, 30);
+		button.setSize(180, 30);
 		
 		button.onUp.callback = function()
 		{
-			FlxG.switchState(new SplashScreen());
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new SplashScreen());
+			}	
 		}
 		
 		add(button);

@@ -145,10 +145,11 @@ class PlayState extends FlxState
 		speedBar.setRange(Wagon.MIN_SPEED - 2, Wagon.MAX_SPEED);
 		add(speedBar);
 		
-		speedHint = new FlxText(1125, 619, 200, "Press W", 8, true);
-		speedHint.size = 8;
-		speedHint.alpha = 0.5;
-		add(speedHint);
+		var keyImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/W.png");
+		keyImage.setPosition(1128,  609);
+		keyImage.alpha = 0.8;
+		keyImage.setGraphicSize(18, 18);
+		add(keyImage);
 		//End of speed UI
 		
 		//Beacon UI
@@ -161,10 +162,22 @@ class PlayState extends FlxState
 		beaconBar.setRange(0,  MAX_PING_LIGTH);
 		add(beaconBar);
 		
-		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
-		beaconHint.size = 8;
-		beaconHint.alpha = 0.5;
-		add(beaconHint);
+		
+		keyImage = new FlxSprite().loadGraphic("assets/images/keys/SPACE.png");
+		keyImage.alpha = 0.8;
+		keyImage.setPosition(760,  610);
+		keyImage.setGraphicSize(90, 17);
+		add(keyImage);
+		
+		var t:FlxText = new FlxText(220, 617, 200, "Surrender");
+		t.size = 10;
+		add(t);
+		
+		keyImage = new FlxSprite().loadGraphic("assets/images/keys/G.png");
+		keyImage.alpha = 0.8;
+		keyImage.setPosition(190,  608);
+		keyImage.setGraphicSize(18, 18);
+		add(keyImage);
 		
 		_pingSound = FlxG.sound.load("assets/sounds/Beacon.wav", 0.3);
 		//End of Beacon UI
@@ -175,32 +188,32 @@ class PlayState extends FlxState
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
 		
 		_img1BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
-		_img1BG.setPosition(512, 614);
+		_img1BG.setPosition(492, 614);
 		
-		auxSprite.setPosition(513, 615);
+		auxSprite.setPosition(493, 615);
 		add(_img1BG);
 		add(auxSprite);
 		
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
 		_img2BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
-		_img2BG.setPosition(561, 614);
+		_img2BG.setPosition(554, 614);
 		
-		auxSprite.setPosition(562, 615);
+		auxSprite.setPosition(555, 615);
 		add(_img2BG);
 		add(auxSprite);
 		
 		auxSprite = new FlxSprite().makeGraphic(20, 22, FlxColor.BLACK);
-		_img3BG = new FlxSprite().makeGraphic(22, 24, FlxColor.GREEN);
-		_img3BG.setPosition(614, 614);
+		_img3BG = new FlxSprite().makeGraphic(23, 24, FlxColor.GREEN);
+		_img3BG.setPosition(611, 614);
 		
-		auxSprite.setPosition(615, 615);
+		auxSprite.setPosition(613, 615);
 
 		add(_img3BG);
 		add(auxSprite);
 		
-		addKeyHint(500, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(550, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 90, 23);
-		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 0, 23);
+		addKeyHint(480, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		addKeyHint(540, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
+		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90, 23);
 		clearAllSelectedRails();
 		//End of KeyHits
 		
@@ -239,19 +252,19 @@ class PlayState extends FlxState
 		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
 		
 		//STATS:
-		timerTxt = new FlxText(30, 614, 150, "Time:", true);
+		timerTxt = new FlxText(30, 617, 150, "Time:", true);
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		timerTxt = new FlxText(68, 614, 150, "0", true);
+		timerTxt = new FlxText(68, 617, 150, "0", true);
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		diamondsTxt = new FlxText(95, 614, 200, "Diamods:", true);
+		diamondsTxt = new FlxText(95, 617, 200, "Diamods:", true);
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
-		diamondsTxt = new FlxText(150, 614, 150, "0", true);
+		diamondsTxt = new FlxText(150, 617, 150, "0", true);
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
@@ -266,13 +279,14 @@ class PlayState extends FlxState
 	
 	
 	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)
-	{
-		bg = new FlxSprite().makeGraphic(30, 30, FlxColor.BLACK);
-		bg.drawRect(0, 19, 30, 1, FlxColor.WHITE);
+	{		
+		var keyImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/"+text+".png");
+		trace(keyImage.path);
+		keyImage.setPosition(x-17, y);
+		keyImage.alpha = 0.8;
+		keyImage.setGraphicSize(18, 18);
 		
-		txt = new FlxText(x, y + 4, 14, text, 10);
-		txt.size = 10;
-		txt.setBorderStyle(SHADOW, FlxColor.WHITE, 1, 1);
+		add(keyImage);
 		
 		img = new FlxSprite(x + 8, y - 2 + (24 - size),  imgSource);
 		img.setGraphicSize(size, size);
@@ -306,8 +320,8 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		
-		if (FlxG.keys.justPressed.R)
-			FlxG.resetState();
+		if (FlxG.keys.justPressed.G)
+			GameOver();
 		
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	

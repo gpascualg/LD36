@@ -29,28 +29,14 @@ import flixel.util.FlxTimer;
 
 using Main.FloatExtender;
 
-/**
- * About the 'userData'-field:
- * Most things in Nape have this handy Dynamic field called 'userData' which
- * can hold pretty much any kind of data. This can aid you in finding - or
- * referencing this particular nape-sprite instance later, just do:
- *    body.userData.someFieldName = someValue
- * 
- * Note: The program does not always provide you with error messages when it
- * crashes and when Nape is involved; be sure to not refer to fields in userData
- * that you're not sure exists.
- * 
- * To read more about what Nape is and what it can do
- * (and to study some interesting - and useful - Nape demos)
- * @see http://napephys.com/samples.html
- */
 class Loco extends Wagon
 {
 	private var light:LightSource;
 	private var sound:FlxSound;
 	private var canvas:FlxSprite;
 	private var lights:FlxTypedGroup<LightSource>;
-	
+	private var headLight:LightSource;
+
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas: FlxSprite, X:Float, Y:Float) 
 	{
 		super(map, X, Y, "assets/images/train/train-head.png");
@@ -64,6 +50,9 @@ class Loco extends Wagon
 		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70, LightType.CONE);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
 		lights.add(light);
+		
+		headLight = new LightSource(map, canvas, X, y, 100, LightType.CONCENTRIC_SPOT);
+		lights.add(headLight);
 		
 		sound = FlxG.sound.load(SoundManager.LOCO_SOUND, 0.3, true);
 		sound.play();
@@ -88,13 +77,45 @@ class Loco extends Wagon
 	}
 		
 	override public function update(elapsed:Float):Void
-	{		
+	{			
 		updateLight();
+		updateHeadLight();
 		super.update(elapsed);
 	}
 	
-	private function updateLight()
+	private function updateHeadLight():Void
 	{
+		var offsetX:Int = 0;
+		var offsetY:Int = 0;
+		
+		trace(getNormalizedAngle());
+		
+		switch(getNormalizedAngle() )
+		{
+			case 0:
+				offsetX = 20;
+				offsetY = 10;
+			case 90:
+				offsetX = 12;
+				offsetY = 20;
+			case 270:
+				offsetX = 15;
+				offsetY = 10;
+			case 180:
+				offsetX = 10;
+				offsetY = 10;
+			default:
+				offsetX = 10;
+				offsetY = 10;
+				
+		}
+		headLight.x = x + offsetX;
+		headLight.y = y + offsetY;
+		
+	}
+	
+	private function updateLight()
+	{			
 		var ang:Float = 0;
 		if (_next == Direction.EAST || _next == Direction.WEST)
 		{
@@ -119,17 +140,24 @@ class Loco extends Wagon
 		light.force();
 	}
 	
-	private function expluseSmoke(timer:FlxTimer):Void
+	private function getNormalizedAngle():Float
 	{
-		var offsetX:Int = 0;
-		var offsetY:Int = 0;
 		
 		var normalizedAngle:Float = angle % 360;
 		
 		if (normalizedAngle < 0)
 			normalizedAngle += 360;
 		
-		switch(normalizedAngle)
+		//This avoids having "-0"
+		normalizedAngle = Math.abs(normalizedAngle);
+		return normalizedAngle;
+	}
+	
+	private function expluseSmoke(timer:FlxTimer):Void
+	{
+		var offsetX:Int = 0;
+		var offsetY:Int = 0;		
+		switch(getNormalizedAngle() )
 		{
 			case 0:
 				offsetX = 4;
@@ -144,6 +172,7 @@ class Loco extends Wagon
 				offsetX = 20;
 				offsetY = 0;
 		}
+		
 		PlayState.instance.add(new Smoke(this.x + offsetX, this.y + offsetY));
 	}
 	
