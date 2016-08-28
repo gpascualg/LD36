@@ -26,7 +26,7 @@ import openfl.utils.Object;
  */
 class GameMap
 {
-	public static inline var PREBUILD_RAILS_MAX:Int = 5;
+	public static inline var PREBUILD_RAILS_MAX:Int = 5; // 5
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
@@ -38,6 +38,7 @@ class GameMap
 	
 	private var _parent:FlxState;
 	
+	public var inverted:Bool = false;
 	public var startPoint:FlxPoint;
 	public var endPoint:FlxPoint;
 	public var gem:Gem;
@@ -47,7 +48,7 @@ class GameMap
 	public var lastRail:Railway = null;
 	public var rails:FlxTypedGroup<Railway>;
 	public var gems:FlxTypedGroup<Gem>;
-	public var obstacles:Map<Int, Barrel>;
+	public var obstacles:Map<Int, Barrel> = null;
 	
 	public var mirrors:Array<Array<Mirror>>;
 	
@@ -84,25 +85,61 @@ class GameMap
 		gems = new FlxTypedGroup<Gem>();
 		parent.add(gems);
 		createRandomPath();
+		createRandomPath(null, true);
 		
 		// Setup mirrors array
 		buildMirrors();
 	}
 	
-	private function createRandomPath():Void
+	public function createRandomPath(?startPoint:FlxPoint=null, ?invert:Bool=false):Void
 	{
+		// Empty map
+		if (obstacles != null)
+		{
+			for (key in obstacles.keys())
+			{
+				var obstacle = obstacles[key];
+				obstacles.remove(key);
+				
+				var tx = Std.int(obstacle.x / GameMap.TILE_SIZE);
+				var ty = Std.int(obstacle.y / GameMap.TILE_SIZE);
+				reserveTile(tx, ty, 0);
+				obstacle.destroy();
+			}
+		}
+		
 		//Declare the obstacles array
 		obstacles = new Map<Int, Barrel>();
+		inverted = invert;
 		
 		//Start point
-		var xStart:Int = 1;
+		var xStart:Int = 1 + Std.int(Std.random(3));
 		var yStart:Int = Std.random(foreground.heightInTiles - 4) + 2;
-		setStartPoint(Std.int(xStart), Std.int(yStart));
 		
 		//End Point
-		var xEnd:Int = foreground.widthInTiles - 2;
-		var yEnd:Float = Std.random(foreground.heightInTiles - 4) + 2;
-		setEndPoint(Std.int(xEnd), Std.int(yEnd));
+		var xEnd:Int = foreground.widthInTiles - 2 - Std.int(Std.random(3));
+		var yEnd:Int = Std.int(Std.random(foreground.heightInTiles - 4) + 2);
+		
+		if (invert)
+		{
+			var temp = xStart;
+			xStart = xEnd;
+			xEnd = temp;
+			
+			temp = yStart;
+			yStart = yEnd;
+			yEnd = temp;
+		}
+		
+		// Overwrite if given
+		if (startPoint != null)
+		{
+			xStart = Std.int(startPoint.x);
+			yStart = Std.int(startPoint.y);
+		}
+		
+		setStartPoint(xStart, yStart);
+		setEndPoint(xEnd, yEnd);
 		
 		trace("YEnd: " + yEnd);
 		
@@ -117,11 +154,12 @@ class GameMap
 			var arr = new Array<Int>();
 			for (x in 0...foreground.widthInTiles)
 			{
-				arr.push(-1);
+				arr.push(0);
 			}
 			path.push(arr);
 		}
-				
+		path[yEnd][xEnd] = -2;
+		
 		while (!hasGeneratedPath)
 		{
 			//We have ended
@@ -134,7 +172,6 @@ class GameMap
 			var desiredY:Int = y;
 		
 			path[desiredY][desiredX] = actualDirection;
-			reserveTile(desiredX, desiredY);
 						
 			if (Math.random() > 0.7)
 			{
@@ -143,6 +180,12 @@ class GameMap
 			}
 
 			switch(actualDirection){
+				case Direction.WEST:
+					desiredX--;
+					if (desiredX == 0){
+						actualDirection = chooseRandomDirection(x, y);
+						continue;
+					}
 				case Direction.EAST:
 					desiredX++;
 					if (desiredX == foreground.widthInTiles - 1){
@@ -151,7 +194,7 @@ class GameMap
 					}
 				case Direction.NORTH:
 					desiredY--;
-					if (desiredY == 1){
+					if (desiredY == 0){
 						actualDirection = chooseRandomDirection(x, y);
 						continue;
 					}
@@ -161,7 +204,6 @@ class GameMap
 						actualDirection = chooseRandomDirection(x, y);
 						continue;
 					}
-				case Direction.WEST:
 				case Direction.NONE:
 					// NOOOO;
 			}
@@ -177,7 +219,7 @@ class GameMap
 		var direction:Int = -1;
 		var numberOfRails = 0;
 		
-		while (numberOfRails < PREBUILD_RAILS_MAX)
+		while (true)
 		{
 			direction = path[y][x];
 			trace((new FlxPoint(x, y)) + " " + direction);
@@ -187,20 +229,26 @@ class GameMap
 				break;
 			}
 			
-			var isCurved = lastDirection != -1 && lastDirection != direction;
-			
-			lastRail = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
-			rails.add(lastRail);
-			lastDirection = direction;
+			if (numberOfRails < PREBUILD_RAILS_MAX)
+			{
+				lastRail = new Railway(this, lastDirection, direction, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+				rails.add(lastRail);
+				lastDirection = direction;
+			}
+			else
+			{
+				reserveTile(x, y);
+			}
 						
 			switch(direction) {
+				case Direction.WEST:
+					--x;
 				case Direction.EAST:
 					++x;
 				case Direction.NORTH:
 					--y;
 				case Direction.SOUTH:
 					++y;
-				case Direction.WEST:
 				case Direction.NONE:
 					// NOOOO;
 			}
@@ -208,53 +256,77 @@ class GameMap
 		}
 		
 		// Flag start surroundings
-		for (x in -1...1)
+		for (x in -1...2)
 		{
-			for (y in -1...1)
+			for (y in -1...2)
 			{
+				if (x == 0 && y == 0)
+				{
+					continue;
+				}
+				
 				var cx = xStart + x;
 				var cy = yStart + y;
 				
 				if (cx > 0 && cy > 0 && cx < foreground.widthInTiles - 1 && cy < foreground.heightInTiles - 1 && 
-					x != 0 && y != 0 && foreground.getTile(cx, cy) == 0)
+					foreground.getTile(cx, cy) == 0)
 				{
-					reserveTile(cx, cy, -4);
+					reserveTile(cx, cy, -1);
 				}
 			}
 		}
 		
 		// Flag end surroundings
-		for (x in -1...1)
+		for (x in -1...2)
 		{
-			for (y in -1...1)
+			for (y in -1...2)
 			{
-				var cx = Std.int(endPoint.x + x);
-				var cy = Std.int(endPoint.y + y);
+				if (x == 0 && y == 0)
+				{
+					continue;
+				}
+				
+				var cx = xEnd + x;
+				var cy = yEnd + y;
 				
 				if (cx > 0 && cy > 0 && cx < foreground.widthInTiles - 1 && cy < foreground.heightInTiles - 1 && 
-					x != 0 && y != 0 && foreground.getTile(cx, cy) == 0)
+					foreground.getTile(cx, cy) == 0)
 				{
-					reserveTile(cx, cy, -4);
+					trace("Reserve " + new FlxPoint(cx, cy));
+					reserveTile(cx, cy, -1);
 				}
 			}
 		}
 
 		//Fill the map with random noise ensuring that the path is respected
+		var acc = 0.7;
 		for (tileY in 0...foreground.heightInTiles)
 		{
 			for (tileX in 0...foreground.widthInTiles)
 			{
-				var tileIndex = foreground.getTile(tileX, tileY);
-				var xPos:Float = tileX * TILE_SIZE;
-				var yPos:Float = tileY * TILE_SIZE;
+				var x = tileX; // + Std.random(3) - 1;
+				var y = tileY; // + Std.random(3) - 1;
+				
+				var tileIndex = foreground.getTile(x, y);				
+				var xPos:Float = x * TILE_SIZE;
+				var yPos:Float = y * TILE_SIZE;
 				
 				//Render an obstacle
-				if (tileIndex != -1 && tileIndex < 50 && tileIndex != 4 && Math.random() > 0.75)
+				if (tileIndex >= 0 && tileIndex < 50 && tileIndex != 4 && Math.random() > acc)
 				{
 					var barr:Barrel = new Barrel(xPos, yPos);
-					obstacles[tileY * foreground.widthInTiles + tileX] = barr;
+					obstacles[y * foreground.widthInTiles + x] = barr;
 					_parent.add(barr);
-					foreground.setTile(tileX, tileY, Prop.BARREL);
+					foreground.setTile(x, y, Prop.BARREL);
+					
+					if (acc > 0.5)
+					{
+						acc -= Math.random() / 4.0;
+					}
+				}
+				else
+				{
+					acc = 0.7;
 				}
 			}
 		}
@@ -275,9 +347,11 @@ class GameMap
 	{
 		var allowedDirs:Array<Direction> = new Array<Direction>();
 		
+		if (x != 0)
+			allowedDirs.push(Direction.WEST);
 		if (x != foreground.widthInTiles - 1)
 			allowedDirs.push(Direction.EAST);
-		if (y !=  1)
+		if (y != 0)
 			allowedDirs.push(Direction.NORTH);
 		if (y != foreground.heightInTiles - 1)
 			allowedDirs.push(Direction.SOUTH);

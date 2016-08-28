@@ -32,6 +32,7 @@ import LightSource;
 class Gem extends FlxSprite
 {	
 	private var light:LightSource;
+	private var map:GameMap;
 	
 	public function new(map:GameMap, lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, X:Float, Y:Float) 
 	{
@@ -42,6 +43,8 @@ class Gem extends FlxSprite
 		
 		light = new LightSource(map, canvas, X, Y, 80, LightType.SPOT);
 		lightSources.add(light);
+		
+		this.map = map;
 	}
 	
 	override public function update(elapsed:Float):Void
@@ -54,6 +57,8 @@ class Gem extends FlxSprite
 		alive = false;
 		FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut, onComplete: finishKill });
 		FlxTween.tween(light, { thickness: 1 }, .33, { ease: FlxEase.circOut, onComplete: finishKill });
+		
+		map.createRandomPath(map.endPoint, !map.inverted);
 	}
 
 	private function finishKill(_):Void
