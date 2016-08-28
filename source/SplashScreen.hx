@@ -8,6 +8,12 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flash.events.KeyboardEvent;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+import flixel.addons.effects.chainable.FlxEffectSprite;
+import flixel.addons.effects.chainable.FlxGlitchEffect;
+
 
 /**
  * ...
@@ -23,30 +29,55 @@ class SplashScreen extends FlxState
 	
 	var numUpdates:Int = 0;
 	
+	var showPress:Bool = false;
+	
 	public function new() 
 	{
 		super();
 		
-		title = new FlxText(100, 50, 1000, "A Trip Into The Dark", true);
-		title.size = 60;
-		add(title);
+
+	}
+	
+	override public function create():Void 
+	{
+		super.create();
 		
-		howTo = new FlxText(100, 200, 400, "How to play:", true);
-		howTo.size = 20;
-		add(howTo);
+		SoundManager.PlayBackgroundMusic();
 		
-		credits = new FlxText(800, 610, 500, "A game made in 72 hours for Ludum Dare 36 by Blipi, 4nc3str4l & Myriologie", true);
-		credits.size = 10;
-		add(credits);
+		var _gameOverEffectSprite:FlxEffectSprite;
 		
-		pressKey = new FlxText(480, 550, 400, "Press any key to start", true);
+		var splashImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/splash/splash-bg.png");
+		add(_gameOverEffectSprite = new FlxEffectSprite(splashImage));
+		var effect:FlxGlitchEffect = new FlxGlitchEffect(10, 2, 0.1);
+		_gameOverEffectSprite.effects = [effect];
+		
+		
+		var image:FlxSprite = new FlxSprite().loadGraphic("assets/images/splash/title.png");
+		image.setPosition(1280 / 2 - (742 / 2), 100);
+		image.alpha = 0;
+		add(image);
+		
+		pressKey = new FlxText(0, 550, 1280, "Press any key to start", true);
+		pressKey.alignment = FlxTextAlign.CENTER;
 		pressKey.size = 20;
+		pressKey.alpha = 0;
 		pressKey.setBorderStyle(SHADOW, FlxColor.YELLOW, 1, 1);
 		add(pressKey);
+		
+		FlxTween.tween(image, { alpha: 1 }, 4, { ease: FlxEase.cubeIn }).onComplete = showPlay;
+		
 	}
+	
+	private function showPlay(tween:FlxTween):Void
+	{
+		showPress = true;
+	}
+	
 	
 	override public function update(elapsed:Float):Void
 	{
+		if (!showPress) return;
+		
 		numUpdates++;
 		pressKey.alpha = numUpdates / 400;
 		if (numUpdates == 400){			
