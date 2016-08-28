@@ -64,7 +64,7 @@ class GameMap
 		shadowCanvas = new FlxSprite();
 		shadowCanvas.blend = BlendMode.MULTIPLY;
 		shadowCanvas.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
-		_parent.add(shadowCanvas);
+		//_parent.add(shadowCanvas);
 		
 		foreground = new FlxNapeTilemap();
 		mapData = new Array<Int>();
@@ -77,7 +77,7 @@ class GameMap
 		shadowOverlay = new FlxSprite();
 		shadowOverlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
 		shadowOverlay.blend = BlendMode.MULTIPLY;
-		_parent.add(shadowOverlay);
+		//_parent.add(shadowOverlay);
 		
 		foreground.setupTileIndices([4]);
 		rails = new FlxTypedGroup<Railway>();

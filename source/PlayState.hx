@@ -391,11 +391,28 @@ class PlayState extends FlxState
 			
 			if (FlxG.mouse.justPressed)
 			{
-				map.lastRail = rail;
-				rail.reserveNow();
-				rail = null;
-				clearAllSelectedRails();
-				_addRailSound.play();
+				var tileIdx = map.foreground.getTile(x, y);
+				trace(tileIdx);
+				if (tileIdx <= 0 || tileIdx >= 50)
+				{
+					var tx = Std.int(map.lastRail.x / GameMap.TILE_SIZE);
+					var ty = Std.int(map.lastRail.y / GameMap.TILE_SIZE);
+					
+					var canBeAdded = 
+						(map.lastRail.direction == Direction.EAST && tx + 1 == x && ty == y) ||
+						(map.lastRail.direction == Direction.WEST && tx - 1 == x && ty == y) ||
+						(map.lastRail.direction == Direction.NORTH && tx == x && ty - 1 == y) ||
+						(map.lastRail.direction == Direction.SOUTH && tx == x && ty + 1 == y);
+					
+					if (canBeAdded)
+					{
+						map.lastRail = rail;
+						rail.reserveNow();
+						rail = null;
+						clearAllSelectedRails();
+						_addRailSound.play();
+					}
+				}
 			}
 		}
 			
