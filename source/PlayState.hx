@@ -141,10 +141,11 @@ class PlayState extends FlxState
 		speedBar.setRange(Wagon.MIN_SPEED - 2, Wagon.MAX_SPEED);
 		add(speedBar);
 		
-		speedHint = new FlxText(1125, 619, 200, "Press W", 8, true);
-		speedHint.size = 8;
-		speedHint.alpha = 0.5;
-		add(speedHint);
+		var keyImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/W.png");
+		keyImage.setPosition(1128,  609);
+		keyImage.alpha = 0.8;
+		keyImage.setGraphicSize(18, 18);
+		add(keyImage);
 		//End of speed UI
 		
 		//Beacon UI
@@ -157,10 +158,22 @@ class PlayState extends FlxState
 		beaconBar.setRange(0,  MAX_PING_LIGTH);
 		add(beaconBar);
 		
-		beaconHint = new FlxText(825, 619, 200, "Space", 8, true);
-		beaconHint.size = 8;
-		beaconHint.alpha = 0.5;
-		add(beaconHint);
+		
+		keyImage = new FlxSprite().loadGraphic("assets/images/keys/SPACE.png");
+		keyImage.alpha = 0.8;
+		keyImage.setPosition(760,  610);
+		keyImage.setGraphicSize(90, 17);
+		add(keyImage);
+		
+		var t:FlxText = new FlxText(220, 617, 200, "Surrender");
+		t.size = 10;
+		add(t);
+		
+		keyImage = new FlxSprite().loadGraphic("assets/images/keys/R.png");
+		keyImage.alpha = 0.8;
+		keyImage.setPosition(190,  608);
+		keyImage.setGraphicSize(18, 18);
+		add(keyImage);
 		
 		_pingSound = FlxG.sound.load("assets/sounds/Beacon.wav", 0.3);
 		//End of Beacon UI
@@ -235,19 +248,19 @@ class PlayState extends FlxState
 		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
 		
 		//STATS:
-		timerTxt = new FlxText(30, 614, 150, "Time:", true);
+		timerTxt = new FlxText(30, 617, 150, "Time:", true);
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		timerTxt = new FlxText(68, 614, 150, "0", true);
+		timerTxt = new FlxText(68, 617, 150, "0", true);
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		diamondsTxt = new FlxText(95, 614, 200, "Diamods:", true);
+		diamondsTxt = new FlxText(95, 617, 200, "Diamods:", true);
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
-		diamondsTxt = new FlxText(150, 614, 150, "0", true);
+		diamondsTxt = new FlxText(150, 617, 150, "0", true);
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
@@ -303,7 +316,7 @@ class PlayState extends FlxState
 	{
 		
 		if (FlxG.keys.justPressed.R)
-			FlxG.resetState();
+			GameOver();
 		
 		if (FlxG.keys.justPressed.D)
 			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;	
