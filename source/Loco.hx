@@ -2,12 +2,14 @@ package;
 
 import flash.display.InteractiveObject;
 import flash.geom.Point;
+import flash.media.Sound;
 import flixel.FlxSprite;
 import flixel.addons.nape.FlxNapeSpace;
 import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
@@ -44,7 +46,7 @@ using Main.FloatExtender;
 class Loco extends Wagon
 {
 	private var light:LightSource;
-	
+	private var sound:FlxSound;
 
 	public function new(map:GameMap, lights:FlxTypedGroup<LightSource>, canvas: FlxSprite, X:Float, Y:Float) 
 	{
@@ -53,7 +55,10 @@ class Loco extends Wagon
 		new FlxTimer().start(1.0, expluseSmoke, 0);	
 		light = new LightSource(map, canvas, X, Y + GameMap.TILE_SIZE / 2, 70);
 		light.setTarget(Std.int(X + 10000), Std.int(Y));
-		lights.add(light);	
+		lights.add(light);
+		
+		sound = FlxG.sound.load(SoundManager.LOCO_SOUND, 0.3, true);
+		sound.play();
 	}
 	
 	public function stop()

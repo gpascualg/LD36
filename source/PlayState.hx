@@ -163,9 +163,9 @@ class PlayState extends FlxState
 		fps.visible = false;
 		
 		#if flash
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 0.3, true);
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_MP3, 1, true);
 		#else
-			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 0.3, true);
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC_OGG, 1, true);
 		#end
 	}
 	

@@ -11,4 +11,6 @@ class SoundManager
 	
 	public static inline var DEATH_SOUND:String = "assets/sounds/Explode.wav";
 	public static inline var PICKUP_SOUND:String = "assets/sounds/done.wav";
+	
+	public static inline var LOCO_SOUND:String = "assets/sounds/LocoSound.wav";
 }
