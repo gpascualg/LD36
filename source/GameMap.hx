@@ -237,16 +237,18 @@ class GameMap
 			currentWagon = currentWagon.next;
 		}
 		
-		// TODO: Check isLoop
-		var nextRails:Array<RailCombo> = currentWagon.nextRails(false).railCombo;
+		var railsInfo:RailInfo = currentWagon.nextRails(false);
+		var nextRails:Array<RailCombo> = railsInfo.railCombo;
 		var keepRails:Array<Railway> = [];
-		for (rail in nextRails)
-		{
-			keepRails.push(rail.railway);
-		}
 		
-		trace(keepRails);
-		trace(keepRails.length);
+		// Keep only if not looping
+		if (!railsInfo.isLoop)
+		{
+			for (rail in nextRails)
+			{
+				keepRails.push(rail.railway);
+			}
+		}
 		
 		// Clear rails
 		for (rail in rails)
@@ -297,6 +299,17 @@ class GameMap
 		{
 			xStart = Std.int(startPoint.x);
 			yStart = Std.int(startPoint.y);
+		}
+		
+		// Reset if it is loop
+		if (railsInfo.isLoop)
+		{
+			var currentWagon:Wagon = _loco;
+			while (currentWagon != null)
+			{
+				currentWagon.resetWagon(xStart * GameMap.TILE_SIZE, yStart * GameMap.TILE_SIZE, currentWagon != _loco);
+				currentWagon = currentWagon.next;
+			}
 		}
 		
 		var path:Array<Array<Int>> = new Array<Array<Int>>();
