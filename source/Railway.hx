@@ -43,6 +43,9 @@ class Railway extends FlxSprite
 	public var next:Railway = null;
 	public var curved:Bool = false;
 	
+	public var forceTransform = -1;
+	public var currentTransform = -1;
+	
 	public var tx:Int;
 	public var ty:Int;
 	
@@ -280,13 +283,23 @@ class Railway extends FlxSprite
 	
 	override public function update(elapsed:Float):Void
 	{
-		if (this == map.lastRail)
+		if (forceTransform == 1)
 		{
-			this.colorTransform = new ColorTransform(0.7, 1, 0.7);
+			setColorTransform(1, 0.7, 0.7);
 		}
-		else
+		else if (forceTransform == 2)
 		{
-			this.colorTransform = new ColorTransform();
+			setColorTransform(0.7, 1, 0.7);
+		}
+		else if (this == map.lastRail && currentTransform != 1)
+		{
+			currentTransform = 1;
+			setColorTransform(1, 0.8, 0.5);
+		}
+		else if (this != map.lastRail && currentTransform != 0)
+		{
+			currentTransform = 0;
+			setColorTransform(1, 1, 1);
 		}
 		
 		super.update(elapsed);

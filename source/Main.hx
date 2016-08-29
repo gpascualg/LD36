@@ -45,17 +45,17 @@ class Main extends Sprite
 		if (gameSave.data.tutorialDone)
 		{
 			#if !flash
-				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State, 1, 60, true, false));
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState, 1, 60, true, false));
 			#else
-				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State));
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
 			#end
 		}
 		else
 		{
 			#if !flash
-				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State, 1, 60, true, false));
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState, 1, 60, true, false));
 			#else
-				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State));
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
 			#end
 		}
 	}

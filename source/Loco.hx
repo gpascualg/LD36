@@ -152,26 +152,16 @@ class Loco extends Wagon
 	}
 	
 	private function expluseSmoke(timer:FlxTimer):Void
-	{
-		var offsetX:Int = 0;
-		var offsetY:Int = 0;		
-		switch(getNormalizedAngle() )
-		{
-			case 0:
-				offsetX = 4;
-				offsetY = 22;
-			case 90:
-				offsetX = 1;
-				offsetY = 6;
-			case 270:
-				offsetX = 20;
-				offsetY = 4;
-			case 180:
-				offsetX = 20;
-				offsetY = 0;
-		}
+	{		
+		var cx = x + GameMap.TILE_SIZE / 2.0;
+		var cy = y + GameMap.TILE_SIZE / 2.0;
+		var rad = (angle + 132) * Math.PI / 180;
 		
-		PlayState.instance.add(new Smoke(this.x + offsetX, this.y + offsetY));
+		var x = cx + 12.5 * Math.cos(rad);
+		var y = cy + 12.5 * Math.sin(rad);
+
+		timer.time = Wagon.MIN_SPEED / realSpeed;
+		PlayState.instance.add(new Smoke(x, y));
 	}
 	
 	public function updateLast(rail:Railway)

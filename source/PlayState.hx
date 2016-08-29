@@ -400,24 +400,33 @@ class PlayState extends FlxState
 			rail.x = x * GameMap.TILE_SIZE;
 			rail.y = y * GameMap.TILE_SIZE;
 			
-			if (FlxG.mouse.justPressed)
+			var tileIdx = map.foreground.getTile(x, y);				
+			if (tileIdx <= 0 || tileIdx >= 50)
 			{
-				var tileIdx = map.foreground.getTile(x, y);
-				trace(tileIdx);
-				if (tileIdx <= 0 || tileIdx >= 50)
+				var tx = Std.int(map.lastRail.x / GameMap.TILE_SIZE);
+				var ty = Std.int(map.lastRail.y / GameMap.TILE_SIZE);
+				var direction = map.getLastDirection();
+				
+				var canBeAdded = 
+					(direction == Direction.EAST && tx + 1 == x && ty == y) ||
+					(direction == Direction.WEST && tx - 1 == x && ty == y) ||
+					(direction == Direction.NORTH && tx == x && ty - 1 == y) ||
+					(direction == Direction.SOUTH && tx == x && ty + 1 == y);
+				
+				if (canBeAdded)
 				{
-					var tx = Std.int(map.lastRail.x / GameMap.TILE_SIZE);
-					var ty = Std.int(map.lastRail.y / GameMap.TILE_SIZE);
-					var direction = map.getLastDirection();
+					rail.forceTransform = 2;
+				}
+				else
+				{
+					rail.forceTransform = 1;
+				}
 					
-					var canBeAdded = 
-						(direction == Direction.EAST && tx + 1 == x && ty == y) ||
-						(direction == Direction.WEST && tx - 1 == x && ty == y) ||
-						(direction == Direction.NORTH && tx == x && ty - 1 == y) ||
-						(direction == Direction.SOUTH && tx == x && ty + 1 == y);
-					
+				if (FlxG.mouse.justPressed)
+				{
 					if (canBeAdded)
 					{
+						rail.forceTransform = -1;
 						rail.updateTile();
 						map.placeRailAt(rail, rail.tx, rail.ty);
 						loco.updateLast(rail);
@@ -426,7 +435,7 @@ class PlayState extends FlxState
 						_addRailSound.play();
 						onRailPlaced();
 					}
-				}
+				}				
 			}
 		}
 			
