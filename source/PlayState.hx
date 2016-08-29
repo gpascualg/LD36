@@ -359,8 +359,12 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.G)
 			GameOver();
 		
-		if (FlxG.keys.justPressed.R)
-			FlxG.resetGame();
+		#if debug
+			if (FlxG.keys.justPressed.R)
+			{
+				FlxG.resetGame();
+			}
+		#end
 		
 		var railOld:Int = Direction.NONE;
 		var railNew:Int = Direction.EAST;
