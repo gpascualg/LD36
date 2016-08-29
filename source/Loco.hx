@@ -172,7 +172,7 @@ class Loco extends Wagon
 		var realNext:Int = -1;
 		var last = _next;
 		var next = _next;
-		var prev = null;
+		var prev = rail;
 		var current = _current;
 		var railAcc = 0;
 		while (current != null)

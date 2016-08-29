@@ -40,7 +40,11 @@ class Gem extends FlxSprite
 	override public function kill():Void
 	{
 		alive = false;
-		FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut });
+		#if flash
+			finishKill(null);
+		#else
+			FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut });
+		#end
 		FlxTween.tween(light, { thickness: 1 }, 2, { ease: FlxEase.circOut, onComplete: finishKill });
 		
 		map.createRandomPath(lightSources, canvas, null, map.endPoint, !map.inverted);

@@ -168,7 +168,7 @@ class GameMap
 		}
 		
 		// Keep last chunks
-		_loco._current = _loco._current == null ? loco._previous : loco._current;
+		_loco._current = _loco._current == null ? _loco._previous : _loco._current;
 		_loco._first = _loco._current == null;
 		var currentWagon:Wagon = _loco;
 		while (currentWagon.next != null)
