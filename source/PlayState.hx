@@ -132,11 +132,7 @@ class PlayState extends FlxState
 				_effects.alpha = 0;
 			#end
 			
-			#if neko
-				_effects.blend = BlendMode.MULTIPLY;
-			#else
-				_effects.blend = BlendMode.MULTIPLY;
-			#end
+			_effects.blend = BlendMode.MULTIPLY;
 		#end
 		
 		//Speed UI
