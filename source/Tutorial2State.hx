@@ -37,10 +37,7 @@ class Tutorial2State extends PlayState
 		super.create();
 		
 		darknessOverlay.alpha = 0;
-		map.loadTutorial2(loco, 0);
-				
-		//Make the loco stop after a few seconds
-		new FlxTimer().start(2.4, function(t:FlxTimer){loco.stop(); }, 1);
+		map.loadTutorial(loco, 1);
 		
 		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut2Expl.png");
 		add(explImage);

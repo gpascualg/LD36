@@ -56,7 +56,7 @@ class Tutorial1State extends PlayState
 		add(explanation);
 		
 		var tutImg:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tutorial1.png");
-		tutImg.setPosition(584, 424);
+		tutImg.setPosition(584, 360);
 		tutImg.alpha = 0.6;
 		add(tutImg);
 		
@@ -92,7 +92,7 @@ class Tutorial1State extends PlayState
 				FlxG.switchState(new Tutorial2State());
 			}
 			
-			gem.kill();
+			gem.alive = false;
 		}
 	}
 	
