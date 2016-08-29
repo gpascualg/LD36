@@ -11,7 +11,6 @@ import flash.events.KeyboardEvent;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
-import flixel.util.FlxSave;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxGlitchEffect;
 import flixel.ui.FlxButton;
@@ -23,8 +22,6 @@ import flixel.ui.FlxButton;
  */
 class SplashScreen extends FlxState
 {
-
-	public static var gameSave = new FlxSave();
 	var title:FlxText;
 	var credits:FlxText;
 	var howTo:FlxText;
@@ -36,7 +33,6 @@ class SplashScreen extends FlxState
 	
 	public function new() 
 	{
-		gameSave.bind("SaveState");
 		super();
 	}
 	
@@ -61,7 +57,7 @@ class SplashScreen extends FlxState
 		add(image);
 		
 		
-		if (gameSave.data.tutorialDone)
+		if (Main.gameSave.data.tutorialDone)
 		{
 			add(new FlxSprite(1182, 47, "assets/images/keys/T.png"));
 			add(new FlxText(1200, 48, 200, "Tutorial"));
@@ -100,7 +96,7 @@ class SplashScreen extends FlxState
 		{
 			showPress = false;
 			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
-				if (gameSave.data.tutorialDone)
+				if (Main.gameSave.data.tutorialDone)
 				{
 					FlxG.switchState(new PlayState());
 				}
