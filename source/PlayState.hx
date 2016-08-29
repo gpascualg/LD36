@@ -521,7 +521,9 @@ class PlayState extends FlxState
 	public function onGemPicked(loco:Loco, gem:Gem)
 	{
 		darknessOverlay.alpha = 0.90;
-		_effects.effects[0].active = true;
+		#if !html5
+			_effects.effects[0].active = true;
+		#end
 		new FlxTimer().start(1, disableRainbow, 1);
 		
 		loco.onGemPicked(loco, gem);
@@ -530,7 +532,9 @@ class PlayState extends FlxState
 	public function disableRainbow(timer:FlxTimer)
 	{
 		darknessOverlay.alpha = 1;
-		_effects.effects[0].active = false;
+		#if !html5
+			_effects.effects[0].active = false;
+		#end
 	}
 	
 	public function GameOver():Void
