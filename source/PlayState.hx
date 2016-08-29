@@ -220,9 +220,9 @@ class PlayState extends FlxState
 		rem.setGraphicSize(18, 18);
 		add(rem);
 		
-		addKeyHint(480, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
-		addKeyHint(540, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
-		addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90, 23);
+		_img1 = addKeyHint(480, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
+		_img2 = addKeyHint(540, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
+		_img3 = addKeyHint(600, 610, "3", "assets/images/raiways/Curved Railway.png", _txtNum3, _img3, _img3BG, 90, 23);
 		clearAllSelectedRails();
 		//End of KeyHits
 		
@@ -277,6 +277,8 @@ class PlayState extends FlxState
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
+		updateGUI();
+		
 		new FlxTimer().start(1, addOneSecond, 0);
 	}
 	
@@ -287,7 +289,7 @@ class PlayState extends FlxState
 	}
 	
 	
-	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24)
+	public function addKeyHint(x:Int, y:Int, text:String, imgSource:String, txt:FlxText, img:FlxSprite, bg:FlxSprite, rot:Float=0, size:Int=24):FlxSprite
 	{		
 		var keyImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/"+text+".png");
 		trace(keyImage.path);
@@ -302,7 +304,8 @@ class PlayState extends FlxState
 		img.angle = rot;
 		
 		add(img);
-		add(txt);		
+		add(txt);
+		return img;
 	}
 	
 	public function selectRailway(index:Int)
@@ -445,6 +448,7 @@ class PlayState extends FlxState
 						clearAllSelectedRails();
 						_addRailSound.play();
 						onRailPlaced();
+						updateGUI();
 					}
 				}				
 			}
@@ -483,6 +487,7 @@ class PlayState extends FlxState
 			}
 			
 			map.setLastRail(newLast, newDir);
+			updateGUI();
 		}
 		
 		beaconBar.value = _pingPower;
@@ -603,6 +608,34 @@ class PlayState extends FlxState
 		new FlxTimer().start(1, disableRainbow, 1);
 		
 		loco.onGemPicked(loco, gem);
+	}
+	
+	public function updateGUI()
+	{
+		var dir = map.getLastDirection();
+		switch (dir)
+		{
+			case Direction.NORTH, Direction.SOUTH:
+				_img1.angle = _img2.angle = 0;
+				_img3.angle = 90;
+				
+				if (dir == Direction.SOUTH)
+				{
+					_img2.angle = 270;
+					_img3.angle = 180;
+				}
+				
+			case Direction.WEST, Direction.EAST:
+				_img1.angle = 90;
+				_img2.angle = 180;
+				_img3.angle = 90;
+				
+				if (dir == Direction.WEST)
+				{
+					_img2.angle = 270;
+					_img3.angle = 0;
+				}
+		}
 	}
 	
 	public function disableRainbow(timer:FlxTimer)
