@@ -238,7 +238,6 @@ class Railway extends FlxSprite
 			// Check for it
 			for (combo in info.railCombo)
 			{
-				trace(new FlxPoint(combo.railway.tx, combo.railway.ty));
 				if (combo.railway == current)
 				{
 					info.isLoop = true;
