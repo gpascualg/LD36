@@ -85,19 +85,19 @@ class GameOverState extends FlxState
 		var horOffset:Int = 80;
 		
 		_shakeEffect.onComplete = function(){
-			var infoText = new FlxText(410 + horOffset, 260, 300, "Time Resisted:", true);
+			var infoText = new FlxText(410 + horOffset, 260, 300, "Time Resisted:");
 			infoText.size = 24;
 			add(infoText);
 			
-			infoText = new FlxText(700 + horOffset, 260, 260, Std.string(StatsManager.secondsResisted), true);
+			infoText = new FlxText(700 + horOffset, 260, 260, Std.string(StatsManager.secondsResisted));
 			infoText.size = 24;
 			add(infoText);
 			
-			infoText = new FlxText(410 + horOffset, 314, 300, "Diamonds Taken:", true);
+			infoText = new FlxText(410 + horOffset, 314, 300, "Diamonds Taken:");
 			infoText.size = 24;
 			add(infoText);
 			
-			infoText = new FlxText(700 + horOffset, 314, 300, Std.string(StatsManager.gemsTaken), true);
+			infoText = new FlxText(700 + horOffset, 314, 300, Std.string(StatsManager.gemsTaken));
 			infoText.size = 24;
 			add(infoText);
 		}

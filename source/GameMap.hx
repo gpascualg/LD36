@@ -92,8 +92,72 @@ class GameMap
 		buildMirrors();
 	}
 	
-	public function createRandomPath(lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, loco:Loco, ?startPoint:FlxPoint=null, ?invert:Bool=false):Void
+	public function loadTutorial(loco:Loco, phase:Int)
 	{
+		// All obstacles out
+		for (key in obstacles.keys())
+		{
+			obstacles[key].destroy();
+			obstacles.remove(key);
+		}
+		
+		// All railways out
+		for (rail in rails)
+		{
+			rails.remove(rail);
+		}
+		
+		// Generate map
+		var rail = null;
+		for (y in 1...(foreground.heightInTiles - 1))
+		{
+			for (x in 1...(foreground.widthInTiles - 1))
+			{
+				railsByIndex[y][x] = null;
+				
+				if (y < foreground.heightInTiles / 2)
+				{
+					foreground.setTile(x, y, 4);
+				}
+				else if (y == foreground.heightInTiles - 5 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
+				{
+					rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+					placeRailAt(rail, x, y);
+				}
+				else if (y == foreground.heightInTiles - 4 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
+				{
+					foreground.setTile(x, y, 4);
+				}
+				else
+				{
+					foreground.setTile(x, y, 0);
+				}
+			}
+		}
+		
+		for (gem in gems)
+		{
+			gem.x = (foreground.widthInTiles / 2) * GameMap.TILE_SIZE;
+			gem.y = (foreground.heightInTiles - 3) * GameMap.TILE_SIZE;
+		}
+		
+		var wagon:Wagon = loco;
+		while (wagon != null)
+		{
+			wagon.x = (foreground.widthInTiles / 2 - 1) * GameMap.TILE_SIZE;
+			wagon.y = (foreground.heightInTiles - 5) * GameMap.TILE_SIZE;
+			wagon = wagon.next;
+		}
+	}
+	
+	public function createRandomPath(lightSources:FlxTypedGroup<LightSource>, canvas:FlxSprite, loco:Loco, ?startPoint:FlxPoint=null, ?invert:Bool=false):Void
+	{	
+		// Save loco
+		if (loco != null)
+		{
+			_loco = loco;
+		}
+		
 		// Empty map
 		if (obstacles != null)
 		{
@@ -107,12 +171,6 @@ class GameMap
 				reserveTile(tx, ty, 0);
 				obstacle.destroy();
 			}
-		}
-		
-		// Save loco
-		if (loco != null)
-		{
-			_loco = loco;
 		}
 		
 		// Keep last chunks

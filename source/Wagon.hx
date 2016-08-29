@@ -166,7 +166,7 @@ class Wagon extends FlxSprite
 			if (_current == null)
 			{
 				trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);				
-				PlayState.GameOver();
+				PlayState.instance.GameOver();
 				return;
 			}
 			
@@ -205,7 +205,7 @@ class Wagon extends FlxSprite
 				default:
 					trace("SHOULD NOT BE HERE!! at " + (new FlxPoint(tx, ty)) + "? " + _next);
 					speed = 0;
-					PlayState.GameOver();
+					PlayState.instance.GameOver();
 			}
 			
 			_first = false;

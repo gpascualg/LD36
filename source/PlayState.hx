@@ -107,7 +107,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-		
+
 		instance = this;
 		StatsManager.ResetStats();
 		
@@ -130,10 +130,16 @@ class PlayState extends FlxState
 		darknessOverlay.blend = BlendMode.MULTIPLY;
 		add(darknessOverlay);
 
-		add(_effects = new FlxEffectSprite(darknessOverlay));
-		_effects.effects = [new FlxRainbowEffect(0.9)];
-		_effects.effects[0].active = false;
-		_effects.blend = BlendMode.MULTIPLY;
+		#if !html5
+			add(_effects = new FlxEffectSprite(darknessOverlay));
+			_effects.effects = [new FlxRainbowEffect(0.9)];
+			_effects.effects[0].active = false;
+			#if neko
+				_effects.blend = BlendMode.MULTIPLY;
+			#else
+				_effects.blend = BlendMode.ALPHA;
+			#end
+		#end
 		
 		//Speed UI
 		speedText = new FlxText(1000, 617, 200, "Speed:", 8, true);
@@ -252,19 +258,19 @@ class PlayState extends FlxState
 		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
 		
 		//STATS:
-		timerTxt = new FlxText(30, 617, 150, "Time:", true);
+		timerTxt = new FlxText(30, 617, 150, "Time:");
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		timerTxt = new FlxText(68, 617, 150, "0", true);
+		timerTxt = new FlxText(68, 617, 150, "0");
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		diamondsTxt = new FlxText(95, 617, 200, "Diamods:", true);
+		diamondsTxt = new FlxText(95, 617, 200, "Diamods:");
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
-		diamondsTxt = new FlxText(150, 617, 150, "0", true);
+		diamondsTxt = new FlxText(150, 617, 150, "0");
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
@@ -610,7 +616,7 @@ class PlayState extends FlxState
 		return normal.dot(lightToStart) > 0;
 	}
 	
-	public static function GameOver():Void
+	public function GameOver():Void
 	{
 		FlxG.switchState(new GameOverState()); 
 	}

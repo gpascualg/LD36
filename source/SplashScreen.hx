@@ -55,7 +55,7 @@ class SplashScreen extends FlxState
 		image.alpha = 0;
 		add(image);
 		
-		pressKey = new FlxText(0, 550, 1280, "Press any key to start", true);
+		pressKey = new FlxText(0, 550, 1280, "Press any key to start");
 		pressKey.alignment = FlxTextAlign.CENTER;
 		pressKey.size = 20;
 		pressKey.alpha = 0;
