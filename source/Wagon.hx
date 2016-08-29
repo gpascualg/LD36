@@ -221,7 +221,7 @@ class Wagon extends FlxSprite
 	
 	public function updateSpeed(elapsed:Float)
 	{
-		if (!_first && speed < realMinimumSpeed)
+		if (!_first && speed > 0 && speed < realMinimumSpeed)
 		{
 			speed = realMinimumSpeed;
 		}
