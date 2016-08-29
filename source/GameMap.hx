@@ -13,6 +13,7 @@ import openfl.display.FPS;
 import flixel.util.FlxSpriteUtil;
 import Barrel;
 import Gem;
+import Railway;
 import openfl.utils.Object;
 
 /**
@@ -176,7 +177,13 @@ class GameMap
 			currentWagon = currentWagon.next;
 		}
 		
-		var keepRails:Array<Railway> = currentWagon.nextRails(false);
+		// TODO: Check isLoop
+		var nextRails:Array<RailCombo> = currentWagon.nextRails(false).railCombo;
+		var keepRails:Array<Railway> = [];
+		for (rail in nextRails)
+		{
+			keepRails.push(rail.railway);
+		}
 		
 		trace(keepRails);
 		trace(keepRails.length);
@@ -512,17 +519,19 @@ class GameMap
 		rails.add(rail);
 	}
 	
-	public function getRailAt(x:Int, y:Int)
+	public function removeRailAt(x:Int, y:Int)
 	{
-		for (rail in rails)
+		if (railsByIndex[y][x] != null)
 		{
-			if (Std.int(rail.x / GameMap.TILE_SIZE) == x && Std.int(rail.y / GameMap.TILE_SIZE) == y)
-			{
-				return rail;
-			}
+			rails.remove(railsByIndex[y][x]);
 		}
 		
-		return null;
+		railsByIndex[y][x] = null;
+	}
+	
+	public function getRailAt(x:Int, y:Int):Railway
+	{
+		return railsByIndex[y][x];
 	}
 	
 	public function tempRailPlace(rail:Railway)

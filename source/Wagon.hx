@@ -11,6 +11,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
 
+import Railway;
 import GameMap;
 
 using Main.FloatExtender;
@@ -29,9 +30,12 @@ class Wagon extends FlxSprite
 	private var _last:Int = -1;
 	private var _next:Int = -1;
 	private var _target:Int = 0;
+	private var mA:Float = 0;
+	private var realMA:Float = 0;
 	
 	public var map:GameMap;
 	public var speed:Float = MIN_SPEED;
+	public var realSpeed:Float = 0;
 	private var previous:Wagon = null;
 	public var next:Wagon = null;
 	
@@ -76,7 +80,6 @@ class Wagon extends FlxSprite
 	
 	override public function update(elapsed:Float):Void
 	{
-		var mA = 0;
 		var tx = Std.int((x + 1e-6) / GameMap.TILE_SIZE);
 		var ty = Std.int(y / GameMap.TILE_SIZE);
 		
@@ -108,8 +111,6 @@ class Wagon extends FlxSprite
 					return;
 				}
 			}
-			
-			speed = previous.speed;
 		}
 				
 		if (_target != angle)
@@ -125,6 +126,7 @@ class Wagon extends FlxSprite
 				var tdy = Std.int((y + GameMap.TILE_SIZE - 1e-6) / GameMap.TILE_SIZE);
 				if (tdy == _ty)
 				{
+					updateSpeed(elapsed);
 					super.update(elapsed);
 					return;
 				}
@@ -140,6 +142,7 @@ class Wagon extends FlxSprite
 				var tdx = Std.int((x + GameMap.TILE_SIZE - 1e-6) / GameMap.TILE_SIZE);
 				if (tdx == _tx)
 				{
+					updateSpeed(elapsed);
 					super.update(elapsed);
 					return;
 				}
@@ -202,20 +205,59 @@ class Wagon extends FlxSprite
 			}
 			
 			_first = false;
-			velocity.set(speed * elapsed, 0);
-			velocity.rotate(FlxPoint.weak(0, 0), mA);
 		}
 		
+		updateSpeed(elapsed);		
 		super.update(elapsed);
 	}
 	
-	public function nextRails(?canEndInCurve:Bool=true):Array<Railway>
+	public function updateSpeed(elapsed:Float)
 	{
-		if (_current != null)
+		if (realMA != mA || speed != realSpeed || (previous != null && realSpeed != previous.realSpeed))
+		{
+			// Loco sets speed
+			if (previous == null)
+			{
+				realSpeed = speed;
+			}
+			else
+			{
+				realSpeed = previous.realSpeed;
+			}
+			
+			realMA = mA;
+			velocity.set(realSpeed * elapsed, 0);
+			velocity.rotate(FlxPoint.weak(0, 0), realMA);
+		}
+	}
+	
+	public function previousRail(?startInCurrent:Bool=true):Railway
+	{		
+		if (startInCurrent && _current != null)
+		{
+			return _current.previousRail(_next);
+		}
+		
+		if (_previous != null)
+		{
+			return _previous.previousRail(_last);
+		}
+		
+		return null;
+	}
+	
+	public function nextRails(?canEndInCurve:Bool=true, ?startInCurrent:Bool=false):RailInfo
+	{
+		if (!startInCurrent && _previous != null)
 		{
 			return _previous.nextRails(_last, canEndInCurve);
 		}
 		
-		return [];
+		if (_current != null)
+		{
+			return _current.nextRails(_next, canEndInCurve);
+		}
+		
+		return new RailInfo(new Array<RailCombo>(), false);
 	}
 }

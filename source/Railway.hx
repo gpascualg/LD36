@@ -8,6 +8,32 @@ import GameMap;
 
 import GameMap;
 
+
+class RailCombo
+{
+	public var railway:Railway;
+	public var direction:Int;
+	
+	public function new(r:Railway, d:Int)
+	{
+		railway = r;
+		direction = d;
+	}
+}
+
+class RailInfo
+{
+	public var railCombo:Array<RailCombo>;
+	public var isLoop:Bool;
+	
+	public function new(r:Array<RailCombo>, l:Bool)
+	{
+		railCombo = r;
+		isLoop = l;
+	}
+}
+
+
 class Railway extends FlxSprite
 {
 	public var map:GameMap;
@@ -144,37 +170,98 @@ class Railway extends FlxSprite
 		return null;
 	}
 	
-	public function nextRails(last:Int, canEndInCurve:Bool):Array<Railway>
+	public function previousDirection(from:Int):Int
 	{
-		var nextArray:Array<Railway> = new Array<Railway>();
+		if (!curved)
+		{
+			if (from == direction || map.directionInverse(from) == direction)
+			{
+				return map.directionInverse(from);
+			}
+			
+			return direction;
+		}
+		
+		if (from == lastDirection)
+		{
+			trace("CASE 1 " + from + " to " + map.directionInverse(lastDirection));
+			return map.directionInverse(lastDirection);
+		}
+		
+		if (from == direction)
+		{
+			trace("CASE 2 " + from + " to " + map.directionInverse(lastDirection));
+			return map.directionInverse(lastDirection);
+		}
+		
+		if (from == map.directionInverse(lastDirection))
+		{
+			trace("CASE 3 " + from + " to " + map.directionInverse(lastDirection));
+			return map.directionInverse(lastDirection);
+		}
+			
+		if (from == map.directionInverse(direction))
+		{
+			trace("CASE 3 " + from + " to " + lastDirection);
+			return lastDirection;
+		}
+			
+		trace("?????");
+		return -1;
+	}
+	
+	public function previousRail(from:Int):Railway
+	{
+		switch (previousDirection(from))
+		{
+			case Direction.NORTH: return map.getRailAt(tx, ty - 1);
+			case Direction.SOUTH: return map.getRailAt(tx, ty + 1);
+			case Direction.EAST: return map.getRailAt(tx + 1, ty);
+			case Direction.WEST: return map.getRailAt(tx - 1, ty);
+		}
+		
+		return null;
+	}
+	
+	public function nextRails(last:Int, canEndInCurve:Bool):RailInfo
+	{
+		var info:RailInfo = new RailInfo(new Array<RailCombo>(), false);
 		
 		var realNext:Int = -1;
 		var next = last;
 		var prev = null;
 		var current = this;
 		var railAcc = 0;
+		
 		while (current != null)
 		{
-			nextArray.push(current);
+			// Check for it
+			for (combo in info.railCombo)
+			{
+				trace(new FlxPoint(combo.railway.tx, combo.railway.ty));
+				if (combo.railway == current)
+				{
+					info.isLoop = true;
+					break;
+				}
+			}
+			
+			if (info.isLoop)
+			{
+				break;
+			}
+			
+			info.railCombo.push(new RailCombo(current, next));
 			
 			prev = current;
 			last = next;
 			next = current.nextDirection(last);							
 			current = current.nextRail(last);
-			
-			if (current != null && current == this)
-			{
-				++railAcc;
-				if (railAcc == 2)
-				{
-					break;
-				}
-			}
 		}
 		
-		if (!canEndInCurve && nextArray.length > 0)
+		if (!canEndInCurve && info.railCombo.length > 0)
 		{			
-			var rail = nextArray[nextArray.length - 1];
+			var rail = info.railCombo[info.railCombo.length - 1].railway;
 			if (rail.lastDirection != rail.direction)
 			{			
 				var dx = next == Direction.EAST ? 1 : (next == Direction.WEST ? -1 : 0);
@@ -185,11 +272,11 @@ class Railway extends FlxSprite
 				
 				var newRail = new Railway(map, rail, next, next, (rail.tx + dx) * GameMap.TILE_SIZE, (rail.ty + dy) * GameMap.TILE_SIZE);
 				map.placeRailAt(newRail, rail.tx + dx, rail.ty + dy);
-				nextArray.push(newRail);
+				info.railCombo.push(new RailCombo(newRail, next));
 			}
 		}
 		
-		return nextArray;
+		return info;
 	}
 	
 	override public function update(elapsed:Float):Void

@@ -438,6 +438,32 @@ class PlayState extends FlxState
 			speedBar.value  = loco.speed;
 		}
 		
+		if (FlxG.keys.justPressed.D)
+		{
+			map.removeRailAt(map.lastRail.tx, map.lastRail.ty);
+			
+			var curDir = map.getLastDirection();
+			var newLast = map.lastRail.previousRail(curDir);
+			var newDir:Int = map.directionInverse(map.lastRail.previousDirection(curDir));
+			
+			if (newLast == null)
+			{
+				var rails = loco.nextRails();
+				if (rails.railCombo.length > 0)
+				{
+					newLast = rails.railCombo[rails.railCombo.length - 1].railway;
+					newDir = rails.railCombo[rails.railCombo.length - 1].direction;
+				}
+			}
+			
+			if (newLast == null || !newLast.exists)
+			{
+				GameOver();
+			}
+			
+			map.setLastRail(newLast, newDir);
+		}
+		
 		beaconBar.value = _pingPower;
 		
 		if (FlxG.keys.justPressed.SPACE && !ping.enabled)

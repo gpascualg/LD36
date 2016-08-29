@@ -44,8 +44,8 @@ class Gem extends FlxSprite
 			finishKill(null);
 		#else
 			FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut });
+			FlxTween.tween(light, { thickness: 1 }, 2, { ease: FlxEase.circOut, onComplete: finishKill });
 		#end
-		FlxTween.tween(light, { thickness: 1 }, 2, { ease: FlxEase.circOut, onComplete: finishKill });
 		
 		map.createRandomPath(lightSources, canvas, null, map.endPoint, !map.inverted);
 	}

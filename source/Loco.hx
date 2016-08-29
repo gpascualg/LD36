@@ -169,31 +169,19 @@ class Loco extends Wagon
 	
 	public function updateLast(rail:Railway)
 	{
-		var realNext:Int = -1;
-		var last = _next;
-		var next = _next;
-		var prev = rail;
-		var current = _current;
-		var railAcc = 0;
-		while (current != null)
+		var rails = nextRails(true, true);
+		if (rails.isLoop)
 		{
-			prev = current;
-			last = next;
-			next = current.nextDirection(last);							
-			current = current.nextRail(last);
-			
-			if (current != null && current == rail)
-			{
-				++railAcc;
-				if (railAcc == 2)
-				{
-					prev = rail;
-					break;
-				}
-			}
+			map.setLastRail(rail, map.getLastDirection());
 		}
-		
-		map.setLastRail(prev, next);
+		else
+		{
+			var combo = rails.railCombo;
+			var rw = combo.length > 0 ? combo[combo.length - 1].railway : rail;
+			var dir = combo.length > 0 ? combo[combo.length - 1].direction : -1;
+			
+			map.setLastRail(rw, dir);
+		}
 	}
 	
 	public function onGemPicked(loco:Loco, gem:Gem)
