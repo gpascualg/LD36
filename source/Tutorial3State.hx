@@ -43,16 +43,16 @@ class Tutorial3State extends PlayState
 		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut2Expl.png");
 		add(explImage);
 		
-		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 2: Speed", 30);
+		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 3: Beacon", 30);
 		add(title);
 		
-		var explanation:FlxText = new FlxText(50, 100, "Increment speed:", 25);
+		var explanation:FlxText = new FlxText(50, 100, "Trigger Beacon:", 25);
 		add(explanation);
 		
 		explanation = new FlxText(760, 100, "GOAL:", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 170, "REACH MAX SPEED!", 30);
+		explanation = new FlxText(760, 170, "Let there be light! ", 30);
 		explanation.setBorderStyle(SHADOW, FlxColor.YELLOW);
 		add(explanation);
 		
