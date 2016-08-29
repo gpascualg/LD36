@@ -4,6 +4,7 @@ import flash.display.GraphicsSolidFill;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 import flixel.FlxG;
+import flixel.util.FlxSave;
 
 using Main.FloatExtender;
 
@@ -33,14 +34,31 @@ class Main extends Sprite
 	public static inline var MAP_HEIGTH:Int = 320;
 	public static inline var MAP_SCALE:Int = 2;
 	
+	public static var gameSave = new FlxSave();
+	
 	public function new()
 	{
 		super();
-		#if !flash
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState, 1, 60, true, false));
-		#else
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
-		#end
+		
+		gameSave.bind("SaveState");
+		trace(gameSave.data.tutorialDone);
+
+		if (gameSave.data.tutorialDone)
+		{
+			#if !flash
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState, 1, 60, true, false));
+			#else
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
+			#end
+		}
+		else
+		{
+			#if !flash
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial1State, 1, 60, true, false));
+			#else
+				addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial1State));
+			#end
+		}
 	}
 	
 	public static function SkipTutorial():Void
