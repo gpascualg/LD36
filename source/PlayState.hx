@@ -59,6 +59,7 @@ class PlayState extends FlxState
 	private var pings:Array<LightSource>;
 	private var rail:Railway = null;
 	private var lastRail = [false, false, false];
+	private var lastRailLight:LightSource;
 	
 	private static inline var MAX_PING_LIGTH = 300;
 	private static inline var PING_RECHARGE = 10;
@@ -253,6 +254,10 @@ class PlayState extends FlxState
 		// Ping light
 		pings = new Array<LightSource>();
 		pingsUp = new Array<Bool>();
+		
+		// Last rail light
+		lastRailLight = new LightSource(map, darknessOverlay, 0, 0, 50, LightType.CONCENTRIC_SPOT, false);
+		lightSources.add(lastRailLight);
 		
 		// This here is only used to get the current FPS in a simple way, without having to run the application in Debug mode
 		fps = new FPS(10, 10, 0xffffff);
@@ -478,6 +483,9 @@ class PlayState extends FlxState
 						_addRailSound.play();
 						onRailPlaced();
 						updateGUI();
+						
+						lastRailLight.enabled = true;
+						(new FlxTimer()).start(1, function(_){ lastRailLight.enabled = false; });
 					}
 				}				
 			}
@@ -517,6 +525,9 @@ class PlayState extends FlxState
 			
 			map.setLastRail(newLast, newDir);
 			updateGUI();
+			
+			lastRailLight.enabled = true;
+			(new FlxTimer()).start(1, function(_){ lastRailLight.enabled = false; });
 		}
 		
 		beaconBar.value = _pingPower;
@@ -593,6 +604,10 @@ class PlayState extends FlxState
 			lightSources.remove(ping);
 			pings.remove(ping);
 		}
+		
+		// Update last rail light
+		lastRailLight.x = map.lastRail.x + GameMap.TILE_SIZE / 2 - 2.5;
+		lastRailLight.y = map.lastRail.y + GameMap.TILE_SIZE / 2 - 2.5;
 		
 		// Find closest light for each lightsources
 		var i = 0;
