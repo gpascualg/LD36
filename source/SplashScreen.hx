@@ -77,10 +77,7 @@ class SplashScreen extends FlxState
 		pressKey.setBorderStyle(SHADOW, FlxColor.YELLOW, 1, 1);
 		add(pressKey);
 		
-		FlxTween.tween(image, { alpha: 1 }, 4, { ease: FlxEase.cubeIn }).onComplete = showPlay;
-		
-
-		
+		FlxTween.tween(image, { alpha: 1 }, 4, { ease: FlxEase.cubeIn }).onComplete = showPlay;		
 	}
 	
 	private function showPlay(tween:FlxTween):Void
