@@ -127,7 +127,11 @@ class PlayState extends FlxState
 			add(_effects = new FlxEffectSprite(darknessOverlay));
 			_effects.effects = [new FlxRainbowEffect(0.9)];
 			_effects.effects[0].active = false;
-			_effects.alpha = 0;
+			
+			#if flash
+				_effects.alpha = 0;
+			#end
+			
 			#if neko
 				_effects.blend = BlendMode.MULTIPLY;
 			#else
@@ -297,7 +301,7 @@ class PlayState extends FlxState
 		
 		#if (flash && debug)
 			_effects.alpha = 1;
-		#else
+		#elseif flash
 			FlxTween.tween(_effects, { alpha: 1 }, 1, { ease: FlxEase.circOut });
 		#end	
 		
@@ -676,7 +680,7 @@ class PlayState extends FlxState
 		
 		#if (flash && debug)
 			_effects.alpha = 0;
-		#else
+		#elseif flash
 			FlxTween.tween(_effects, { alpha: 0 }, 1, { ease: FlxEase.circOut });
 		#end		
 		
