@@ -60,7 +60,6 @@ class Wagon extends FlxSprite
 		y = Y;
 	}
 	
-	/*
 	public function resetWagon(X:Float, Y:Float, ?resetSpeed:Bool=false)
 	{
 		x = X;
@@ -69,14 +68,16 @@ class Wagon extends FlxSprite
 		_last = _next = -1;
 		_tx = Std.int(Math.NaN);
 		_ty = Std.int(Math.NaN);
+		_current = _previous = null;
 		
 		if (resetSpeed)
 		{
+			mA = realMA = 0;
 			speed = 0;
+			realSpeed = 0;
 			velocity.set(speed, 0);
 		}
 	}
-	*/
 	
 	override public function update(elapsed:Float):Void
 	{

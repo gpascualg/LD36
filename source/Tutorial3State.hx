@@ -73,7 +73,9 @@ class Tutorial3State extends PlayState
 		{
 			if (pings.length == 0)
 			{
-				FlxG.switchState(new Tutorial4State());
+				Main.gameSave.data.tutorialDone = true;
+				Main.gameSave.flush();
+				FlxG.switchState(new PlayState());
 			}
 			return;
 		}
