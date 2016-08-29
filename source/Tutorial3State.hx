@@ -44,13 +44,13 @@ class Tutorial3State extends PlayState
 		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 3: Beacon", 30);
 		add(title);
 		
-		var explanation:FlxText = new FlxText(50, 100, "Trigger Beacon:", 25);
+		var explanation:FlxText = new FlxText(50, 100, 0, "Trigger Beacon:", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 100, "GOAL:", 25);
+		explanation = new FlxText(760, 100, 0, "GOAL:", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 170, "Let there be light! ", 30);
+		explanation = new FlxText(760, 170, 0, "Let there be light! ", 30);
 		explanation.setBorderStyle(SHADOW, FlxColor.YELLOW);
 		add(explanation);
 		

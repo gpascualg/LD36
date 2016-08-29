@@ -35,12 +35,8 @@ class Main extends Sprite
 	
 	public function new()
 	{
-		super();		
-		#if !flash
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, SplashScreen, 1, 60, true, false));
-		#else
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, SplashScreen));
-		#end
+		super();
+		addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, SplashScreen, 1, 60, 60, true, false));
 	}
 	
 	public static function SkipTutorial():Void

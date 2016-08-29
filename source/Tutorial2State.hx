@@ -45,13 +45,13 @@ class Tutorial2State extends PlayState
 		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 2: Speed", 30);
 		add(title);
 		
-		var explanation:FlxText = new FlxText(50, 100, "Increment speed:", 25);
+		var explanation:FlxText = new FlxText(50, 100, 0, "Increment speed:", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 100, "GOAL:", 25);
+		explanation = new FlxText(760, 100, 0, "GOAL:", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 170, "REACH MAX SPEED!", 30);
+		explanation = new FlxText(760, 170, 0, "REACH MAX SPEED!", 30);
 		explanation.setBorderStyle(SHADOW, FlxColor.YELLOW);
 		add(explanation);
 		

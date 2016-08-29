@@ -46,13 +46,13 @@ class Tutorial1State extends PlayState
 		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 1: Movement", 30);
 		add(title);
 		
-		var explanation:FlxText = new FlxText(50, 100, "Select Railway", 25);
+		var explanation:FlxText = new FlxText(50, 100, 0, "Select Railway", 25);
 		add(explanation);
 		
-		explanation = new FlxText(762, 100, "Place", 25);
+		explanation = new FlxText(762, 100, 0, "Place", 25);
 		add(explanation);
 
-		explanation = new FlxText(988, 100, "Delete", 25);
+		explanation = new FlxText(988, 100, 0, "Delete", 25);
 		add(explanation);
 		
 		var tutImg:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tutorial1.png");
