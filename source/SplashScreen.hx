@@ -84,6 +84,13 @@ class SplashScreen extends FlxState
 	
 	override public function update(elapsed:Float):Void
 	{
+		
+				
+		if (FlxG.keys.justPressed.F)
+		{
+            FlxG.fullscreen = !FlxG.fullscreen;
+		}
+		
 		if (!showPress) return;
 		
 		numUpdates++;
@@ -113,11 +120,7 @@ class SplashScreen extends FlxState
 				FlxG.switchState(new Tutorial1State());
 			}	
 		}
-		
-		if (FlxG.keys.justPressed.F)
-		{
-            FlxG.fullscreen = !FlxG.fullscreen;
-		}
+
 	}
 	
 
