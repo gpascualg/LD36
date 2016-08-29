@@ -15,6 +15,7 @@ import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.ui.FlxButton;
 import openfl.display.BlendMode;
 import openfl.display.FPS;
 import flixel.group.FlxSpriteGroup;
@@ -37,7 +38,7 @@ class Tutorial2State extends PlayState
 		
 		darknessOverlay.alpha = 0;
 		map.loadTutorial2(loco, 0);
-		
+				
 		//Make the loco stop after a few seconds
 		new FlxTimer().start(2.4, function(t:FlxTimer){loco.stop(); }, 1);
 		
@@ -62,6 +63,10 @@ class Tutorial2State extends PlayState
 			gem.alpha = 0;
 		}
 		
+		var button:FlxButton = new FlxButton(1165, 23, "Skip Tutorial", function(){
+			Main.SkipTutorial();
+		});
+		add(button);
 	}
 		
 	override public function update(elapsed:Float):Void

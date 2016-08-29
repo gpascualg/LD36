@@ -15,6 +15,7 @@ import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.ui.FlxButton;
 import openfl.display.BlendMode;
 import openfl.display.FPS;
 import flixel.group.FlxSpriteGroup;
@@ -58,6 +59,10 @@ class Tutorial3State extends PlayState
 			gem.alpha = 0;
 		}
 		
+		var button:FlxButton = new FlxButton(1165, 23, "Skip Tutorial", function(){
+			Main.SkipTutorial();
+		});
+		add(button);
 	}
 		
 	override public function update(elapsed:Float):Void
