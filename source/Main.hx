@@ -37,9 +37,9 @@ class Main extends Sprite
 	{
 		super();
 		#if !flash
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial1State, 1, 60, true, false));
+			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State, 1, 60, true, false));
 		#else
-			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial1State));
+			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, Tutorial4State));
 		#end
 	}
 	

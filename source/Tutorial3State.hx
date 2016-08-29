@@ -73,7 +73,7 @@ class Tutorial3State extends PlayState
 		{
 			if (pings.length == 0)
 			{
-				FlxG.switchState(new PlayState());
+				FlxG.switchState(new Tutorial4State());
 			}
 			return;
 		}
