@@ -367,9 +367,16 @@ class PlayState extends FlxState
 	}
 	
 	override public function update(elapsed:Float):Void
-	{		
+	{
+		if (FlxG.keys.justPressed.F)
+		{
+            FlxG.fullscreen = !FlxG.fullscreen;
+		}
+		
 		if (FlxG.keys.justPressed.G)
+		{
 			GameOver();
+		}
 		
 		#if debug
 			if (FlxG.keys.justPressed.R)

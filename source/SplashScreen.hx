@@ -63,7 +63,7 @@ class SplashScreen extends FlxState
 			add(new FlxText(1180, 48, 200, "Tutorial"));
 		}
 		
-		add(new FlxSprite(1162, 72, "assets/images/keys/T.png"));
+		add(new FlxSprite(1162, 72, "assets/images/keys/F.png"));
 		add(new FlxText(1180, 73, 200, "Toggle Full Screen"));
 		
 		add(new FlxSprite(1138, 22, "assets/images/keys/volume.png"));
