@@ -282,11 +282,11 @@ class PlayState extends FlxState
 		timerTxt.size = 10;
 		add(timerTxt);
 		
-		diamondsTxt = new FlxText(95, 617, 200, "Diamods:");
+		diamondsTxt = new FlxText(105, 617, 200, "Diamods:");
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
-		diamondsTxt = new FlxText(150, 617, 150, "0");
+		diamondsTxt = new FlxText(160, 617, 150, "0");
 		diamondsTxt.size = 10;
 		add(diamondsTxt);
 		
