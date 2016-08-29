@@ -106,13 +106,17 @@ class SplashScreen extends FlxState
 				}
 			}	
 		}
-		
 		else if (FlxG.keys.justPressed.T)
 		{
 			showPress = false;
 			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
 				FlxG.switchState(new Tutorial1State());
 			}	
+		}
+		
+		if (FlxG.keys.justPressed.F)
+		{
+            FlxG.fullscreen = !FlxG.fullscreen;
 		}
 	}
 	
