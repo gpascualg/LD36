@@ -175,6 +175,7 @@ class PlayState extends FlxState
 		keyImage.setPosition(190,  608);
 		keyImage.setGraphicSize(18, 18);
 		add(keyImage);
+
 		
 		_pingSound = FlxG.sound.load("assets/sounds/Beacon.wav", 0.3);
 		//End of Beacon UI
@@ -207,6 +208,17 @@ class PlayState extends FlxState
 
 		add(_img3BG);
 		add(auxSprite);
+		
+				
+		var t:FlxText = new FlxText(405, 617, 200, "Remove");
+		t.size = 10;
+		add(t);
+		
+		var rem:FlxSprite = new FlxSprite().loadGraphic("assets/images/keys/D.png");
+		rem.setPosition(375, 610);
+		rem.alpha = 0.8;
+		rem.setGraphicSize(18, 18);
+		add(rem);
 		
 		addKeyHint(480, 610, "1", "assets/images/raiways/railway.png", _txtNum1, _img1, _img1BG, 0, 22);
 		addKeyHint(540, 610, "2", "assets/images/raiways/Curved Railway.png", _txtNum2, _img2, _img2BG, 0, 23);
