@@ -102,7 +102,12 @@ class GameOverState extends FlxState
 			add(infoText);
 		}
 
-		
+		var button1:FlxButton = new FlxButton(1165, 23, "Tutorial", function(){
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new Tutorial1State());
+			}
+		});
+		add(button1);
 	}
 	
 	override public function update(elapsed:Float):Void

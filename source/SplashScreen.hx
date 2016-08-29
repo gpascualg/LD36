@@ -11,8 +11,10 @@ import flash.events.KeyboardEvent;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
+import flixel.util.FlxSave;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxGlitchEffect;
+import flixel.ui.FlxButton;
 
 
 /**
@@ -22,6 +24,7 @@ import flixel.addons.effects.chainable.FlxGlitchEffect;
 class SplashScreen extends FlxState
 {
 
+	public static var gameSave = new FlxSave();
 	var title:FlxText;
 	var credits:FlxText;
 	var howTo:FlxText;
@@ -33,12 +36,14 @@ class SplashScreen extends FlxState
 	
 	public function new() 
 	{
+		gameSave.bind("SaveState");
 		super();
 	}
 	
 	override public function create():Void 
 	{
 		super.create();
+
 		
 		SoundManager.PlayBackgroundMusic();
 		
@@ -55,7 +60,17 @@ class SplashScreen extends FlxState
 		image.alpha = 0;
 		add(image);
 		
-		pressKey = new FlxText(0, 550, 1280, "Press any key to start");
+		
+		if (gameSave.data.tutorialDone)
+		{
+			add(new FlxSprite(1182, 47, "assets/images/keys/T.png"));
+			add(new FlxText(1200, 48, 200, "Tutorial"));
+		}
+		
+		add(new FlxSprite(1158, 22, "assets/images/keys/volume.png"));
+		add(new FlxText(1201, 23, 200, "Volume"));
+		
+		pressKey = new FlxText(0, 550, 1280, "Press space to start");
 		pressKey.alignment = FlxTextAlign.CENTER;
 		pressKey.size = 20;
 		pressKey.alpha = 0;
@@ -63,6 +78,8 @@ class SplashScreen extends FlxState
 		add(pressKey);
 		
 		FlxTween.tween(image, { alpha: 1 }, 4, { ease: FlxEase.cubeIn }).onComplete = showPlay;
+		
+
 		
 	}
 	
@@ -82,10 +99,26 @@ class SplashScreen extends FlxState
 			numUpdates = 0;
 		}
 		
-		if (FlxG.keys.firstJustReleased() != -1)
+		if (FlxG.keys.justPressed.SPACE)
 		{
+			showPress = false;
 			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
-				FlxG.switchState(new PlayState());
+				if (gameSave.data.tutorialDone)
+				{
+					FlxG.switchState(new PlayState());
+				}
+				else
+				{
+					FlxG.switchState(new Tutorial1State());
+				}
+			}	
+		}
+		
+		else if (FlxG.keys.justPressed.T)
+		{
+			showPress = false;
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new Tutorial1State());
 			}	
 		}
 	}
