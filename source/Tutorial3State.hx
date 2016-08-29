@@ -35,7 +35,7 @@ class Tutorial3State extends PlayState
 	{
 		super.create();
 		
-		map.loadTutorial2(loco, 0);
+		map.loadTutorial(loco, 1);
 				
 		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut3Expl.png");
 		add(explImage);
@@ -63,15 +63,21 @@ class Tutorial3State extends PlayState
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+				
+		if (completed)
+		{
+			if (pings.length == 0)
+			{
+				FlxG.switchState(new PlayState());
+			}
+			return;
+		}
 		
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			if (completed) return;
-			completed = true;
 			
-			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
-				new FlxTimer().start(3, function(t:FlxTimer){FlxG.switchState(new PlayState()); }, 1);
-			}	
+			completed = true;
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1);
 		}
 	}
 	

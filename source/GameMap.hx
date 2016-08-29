@@ -114,14 +114,74 @@ class GameMap
 				{
 					foreground.setTile(x, y, 4);
 				}
-				else if (y == foreground.heightInTiles - 7 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 6)
+				else if (y == foreground.heightInTiles - 7 && x > foreground.widthInTiles / 2 - 9 && x < foreground.widthInTiles / 2 + 9)
 				{
-					rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
-					placeRailAt(rail, x, y);
+					if (x > foreground.widthInTiles / 2 - 8 && ((phase == 1 && x < foreground.widthInTiles / 2 + 8) || x < foreground.widthInTiles / 2 + 6))
+					{
+						rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 + 8)
+					{
+						rail = new Railway(this, rail, Direction.EAST, Direction.SOUTH, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 - 8)
+					{
+						rail = new Railway(this, rail, Direction.NORTH, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else
+					{
+						foreground.setTile(x, y, 0);
+					}
+				}
+				else if (y == foreground.heightInTiles - 6 && x > foreground.widthInTiles / 2 - 9 && x < foreground.widthInTiles / 2 + 9)
+				{
+					if (x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
+					{
+						foreground.setTile(x, y, 4);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 + 8)
+					{
+						rail = new Railway(this, rail, Direction.SOUTH, Direction.SOUTH, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 - 8)
+					{
+						rail = new Railway(this, rail, Direction.NORTH, Direction.NORTH, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else
+					{
+						foreground.setTile(x, y, 0);
+					}
 				}
 				else if (y == foreground.heightInTiles - 6 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
 				{
 					foreground.setTile(x, y, 4);
+				}
+				else if (phase == 1 && y == foreground.heightInTiles - 5 && x > foreground.widthInTiles / 2 - 9 && x < foreground.widthInTiles / 2 + 9)
+				{
+					if (x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
+					{
+						rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 + 8)
+					{
+						rail = new Railway(this, rail, Direction.SOUTH, Direction.WEST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else if (phase == 1 && x == foreground.widthInTiles / 2 - 8)
+					{
+						rail = new Railway(this, rail, Direction.WEST, Direction.NORTH, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
+						placeRailAt(rail, x, y);
+					}
+					else
+					{
+						foreground.setTile(x, y, 0);
+					}
 				}
 				else
 				{
@@ -141,66 +201,6 @@ class GameMap
 		{
 			wagon.x = (foreground.widthInTiles / 2 - 7) * GameMap.TILE_SIZE;
 			wagon.y = (foreground.heightInTiles - 7) * GameMap.TILE_SIZE;
-			wagon = wagon.next;
-		}
-	}
-	
-	public function loadTutorial2(loco:Loco, phase:Int)
-	{
-		// All obstacles out
-		for (key in obstacles.keys())
-		{
-			obstacles[key].destroy();
-			obstacles.remove(key);
-		}
-		
-		// All railways out
-		for (rail in rails)
-		{
-			rails.remove(rail);
-		}
-		
-		// Generate map
-		var rail = null;
-		for (y in 1...(foreground.heightInTiles - 1))
-		{
-			for (x in 1...(foreground.widthInTiles - 1))
-			{
-				railsByIndex[y][x] = null;
-				
-				if (y < foreground.heightInTiles / 2)
-				{
-					foreground.setTile(x, y, 4);
-				}
-				else if (y == foreground.heightInTiles - 5 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
-				{
-					rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
-					placeRailAt(rail, x, y);
-					rail = new Railway(this, rail, Direction.WEST, Direction.WEST, x * GameMap.TILE_SIZE, (y + 2) * GameMap.TILE_SIZE);
-					placeRailAt(rail, x, y + 2);
-				}
-				else if (y == foreground.heightInTiles - 4 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
-				{
-					foreground.setTile(x, y, 4);
-				}
-				else
-				{
-					foreground.setTile(x, y, 0);
-				}
-			}
-		}
-		
-		for (gem in gems)
-		{
-			gem.x = (foreground.widthInTiles / 2) * GameMap.TILE_SIZE;
-			gem.y = (foreground.heightInTiles - 3) * GameMap.TILE_SIZE;
-		}
-		
-		var wagon:Wagon = loco;
-		while (wagon != null)
-		{
-			wagon.x = (foreground.widthInTiles / 2 - 7) * GameMap.TILE_SIZE;
-			wagon.y = (foreground.heightInTiles - 5) * GameMap.TILE_SIZE;
 			wagon = wagon.next;
 		}
 	}
