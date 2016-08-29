@@ -608,6 +608,10 @@ class PlayState extends FlxState
 		new FlxTimer().start(1, disableRainbow, 1);
 		
 		loco.onGemPicked(loco, gem);
+		if (loco.realMinimumSpeed < Wagon.MAX_SPEED)
+		{
+			loco.realMinimumSpeed = loco.realMinimumSpeed + 100;
+		}
 	}
 	
 	public function updateGUI()

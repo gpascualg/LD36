@@ -34,6 +34,7 @@ class Wagon extends FlxSprite
 	private var realMA:Float = 0;
 	
 	public var map:GameMap;
+	public var realMinimumSpeed = MIN_SPEED;
 	public var speed:Float = MIN_SPEED;
 	public var realSpeed:Float = 0;
 	private var previous:Wagon = null;
@@ -113,7 +114,7 @@ class Wagon extends FlxSprite
 				}
 			}
 		}
-				
+
 		if (_target != angle)
 		{
 			var dAng = 2;
@@ -220,6 +221,11 @@ class Wagon extends FlxSprite
 	
 	public function updateSpeed(elapsed:Float)
 	{
+		if (!_first && speed < realMinimumSpeed)
+		{
+			speed = realMinimumSpeed;
+		}
+		
 		if (realMA != mA || speed != realSpeed || (previous != null && realSpeed != previous.realSpeed))
 		{
 			// Loco sets speed

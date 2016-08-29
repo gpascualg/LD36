@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.system.FlxSound;
+import flixel.util.FlxTimer;
 
 /**
  * ...
@@ -37,13 +38,16 @@ class SoundManager
 			sound = true;
 			FlxG.sound.playMusic(SoundManager.BG_MUSIC[n], 1, false);
 			FlxG.sound.music.onComplete = onSoundComplete;
+			trace(FlxG.sound.music.playing);
 		}
 	}
 	
 	public static function onSoundComplete()
 	{
-		n = (n + 3) % BG_MUSIC.length;
-		FlxG.sound.playMusic(SoundManager.BG_MUSIC[n], 1, false);
-		FlxG.sound.music.onComplete = onSoundComplete;
+		n = (n + 1) % BG_MUSIC.length;
+		(new FlxTimer()).start(1, function(_) {
+			FlxG.sound.playMusic(SoundManager.BG_MUSIC[n], 1, false);
+			FlxG.sound.music.onComplete = onSoundComplete;
+		});
 	}
 }
