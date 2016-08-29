@@ -84,6 +84,11 @@ class Tutorial4State extends FlxState
 	
 	override public function update(elapsed:Float):Void
 	{
+		if (FlxG.keys.justPressed.F)
+		{
+            FlxG.fullscreen = !FlxG.fullscreen;
+		}
+		
 		super.update(elapsed);
 	}
 }
