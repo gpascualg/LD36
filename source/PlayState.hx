@@ -268,8 +268,15 @@ class PlayState extends FlxState
 		
 		new FlxTimer().start(1.0, function(t:FlxTimer) { 
 			if (_pingPower < MAX_PING_LIGTH && (pingsUp.length <= 0 || !pingsUp[pingsUp.length - 1]))
-			{ 
-				_pingPower += PING_RECHARGE * loco.realSpeed / Wagon.MIN_SPEED;
+			{
+				if (loco.realSpeed >= Wagon.MIN_SPEED)
+				{
+					_pingPower += PING_RECHARGE * loco.realSpeed / Wagon.MIN_SPEED;
+				}
+				else
+				{
+					_pingPower += PING_RECHARGE;
+				}
 			}
 		}, 250);	
 		
