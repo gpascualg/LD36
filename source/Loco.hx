@@ -58,6 +58,13 @@ class Loco extends Wagon
 		speed = 0;
 	}
 	
+	public function restart()
+	{
+		if (speed > 0) return;
+		velocity.x = Wagon.MIN_SPEED;
+		speed = Wagon.MIN_SPEED;
+	}
+	
 	public function incrementSpeed(elapsed:Float)
 	{
 		if(speed < Wagon.MAX_SPEED)

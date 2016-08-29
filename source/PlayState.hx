@@ -424,6 +424,7 @@ class PlayState extends FlxState
 						rail = null;
 						clearAllSelectedRails();
 						_addRailSound.play();
+						onRailPlaced();
 					}
 				}
 			}
@@ -570,6 +571,8 @@ class PlayState extends FlxState
 		
 		super.update(elapsed);
 	}
+	
+	public function onRailPlaced():Void{}
 	
 	public function onGemPicked(loco:Loco, gem:Gem)
 	{
