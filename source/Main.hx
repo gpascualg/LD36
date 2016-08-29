@@ -1,5 +1,6 @@
 package;
 
+import flash.display.GraphicsSolidFill;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 import flixel.FlxG;
@@ -40,5 +41,10 @@ class Main extends Sprite
 		#else
 			addChild(new FlxGame(MAP_WIDTH * MAP_SCALE, MAP_HEIGTH * MAP_SCALE, PlayState));
 		#end
+	}
+	
+	public static function SkipTutorial():Void
+	{
+		FlxG.switchState(new PlayState());
 	}
 }

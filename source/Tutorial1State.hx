@@ -13,6 +13,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import openfl.display.BlendMode;
@@ -48,7 +49,7 @@ class Tutorial1State extends PlayState
 		var explanation:FlxText = new FlxText(50, 100, "Select Railway", 25);
 		add(explanation);
 		
-		explanation = new FlxText(760, 100, "Place", 25);
+		explanation = new FlxText(762, 100, "Place", 25);
 		add(explanation);
 
 		explanation = new FlxText(988, 100, "Delete", 25);
@@ -58,6 +59,12 @@ class Tutorial1State extends PlayState
 		tutImg.setPosition(584, 360);
 		tutImg.alpha = 0.6;
 		add(tutImg);
+		
+		var button:FlxButton = new FlxButton(1165, 23, "Skip Tutorial", function(){
+			Main.SkipTutorial();
+		});
+		
+		add(button);
 		
 		loco.speed = Wagon.MAX_SPEED;
 		lastWagon = loco;
