@@ -64,7 +64,10 @@ class Tutorial3State extends PlayState
 		});
 		add(button);
 	}
-		
+	
+	override public function doEffects()
+	{}
+	
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);

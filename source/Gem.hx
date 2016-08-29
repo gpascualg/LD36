@@ -40,7 +40,7 @@ class Gem extends FlxSprite
 	override public function kill():Void
 	{
 		alive = false;
-		#if flash
+		#if (flash && debug)
 			finishKill(null);
 		#else
 			FlxTween.tween(this, { alpha: 0, y: y - 16 }, .33, { ease: FlxEase.circOut });

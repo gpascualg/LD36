@@ -73,7 +73,10 @@ class Tutorial1State extends PlayState
 			lastWagon = lastWagon.next;
 		}
 	}
-		
+	
+	override public function doEffects()
+	{}
+	
 	override public function update(elapsed:Float):Void
 	{
 		if (!lastWagon._first && !moving && loco.speed > 0)

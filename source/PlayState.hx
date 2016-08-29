@@ -20,6 +20,8 @@ import openfl.display.FPS;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxBar;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 import GameMap;
 import LightSource;
@@ -60,7 +62,7 @@ class PlayState extends FlxState
 	
 	private static inline var MAX_PING_LIGTH = 300;
 	private static inline var PING_RECHARGE = 10;
-	private var _pingPower = MAX_PING_LIGTH;
+	private var _pingPower:Float = MAX_PING_LIGTH;
 	private var _pingSound:FlxSound;
 	
 	private var _addRailSound:FlxSound;
@@ -125,10 +127,11 @@ class PlayState extends FlxState
 			add(_effects = new FlxEffectSprite(darknessOverlay));
 			_effects.effects = [new FlxRainbowEffect(0.9)];
 			_effects.effects[0].active = false;
+			_effects.alpha = 0;
 			#if neko
 				_effects.blend = BlendMode.MULTIPLY;
 			#else
-				_effects.blend = BlendMode.ALPHA;
+				_effects.blend = BlendMode.MULTIPLY;
 			#end
 		#end
 		
@@ -258,7 +261,12 @@ class PlayState extends FlxState
 		
 		SoundManager.PlayBackgroundMusic();
 		
-		new FlxTimer().start(1.0, function(t:FlxTimer){ if (_pingPower < MAX_PING_LIGTH && (pingsUp.length <= 0 || !pingsUp[pingsUp.length - 1])){_pingPower += PING_RECHARGE; }}, 250);	
+		new FlxTimer().start(1.0, function(t:FlxTimer) { 
+			if (_pingPower < MAX_PING_LIGTH && (pingsUp.length <= 0 || !pingsUp[pingsUp.length - 1]))
+			{ 
+				_pingPower += PING_RECHARGE * loco.realSpeed / Wagon.MIN_SPEED;
+			}
+		}, 250);	
 		
 		//STATS:
 		timerTxt = new FlxText(30, 617, 150, "Time:");
@@ -278,8 +286,25 @@ class PlayState extends FlxState
 		add(diamondsTxt);
 		
 		updateGUI();
+		doEffects();
 		
 		new FlxTimer().start(1, addOneSecond, 0);
+	}
+	
+	public function doEffects()
+	{
+		darknessOverlay.alpha = 0.90;
+		
+		#if (flash && debug)
+			_effects.alpha = 1;
+		#else
+			FlxTween.tween(_effects, { alpha: 1 }, 1, { ease: FlxEase.circOut });
+		#end	
+		
+		#if !html5
+			_effects.effects[0].active = true;
+		#end
+		new FlxTimer().start(1, disableRainbow, 1);
 	}
 	
 	public function addOneSecond(timer:FlxTimer):Void
@@ -603,14 +628,10 @@ class PlayState extends FlxState
 	{
 		if (gem.alive)
 		{
-			darknessOverlay.alpha = 0.90;
-			#if !html5
-				_effects.effects[0].active = true;
-			#end
-			new FlxTimer().start(1, disableRainbow, 1);
+			doEffects();
 			
 			loco.onGemPicked(loco, gem);
-			if (loco.realMinimumSpeed < Wagon.MAX_SPEED)
+			if (loco.realMinimumSpeed < Wagon.MAX_SPEED / 2)
 			{
 				loco.realMinimumSpeed = loco.realMinimumSpeed + 100;
 			}
@@ -648,6 +669,13 @@ class PlayState extends FlxState
 	public function disableRainbow(timer:FlxTimer)
 	{
 		darknessOverlay.alpha = 1;
+		
+		#if (flash && debug)
+			_effects.alpha = 0;
+		#else
+			FlxTween.tween(_effects, { alpha: 0 }, 1, { ease: FlxEase.circOut });
+		#end		
+		
 		#if !html5
 			_effects.effects[0].active = false;
 		#end
