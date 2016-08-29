@@ -36,11 +36,8 @@ class Tutorial3State extends PlayState
 		super.create();
 		
 		map.loadTutorial2(loco, 0);
-		
-		//Make the loco stop after a few seconds
-		new FlxTimer().start(2.4, function(t:FlxTimer){loco.stop(); }, 1);
-		
-		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut2Expl.png");
+				
+		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut3Expl.png");
 		add(explImage);
 		
 		var title:FlxText = new FlxText(45, 25, 600, "Tutorial 3: Beacon", 30);
