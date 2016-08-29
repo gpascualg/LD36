@@ -114,12 +114,12 @@ class GameMap
 				{
 					foreground.setTile(x, y, 4);
 				}
-				else if (y == foreground.heightInTiles - 5 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 6)
+				else if (y == foreground.heightInTiles - 7 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 6)
 				{
 					rail = new Railway(this, rail, Direction.EAST, Direction.EAST, x * GameMap.TILE_SIZE, y * GameMap.TILE_SIZE);
 					placeRailAt(rail, x, y);
 				}
-				else if (y == foreground.heightInTiles - 4 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
+				else if (y == foreground.heightInTiles - 6 && x > foreground.widthInTiles / 2 - 8 && x < foreground.widthInTiles / 2 + 8)
 				{
 					foreground.setTile(x, y, 4);
 				}
@@ -133,14 +133,14 @@ class GameMap
 		for (gem in gems)
 		{
 			gem.x = (foreground.widthInTiles / 2) * GameMap.TILE_SIZE;
-			gem.y = (foreground.heightInTiles - 3) * GameMap.TILE_SIZE;
+			gem.y = (foreground.heightInTiles - 5) * GameMap.TILE_SIZE;
 		}
 		
 		var wagon:Wagon = loco;
 		while (wagon != null)
 		{
 			wagon.x = (foreground.widthInTiles / 2 - 7) * GameMap.TILE_SIZE;
-			wagon.y = (foreground.heightInTiles - 5) * GameMap.TILE_SIZE;
+			wagon.y = (foreground.heightInTiles - 7) * GameMap.TILE_SIZE;
 			wagon = wagon.next;
 		}
 	}
