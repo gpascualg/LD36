@@ -4,8 +4,6 @@ import flash.utils.Timer;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxGlitchEffect;
 import flixel.addons.effects.chainable.FlxRainbowEffect;
-import flixel.addons.nape.FlxNapeSpace;
-import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -17,9 +15,6 @@ import flixel.tile.FlxTilemap;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import nape.geom.Vec2;
-import nape.geom.Vec2List;
-import nape.phys.Body;
 import openfl.display.BlendMode;
 import openfl.display.FPS;
 import flixel.group.FlxSpriteGroup;
@@ -112,11 +107,7 @@ class PlayState extends FlxState
 		StatsManager.ResetStats();
 		
 		FlxG.camera.bgColor = 0x5a81ad;
-		
-		FlxNapeSpace.init();
-		FlxNapeSpace.space.gravity.setxy(0, 0);
-		FlxNapeSpace.drawDebug = false; // You can toggle this on/off one by pressing 'D'		
-		
+				
 		lightSources = new FlxTypedGroup<LightSource>();
 		darknessOverlay = new FlxSprite();
 		
@@ -329,9 +320,6 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.G)
 			GameOver();
 		
-		if (FlxG.keys.justPressed.D)
-			FlxNapeSpace.drawDebug = !FlxNapeSpace.drawDebug;
-		
 		if (FlxG.keys.justPressed.R)
 			FlxG.resetGame();
 		
@@ -462,7 +450,7 @@ class PlayState extends FlxState
 		}
 		
 		// Clean lightning
-		#if debug
+		#if (debug && !html5)
 			darknessOverlay.fill(0xAAFFFFFF);
 		#else
 			darknessOverlay.fill(FlxColor.BLACK);
@@ -543,77 +531,6 @@ class PlayState extends FlxState
 	{
 		darknessOverlay.alpha = 1;
 		_effects.effects[0].active = false;
-	}
-	
-	public function processShadows():Void
-	{
-		map.shadowCanvas.fill(FlxColor.TRANSPARENT);
-		map.shadowOverlay.fill(OVERLAY_COLOR);
-
-		for (body in FlxNapeSpace.space.bodies)
-		{
-			processBodyShapes(body);
-		}
-	}
-	
-	private function processBodyShapes(body:Body)
-	{
-		for (source in lightSources)
-		{
-			for (shape in body.shapes) 			
-			{
-				var verts:Vec2List = shape.castPolygon.worldVerts;
-				
-				for (i in 0...verts.length) 
-				{
-					var startVertex:Vec2 = (i == 0) ? verts.at(verts.length - 1) : verts.at(i - 1);
-					processShapeVertex(source, startVertex, verts.at(i));
-				}
-			}
-		}
-	}
-	
-	private function processShapeVertex(source:LightSource, startVertex:Vec2, endVertex:Vec2):Void
-	{
-		var tempLightOrigin:Vec2 = Vec2.get(
-			source.x + FlxG.random.float( -.3, 3),
-			source.y + FlxG.random.float(-.3, .3));
-			
-		if (doesEdgeCastShadow(startVertex, endVertex, tempLightOrigin))
-		{
-			var projectedPoint:Vec2 = projectPoint(startVertex, tempLightOrigin);
-			var prevProjectedPt:Vec2 = projectPoint(endVertex, tempLightOrigin);
-			var vts:Array<FlxPoint> = [
-				FlxPoint.weak(startVertex.x, startVertex.y),
-				FlxPoint.weak(projectedPoint.x, projectedPoint.y),
-				FlxPoint.weak(prevProjectedPt.x, prevProjectedPt.y),
-				FlxPoint.weak(endVertex.x, endVertex.y)
-			];
-			
-			map.shadowCanvas.drawPolygon(vts, SHADOW_COLOR, lineStyle);
-		}
-	}
-	
-	private function projectPoint(point:Vec2, light:Vec2):Vec2
-	{
-		var lightToPoint:Vec2 = point.copy();
-		lightToPoint.subeq(light);
-		
-		var projectedPoint:Vec2 = point.copy();
-		return projectedPoint.addeq(lightToPoint.muleq(.45));
-	}
-	
-	private function doesEdgeCastShadow(start:Vec2, end:Vec2, light:Vec2):Bool
-	{
-		var startToEnd:Vec2 = end.copy();
-		startToEnd.subeq(start);
-		
-		var normal:Vec2 = new Vec2(startToEnd.y, -1 * startToEnd.x);
-		
-		var lightToStart:Vec2 = start.copy();
-		lightToStart.subeq(light);
-	 
-		return normal.dot(lightToStart) > 0;
 	}
 	
 	public function GameOver():Void

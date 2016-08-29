@@ -4,18 +4,11 @@ import flash.display.InteractiveObject;
 import flash.geom.Point;
 import flash.media.Sound;
 import flixel.FlxSprite;
-import flixel.addons.nape.FlxNapeSpace;
-import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
-import nape.constraint.PivotJoint;
-import nape.geom.Vec2;
-import nape.phys.Body;
-import nape.phys.BodyType;
-import nape.phys.Material;
 
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;

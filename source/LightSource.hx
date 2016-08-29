@@ -2,24 +2,17 @@ package;
 
 import flash.geom.Point;
 import flixel.FlxSprite;
-import flixel.addons.nape.FlxNapeSpace;
-import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxGradient;
 import flixel.util.FlxColor;
-import nape.constraint.PivotJoint;
-import nape.geom.Vec2;
-import nape.phys.Body;
-import nape.phys.BodyType;
-import nape.phys.Material;
 
 import GameMap;
 
 using Main.FloatExtender;
 using flixel.util.FlxSpriteUtil;
 
-class LightSource extends FlxNapeSprite
+class LightSource extends FlxSprite
 {
 	private var map:GameMap;
 	private var lastX:Int = 0;
@@ -41,16 +34,11 @@ class LightSource extends FlxNapeSprite
 	
 	public function new(map:GameMap, canvas:FlxSprite, X:Float, Y:Float, ?thickness:Int=1, ?type:LightType=LightType.LINE, ?enabled:Bool=true) 
 	{
-		super(X, Y, null, true, true);
+		super(X, Y);
 		loadGraphic("assets/images/gem.png", true, 16, 16);
 		animation.add("glitter", [0, 1, 2], 1);
 		animation.play("glitter");
-		
-		createRectangularBody(16, 16, BodyType.DYNAMIC);
-		body.setShapeMaterials(Material.ice());
-		
-		body.userData.type = "Gem";
-		
+				
 		this.map = map;
 		this.thickness = thickness;
 		this.enabled = enabled;
@@ -168,7 +156,7 @@ class LightSource extends FlxNapeSprite
 							mirror = isMirror;
 						}
 					}
-					else if (tileIdx == Prop.BARREL)
+					else if (tileIdx == Prop.BARREL || tileIdx == 4)
 					{
 						var newPoint = new FlxPoint(ix + dx * 2.0, iy + dy * 2.0);
 						if (lastPoint == null || newPoint.distanceTo(getPosition()) < lastPoint.distanceTo(getPosition()))

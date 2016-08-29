@@ -1,7 +1,5 @@
 package;
 
-import flixel.addons.nape.FlxNapeSpace;
-import flixel.addons.nape.FlxNapeTilemap;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -10,9 +8,6 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
-import nape.geom.Vec2;
-import nape.geom.Vec2List;
-import nape.phys.Body;
 import openfl.display.BlendMode;
 import openfl.display.FPS;
 import flixel.util.FlxSpriteUtil;
@@ -30,7 +25,7 @@ class GameMap
 	public static inline var TILE_SIZE:Int = 32;
 	private var background:FlxTilemap;
 	
-	public var foreground:FlxNapeTilemap;
+	public var foreground:FlxTilemap;
 	public var shadowCanvas:FlxSprite;
 	public var shadowOverlay:FlxSprite;
 	
@@ -69,7 +64,7 @@ class GameMap
 		shadowCanvas.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT, true);
 		//_parent.add(shadowCanvas);
 		
-		foreground = new FlxNapeTilemap();
+		foreground = new FlxTilemap();
 		mapData = new Array<Int>();
 		
 		foreground.loadMapFromCSV("assets/data/foreground.txt",
@@ -82,7 +77,6 @@ class GameMap
 		shadowOverlay.blend = BlendMode.MULTIPLY;
 		//_parent.add(shadowOverlay);
 		
-		foreground.setupTileIndices([4]);
 		rails = new FlxTypedGroup<Railway>();
 		parent.add(rails);
 		gems = new FlxTypedGroup<Gem>();

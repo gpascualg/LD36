@@ -2,17 +2,10 @@ package;
 
 import flash.geom.Point;
 import flixel.FlxSprite;
-import flixel.addons.nape.FlxNapeSpace;
-import flixel.addons.nape.FlxNapeSprite;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import nape.constraint.PivotJoint;
-import nape.geom.Vec2;
-import nape.phys.Body;
-import nape.phys.BodyType;
-import nape.phys.Material;
 
 import LightSource;
 import GameMap;
