@@ -68,11 +68,11 @@ class Tutorial2State extends PlayState
 	{
 		super.update(elapsed);
 		
-		trace(loco.speed);
 		if (loco.speed >= Wagon.MAX_SPEED)
 		{
 			if (completed) return;
 			completed = true;
+			
 			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
 				FlxG.switchState(new Tutorial3State());
 			}	
