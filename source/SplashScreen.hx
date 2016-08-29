@@ -59,12 +59,15 @@ class SplashScreen extends FlxState
 		
 		if (Main.gameSave.data.tutorialDone)
 		{
-			add(new FlxSprite(1182, 47, "assets/images/keys/T.png"));
-			add(new FlxText(1200, 48, 200, "Tutorial"));
+			add(new FlxSprite(1162, 47, "assets/images/keys/T.png"));
+			add(new FlxText(1180, 48, 200, "Tutorial"));
 		}
 		
-		add(new FlxSprite(1158, 22, "assets/images/keys/volume.png"));
-		add(new FlxText(1201, 23, 200, "Volume"));
+		add(new FlxSprite(1162, 72, "assets/images/keys/T.png"));
+		add(new FlxText(1180, 73, 200, "Toggle Full Screen"));
+		
+		add(new FlxSprite(1138, 22, "assets/images/keys/volume.png"));
+		add(new FlxText(1181, 23, 200, "Volume"));
 		
 		pressKey = new FlxText(0, 550, 1280, "Press space to start");
 		pressKey.alignment = FlxTextAlign.CENTER;
