@@ -53,8 +53,8 @@ class PlayState extends FlxState
 	private var darknessOverlay:FlxSprite;
 	
 	private var loco:Loco;
-	private var pingUp:Bool = true;
-	private var ping:LightSource;
+	private var pingsUp:Array<Bool>;
+	private var pings:Array<LightSource>;
 	private var rail:Railway = null;
 	private var lastRail = [false, false, false];
 	
@@ -236,8 +236,8 @@ class PlayState extends FlxState
 		add(loco);
 		
 		// Ping light
-		ping = new LightSource(map, darknessOverlay, 0, 0, 1, LightType.CONCENTRIC_SPOT, false);
-		lightSources.add(ping);
+		pings = new Array<LightSource>();
+		pingsUp = new Array<Bool>();
 		
 		// This here is only used to get the current FPS in a simple way, without having to run the application in Debug mode
 		fps = new FPS(10, 10, 0xffffff);
@@ -246,7 +246,7 @@ class PlayState extends FlxState
 		
 		SoundManager.PlayBackgroundMusic();
 		
-		new FlxTimer().start(1.0, function(t:FlxTimer){if (_pingPower < MAX_PING_LIGTH){_pingPower += PING_RECHARGE; }}, 250);	
+		new FlxTimer().start(1.0, function(t:FlxTimer){ if (_pingPower < MAX_PING_LIGTH && (pingsUp.length <= 0 || !pingsUp[pingsUp.length - 1])){_pingPower += PING_RECHARGE; }}, 250);	
 		
 		//STATS:
 		timerTxt = new FlxText(30, 617, 150, "Time:");
@@ -467,14 +467,26 @@ class PlayState extends FlxState
 		
 		beaconBar.value = _pingPower;
 		
-		if (FlxG.keys.justPressed.SPACE && !ping.enabled)
+		if (FlxG.keys.justPressed.SPACE)
 		{
-			ping.enabled = true;
-			pingUp = true;
-			ping.thickness = 0;
-			ping.x = loco.x + GameMap.TILE_SIZE / 2.0;
-			ping.y = loco.y + GameMap.TILE_SIZE / 2.0;
+			var light = new LightSource(map, darknessOverlay, 0, 0, 100, LightType.CONCENTRIC_SPOT, true);
+			pings.push(light);
+			pingsUp.push(true);
+			lightSources.add(light);
+			
+			light.x = loco.x + GameMap.TILE_SIZE / 2.0;
+			light.y = loco.y + GameMap.TILE_SIZE / 2.0;
 		}
+				
+		if (FlxG.keys.justReleased.SPACE)
+		{
+			if (pingsUp.length > 0 && pingsUp[pingsUp.length - 1])
+			{
+				pingsUp[pingsUp.length - 1] = false;
+				_pingSound.play();
+			}
+		}
+		
 		
 		// Clean lightning
 		#if (debug && !html5)
@@ -490,27 +502,42 @@ class PlayState extends FlxState
 		#end
 		
 		// Update ping
-		if (ping.enabled)
+		var toRemove:Array<LightSource> = [];
+		for (i in 0...pings.length)
 		{
-			if (pingUp)
+			var ping = pings[i];
+			var pingUp = pingsUp[i];
+			
+			if (ping.enabled)
 			{
-				ping.thickness += 10;
-				if (ping.thickness > _pingPower)
+				if (pingUp)
 				{
-					pingUp = false;
-					_pingPower = 0;
-					_pingSound.play(); 
+					ping.thickness += 5;
+					_pingPower -= 10;
+					if (_pingPower <= 0)
+					{
+						pingsUp[i] = false;
+						_pingPower = 0;
+						_pingSound.play();
+					}
+				}
+				else
+				{
+					ping.thickness -= 1;
+					
+					if (ping.thickness <= 0)
+					{
+						toRemove.push(ping);
+						pingsUp.remove(false);
+					}
 				}
 			}
-			else
-			{
-				ping.thickness -= 1;
-				
-				if (ping.thickness <= 0)
-				{
-					ping.enabled = false;
-				}
-			}
+		}
+		
+		for (ping in toRemove)
+		{
+			lightSources.remove(ping);
+			pings.remove(ping);
 		}
 		
 		// Find closest light for each lightsources

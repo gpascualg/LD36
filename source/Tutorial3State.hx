@@ -64,7 +64,6 @@ class Tutorial3State extends PlayState
 	{
 		super.update(elapsed);
 		
-		trace(loco.speed);
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			if (completed) return;

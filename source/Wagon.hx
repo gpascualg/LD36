@@ -161,9 +161,15 @@ class Wagon extends FlxSprite
 			
 			if (_current == null)
 			{
-				trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);				
-				PlayState.instance.GameOver();
-				return;
+				// Make sure the user didn't put one at last minute
+				_current = map.getRailAt(tx, ty);
+				
+				if (_current == null)
+				{
+					trace("STOPPING at " + (new FlxPoint(tx, ty)) + _last + " ? " + _next);				
+					PlayState.instance.GameOver();
+					return;
+				}
 			}
 			
 			_last = _next;

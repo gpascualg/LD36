@@ -28,16 +28,16 @@ using flixel.util.FlxSpriteUtil;
 
 
 class Tutorial1State extends PlayState
-{	
+{
+	private var moving:Bool = false;
+	private var lastWagon:Wagon = null; 
+	
 	override public function create():Void
 	{
 		super.create();
 		
 		darknessOverlay.alpha = 0;
 		map.loadTutorial(loco, 0);
-		
-		//Make the loco stop after a few seconds
-		new FlxTimer().start(2.4, function(t:FlxTimer){loco.stop(); }, 1);
 		
 		var explImage:FlxSprite = new FlxSprite().loadGraphic("assets/images/Tut1Expl.png");
 		add(explImage);
@@ -58,22 +58,40 @@ class Tutorial1State extends PlayState
 		tutImg.setPosition(584, 424);
 		tutImg.alpha = 0.6;
 		add(tutImg);
+		
+		loco.speed = Wagon.MAX_SPEED;
+		lastWagon = loco;
+		while (lastWagon.next != null)
+		{
+			lastWagon = lastWagon.next;
+		}
 	}
 		
 	override public function update(elapsed:Float):Void
 	{
+		if (!lastWagon._first && !moving && loco.speed > 0)
+		{
+			loco.stop();
+		}
+		
 		super.update(elapsed);
 	}
 	
 	override public function onGemPicked(loco:Loco, gem:Gem)
 	{
-		FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
-			FlxG.switchState(new Tutorial2State());
-		}	
+		if (gem.alive && gem.exists)
+		{
+			FlxG.sound.play(SoundManager.PICKUP_SOUND, 1).onComplete = function(){
+				FlxG.switchState(new Tutorial2State());
+			}
+			
+			gem.kill();
+		}
 	}
 	
-	override public function onRailPlaced():Void{
-		
+	override public function onRailPlaced():Void
+	{
+		moving = true;
 		loco.restart();
 	}
 	
