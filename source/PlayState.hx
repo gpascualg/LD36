@@ -601,16 +601,19 @@ class PlayState extends FlxState
 	
 	public function onGemPicked(loco:Loco, gem:Gem)
 	{
-		darknessOverlay.alpha = 0.90;
-		#if !html5
-			_effects.effects[0].active = true;
-		#end
-		new FlxTimer().start(1, disableRainbow, 1);
-		
-		loco.onGemPicked(loco, gem);
-		if (loco.realMinimumSpeed < Wagon.MAX_SPEED)
+		if (gem.alive)
 		{
-			loco.realMinimumSpeed = loco.realMinimumSpeed + 100;
+			darknessOverlay.alpha = 0.90;
+			#if !html5
+				_effects.effects[0].active = true;
+			#end
+			new FlxTimer().start(1, disableRainbow, 1);
+			
+			loco.onGemPicked(loco, gem);
+			if (loco.realMinimumSpeed < Wagon.MAX_SPEED)
+			{
+				loco.realMinimumSpeed = loco.realMinimumSpeed + 100;
+			}
 		}
 	}
 	
